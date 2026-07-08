@@ -51,3 +51,11 @@ export interface ProgressPhoto {
   isSynced: boolean;
   isLocalOnly: boolean;
 }
+
+export interface FundEntry {
+  id: string;
+  source: string;
+  amount: number;
+  date: string; // YYYY-MM-DD
+  notes?: string;
+}

@@ -1,14 +1,15 @@
 import { Suspense, lazy, useState, useEffect } from 'react';
 import { dbInstance } from './db';
-import { BudgetCategory, Supplier, Milestone, Invoice, ProgressPhoto } from './types';
+import { BudgetCategory, Supplier, Milestone, Invoice, ProgressPhoto, FundEntry } from './types';
 import Dashboard from './components/Dashboard';
 import BudgetSection from './components/BudgetSection';
+import FundsSection from './components/FundsSection';
 import SuppliersSection from './components/SuppliersSection';
 import MilestonesSection from './components/MilestonesSection';
 import DocumentsSection from './components/DocumentsSection';
 import GallerySection from './components/GallerySection';
 import SyncStatus from './components/SyncStatus';
-import { LayoutDashboard, Wallet, Users, CalendarCheck, FileText, Camera, HardDrive, Database } from 'lucide-react';
+import { LayoutDashboard, Wallet, Users, CalendarCheck, FileText, Camera, HardDrive, Database, Landmark } from 'lucide-react';
 
 const ReportGenerator = lazy(() => import('./components/ReportGenerator'));
 
@@ -21,7 +22,8 @@ export default function App() {
   const [milestones, setMilestones] = useState<Milestone[]>([]);
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [photos, setPhotos] = useState<ProgressPhoto[]>([]);
-  const [storageStats, setStorageStats] = useState({ budget: 0, suppliers: 0, milestones: 0, invoices: 0, photos: 0, total: 0 });
+  const [funds, setFunds] = useState<FundEntry[]>([]);
+  const [storageStats, setStorageStats] = useState({ budget: 0, suppliers: 0, milestones: 0, invoices: 0, photos: 0, funds: 0, total: 0 });
   
   // Local activity log
   const [activityLogs, setActivityLogs] = useState<string[]>([]);
@@ -73,6 +75,7 @@ export default function App() {
     const mData = await dbInstance.getAll<Milestone>('milestones');
     const iData = await dbInstance.getAll<Invoice>('invoices');
     const pData = await dbInstance.getAll<ProgressPhoto>('photos');
+    const fData = await dbInstance.getAll<FundEntry>('funds');
 
     // Sort milestones by date
     mData.sort((a, b) => a.dueDate.localeCompare(b.dueDate));
@@ -82,6 +85,7 @@ export default function App() {
     setMilestones(mData);
     setInvoices(iData);
     setPhotos(pData);
+    setFunds(fData);
     setStorageStats(await dbInstance.getStats());
   };
 
@@ -256,6 +260,24 @@ export default function App() {
     await reloadAllData();
   };
 
+  // Funds
+  const handleAddFund = async (fund: Omit<FundEntry, 'id'>) => {
+    const newFund: FundEntry = {
+      ...fund,
+      id: 'f_' + Math.random().toString(36).substring(2, 9)
+    };
+    await dbInstance.add('funds', newFund);
+    logEvent(`[Database] Fondo registrado: "${newFund.source}" por ${newFund.amount}€`);
+    await reloadAllData();
+  };
+
+  const handleDeleteFund = async (id: string) => {
+    const fund = funds.find(x => x.id === id);
+    await dbInstance.delete('funds', id);
+    logEvent(`[Database] Fondo eliminado: "${fund?.source || id}"`);
+    await reloadAllData();
+  };
+
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col justify-between">
       {/* Dynamic Header */}
@@ -313,6 +335,7 @@ export default function App() {
             budget={budget}
             suppliers={suppliers}
             milestones={milestones}
+            funds={funds}
             onNavigate={setActiveTab}
           />
         )}
@@ -323,6 +346,14 @@ export default function App() {
             onAddCategory={handleAddBudgetCategory}
             onUpdateCategory={handleUpdateBudgetCategory}
             onDeleteCategory={handleDeleteBudgetCategory}
+          />
+        )}
+
+        {activeTab === 'fondos' && (
+          <FundsSection
+            funds={funds}
+            onAddFund={handleAddFund}
+            onDeleteFund={handleDeleteFund}
           />
         )}
 
@@ -394,6 +425,16 @@ export default function App() {
           >
             <Wallet className="w-5 h-5" />
             <span className="text-[10px] xs:text-[11px] font-medium">Costos</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab('fondos')}
+            className={`flex flex-col items-center gap-1 p-2 rounded-xl transition-all ${
+              activeTab === 'fondos' ? 'text-emerald-600 scale-110 font-bold' : 'text-slate-400 hover:text-slate-600'
+            }`}
+          >
+            <Landmark className="w-5 h-5" />
+            <span className="text-[10px] xs:text-[11px] font-medium">Fondos</span>
           </button>
 
           <button

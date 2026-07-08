@@ -1,7 +1,7 @@
-import { BudgetCategory, Supplier, Milestone, Invoice, ProgressPhoto } from './types';
+import { BudgetCategory, Supplier, Milestone, Invoice, ProgressPhoto, FundEntry } from './types';
 
 const DB_NAME = 'ReformaGestDB';
-const DB_VERSION = 2;
+const DB_VERSION = 3;
 
 export class Database {
   private db: IDBDatabase | null = null;
@@ -24,21 +24,16 @@ export class Database {
 
       request.onupgradeneeded = (event) => {
         const db = (event.target as IDBOpenDBRequest).result;
-        const transaction = (event.target as IDBOpenDBRequest).transaction;
-        const storeNames = ['budget', 'suppliers', 'milestones', 'invoices', 'photos'] as const;
+        const storeNames = ['budget', 'suppliers', 'milestones', 'invoices', 'photos', 'funds'] as const;
 
-        if (transaction) {
-          storeNames.forEach((storeName) => {
-            if (db.objectStoreNames.contains(storeName)) {
-              transaction.objectStore(storeName).clear();
-            } else {
-              db.createObjectStore(storeName, { keyPath: 'id' });
-            }
-          });
-
-          if (db.objectStoreNames.contains('syncQueue')) {
-            db.deleteObjectStore('syncQueue');
+        storeNames.forEach((storeName) => {
+          if (!db.objectStoreNames.contains(storeName)) {
+            db.createObjectStore(storeName, { keyPath: 'id' });
           }
+        });
+
+        if (db.objectStoreNames.contains('syncQueue')) {
+          db.deleteObjectStore('syncQueue');
         }
       };
     });
@@ -53,7 +48,7 @@ export class Database {
     return tx.objectStore(storeName);
   }
 
-  async getAll<T>(storeName: 'budget' | 'suppliers' | 'milestones' | 'invoices' | 'photos'): Promise<T[]> {
+  async getAll<T>(storeName: 'budget' | 'suppliers' | 'milestones' | 'invoices' | 'photos' | 'funds'): Promise<T[]> {
     await this.init();
     return new Promise((resolve, reject) => {
       const store = this.getStore(storeName, 'readonly');
@@ -63,7 +58,7 @@ export class Database {
     });
   }
 
-  async add<T>(storeName: 'budget' | 'suppliers' | 'milestones' | 'invoices' | 'photos', item: T): Promise<void> {
+  async add<T>(storeName: 'budget' | 'suppliers' | 'milestones' | 'invoices' | 'photos' | 'funds', item: T): Promise<void> {
     await this.init();
     
     // Add to main store
@@ -75,7 +70,7 @@ export class Database {
     });
   }
 
-  async update<T>(storeName: 'budget' | 'suppliers' | 'milestones' | 'invoices' | 'photos', item: T): Promise<void> {
+  async update<T>(storeName: 'budget' | 'suppliers' | 'milestones' | 'invoices' | 'photos' | 'funds', item: T): Promise<void> {
     await this.init();
 
     await new Promise<void>((resolve, reject) => {
@@ -86,7 +81,7 @@ export class Database {
     });
   }
 
-  async delete(storeName: 'budget' | 'suppliers' | 'milestones' | 'invoices' | 'photos', id: string): Promise<void> {
+  async delete(storeName: 'budget' | 'suppliers' | 'milestones' | 'invoices' | 'photos' | 'funds', id: string): Promise<void> {
     await this.init();
 
     await new Promise<void>((resolve, reject) => {
@@ -99,7 +94,7 @@ export class Database {
 
   async clearAllData(): Promise<void> {
     await this.init();
-    const storeNames = ['budget', 'suppliers', 'milestones', 'invoices', 'photos'] as const;
+    const storeNames = ['budget', 'suppliers', 'milestones', 'invoices', 'photos', 'funds'] as const;
 
     await Promise.all(
       storeNames.map(
@@ -114,7 +109,7 @@ export class Database {
     );
   }
 
-  async getStats(): Promise<{ budget: number; suppliers: number; milestones: number; invoices: number; photos: number; total: number }> {
+  async getStats(): Promise<{ budget: number; suppliers: number; milestones: number; invoices: number; photos: number; funds: number; total: number }> {
     await this.init();
     const [budget, suppliers, milestones, invoices, photos] = await Promise.all([
       this.count('budget'),
@@ -123,6 +118,7 @@ export class Database {
       this.count('invoices'),
       this.count('photos')
     ]);
+    const funds = await this.count('funds');
 
     return {
       budget,
@@ -130,11 +126,12 @@ export class Database {
       milestones,
       invoices,
       photos,
-      total: budget + suppliers + milestones + invoices + photos
+      funds,
+      total: budget + suppliers + milestones + invoices + photos + funds
     };
   }
 
-  private async count(storeName: 'budget' | 'suppliers' | 'milestones' | 'invoices' | 'photos'): Promise<number> {
+  private async count(storeName: 'budget' | 'suppliers' | 'milestones' | 'invoices' | 'photos' | 'funds'): Promise<number> {
     return new Promise((resolve, reject) => {
       const store = this.getStore(storeName, 'readonly');
       const request = store.count();

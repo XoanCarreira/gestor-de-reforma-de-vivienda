@@ -1,10 +1,11 @@
-import { BudgetCategory, Milestone, Supplier } from '../types';
+import { BudgetCategory, Milestone, Supplier, FundEntry } from '../types';
 import { AlertTriangle, TrendingUp, CheckCircle, Clock, Users, HardHat, TrendingDown, Database } from 'lucide-react';
 
 interface DashboardProps {
   budget: BudgetCategory[];
   suppliers: Supplier[];
   milestones: Milestone[];
+  funds: FundEntry[];
   onNavigate: (tab: string) => void;
 }
 
@@ -12,6 +13,7 @@ export default function Dashboard({
   budget,
   suppliers,
   milestones,
+  funds,
   onNavigate
 }: DashboardProps) {
   const TODAY_STR = '2026-07-08'; // System reference date
@@ -21,6 +23,9 @@ export default function Dashboard({
   const totalSpent = budget.reduce((sum, c) => sum + c.spent, 0);
   const totalPaid = suppliers.reduce((sum, s) => sum + s.paidAmount, 0);
   const totalContracted = suppliers.reduce((sum, s) => sum + s.contractedAmount, 0);
+  const totalFunds = funds.reduce((sum, entry) => sum + entry.amount, 0);
+  const fundsBalance = totalFunds - totalAllocated;
+  const hasDeficit = fundsBalance < 0;
   
   const remainingBudget = totalAllocated - totalSpent;
   const progressPercent = totalAllocated > 0 ? (totalSpent / totalAllocated) * 100 : 0;
@@ -162,6 +167,30 @@ export default function Dashboard({
         </div>
       </div>
 
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="p-5 bg-white border border-slate-200 shadow-sm rounded-none">
+          <p className="text-xs font-black text-slate-400 uppercase tracking-wider">Fondos disponibles</p>
+          <p className="text-2xl font-black text-slate-900 mt-2">{totalFunds.toLocaleString('es-ES')} €</p>
+          <span className="text-[10px] text-slate-400 mt-2 block">Aportes, ingresos y financiación registrada</span>
+        </div>
+
+        <div className="p-5 bg-white border border-slate-200 shadow-sm rounded-none">
+          <p className="text-xs font-black text-slate-400 uppercase tracking-wider">Gasto previsto</p>
+          <p className="text-2xl font-black text-slate-900 mt-2">{totalAllocated.toLocaleString('es-ES')} €</p>
+          <span className="text-[10px] text-slate-400 mt-2 block">Suma de las partidas de presupuesto</span>
+        </div>
+
+        <div className={`p-5 border shadow-sm rounded-none ${hasDeficit ? 'bg-red-50 border-red-200' : 'bg-emerald-50 border-emerald-200'}`}>
+          <p className="text-xs font-black text-slate-400 uppercase tracking-wider">Balance fondos - previsto</p>
+          <p className={`text-2xl font-black mt-2 ${hasDeficit ? 'text-red-700' : 'text-emerald-700'}`}>
+            {fundsBalance.toLocaleString('es-ES')} €
+          </p>
+          <span className="text-[10px] text-slate-500 mt-2 block">
+            {hasDeficit ? 'Déficit detectado' : 'Superávit disponible'}
+          </span>
+        </div>
+      </div>
+
       {/* Main Charts & Overview Row */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Cost Comparison Custom Chart */}
@@ -289,6 +318,13 @@ export default function Dashboard({
               >
                 <span className="text-slate-900 font-black uppercase tracking-wider text-[10px]">Cámara</span>
                 <span className="text-[9px] text-slate-400">Subir Avance</span>
+              </button>
+              <button
+                onClick={() => onNavigate('fondos')}
+                className="p-2.5 bg-slate-50 hover:bg-slate-100 text-slate-800 border border-slate-200 rounded-none text-center text-xs font-bold transition-all active:scale-95 flex flex-col items-center gap-1 shadow-sm"
+              >
+                <span className="text-emerald-700 font-black uppercase tracking-wider text-[10px]">Fondos</span>
+                <span className="text-[9px] text-slate-400">Entradas e balance</span>
               </button>
             </div>
           </div>
