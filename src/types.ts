@@ -59,3 +59,14 @@ export interface FundEntry {
   date: string; // YYYY-MM-DD
   notes?: string;
 }
+
+export interface AppBackup {
+  version: number;
+  exportedAt: string;
+  budget: BudgetCategory[];
+  suppliers: Supplier[];
+  milestones: Milestone[];
+  invoices: Invoice[];
+  photos: ProgressPhoto[];
+  funds: FundEntry[];
+}

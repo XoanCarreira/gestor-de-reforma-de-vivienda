@@ -1,6 +1,6 @@
 import { Suspense, lazy, useState, useEffect } from 'react';
 import { dbInstance } from './db';
-import { BudgetCategory, Supplier, Milestone, Invoice, ProgressPhoto, FundEntry } from './types';
+import { AppBackup, BudgetCategory, Supplier, Milestone, Invoice, ProgressPhoto, FundEntry } from './types';
 import Dashboard from './components/Dashboard';
 import BudgetSection from './components/BudgetSection';
 import FundsSection from './components/FundsSection';
@@ -28,6 +28,7 @@ export default function App() {
   // Local activity log
   const [activityLogs, setActivityLogs] = useState<string[]>([]);
   const [clearingData, setClearingData] = useState(false);
+  const [backupProcessing, setBackupProcessing] = useState(false);
 
   // PWA Register inside component lifecycle as well
   useEffect(() => {
@@ -104,6 +105,62 @@ export default function App() {
       logEvent('[Database] Error al vaciar la base local: ' + e);
     } finally {
       setClearingData(false);
+    }
+  };
+
+  const handleExportBackup = async () => {
+    try {
+      setBackupProcessing(true);
+      const backup = await dbInstance.exportBackup();
+      const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const fileName = `reforma-gest-backup-${new Date().toISOString().slice(0, 10)}.json`;
+
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = fileName;
+      link.click();
+
+      URL.revokeObjectURL(url);
+      logEvent(`[Backup] Copia de seguridade exportada: ${fileName}`);
+    } catch (e) {
+      logEvent('[Backup] Erro ao exportar a copia de seguridade: ' + e);
+    } finally {
+      setBackupProcessing(false);
+    }
+  };
+
+  const handleImportBackupFile = async (file: File) => {
+    const confirmed = window.confirm('A importación substituirá todos os datos actuais pola información do backup. Continuar?');
+    if (!confirmed) return;
+
+    try {
+      setBackupProcessing(true);
+      const fileText = await file.text();
+      const parsed = JSON.parse(fileText) as Partial<AppBackup>;
+
+      if (!parsed || !Array.isArray(parsed.budget) || !Array.isArray(parsed.suppliers) || !Array.isArray(parsed.milestones) || !Array.isArray(parsed.invoices) || !Array.isArray(parsed.photos) || !Array.isArray(parsed.funds)) {
+        throw new Error('O ficheiro non é un backup válido.');
+      }
+
+      await dbInstance.importBackup({
+        version: typeof parsed.version === 'number' ? parsed.version : 1,
+        exportedAt: parsed.exportedAt || new Date().toISOString(),
+        budget: parsed.budget,
+        suppliers: parsed.suppliers,
+        milestones: parsed.milestones,
+        invoices: parsed.invoices,
+        photos: parsed.photos,
+        funds: parsed.funds
+      });
+
+      await reloadAllData();
+      logEvent(`[Backup] Importado correctamente o ficheiro ${file.name}`);
+    } catch (e) {
+      logEvent('[Backup] Erro ao importar a copia de seguridade: ' + e);
+      alert('Non se puido importar o backup. Verifica que o ficheiro sexa un JSON xerado pola aplicación.');
+    } finally {
+      setBackupProcessing(false);
     }
   };
 
@@ -397,7 +454,10 @@ export default function App() {
           <SyncStatus
             stats={storageStats}
             onClearData={handleClearDatabase}
+            onExportBackup={handleExportBackup}
+            onImportBackupFile={handleImportBackupFile}
             clearing={clearingData}
+            backupProcessing={backupProcessing}
             activityLogs={activityLogs}
           />
         )}

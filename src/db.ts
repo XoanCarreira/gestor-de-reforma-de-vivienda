@@ -1,4 +1,4 @@
-import { BudgetCategory, Supplier, Milestone, Invoice, ProgressPhoto, FundEntry } from './types';
+import { AppBackup, BudgetCategory, Supplier, Milestone, Invoice, ProgressPhoto, FundEntry } from './types';
 
 const DB_NAME = 'ReformaGestDB';
 const DB_VERSION = 3;
@@ -107,6 +107,48 @@ export class Database {
           })
       )
     );
+  }
+
+  async exportBackup(): Promise<AppBackup> {
+    await this.init();
+
+    const [budget, suppliers, milestones, invoices, photos, funds] = await Promise.all([
+      this.getAll<BudgetCategory>('budget'),
+      this.getAll<Supplier>('suppliers'),
+      this.getAll<Milestone>('milestones'),
+      this.getAll<Invoice>('invoices'),
+      this.getAll<ProgressPhoto>('photos'),
+      this.getAll<FundEntry>('funds')
+    ]);
+
+    return {
+      version: DB_VERSION,
+      exportedAt: new Date().toISOString(),
+      budget,
+      suppliers,
+      milestones,
+      invoices,
+      photos,
+      funds
+    };
+  }
+
+  async importBackup(backup: AppBackup): Promise<void> {
+    await this.init();
+    await this.clearAllData();
+
+    const insertAll = async <T>(storeName: 'budget' | 'suppliers' | 'milestones' | 'invoices' | 'photos' | 'funds', items: T[]) => {
+      for (const item of items) {
+        await this.add(storeName, item);
+      }
+    };
+
+    await insertAll('budget', backup.budget || []);
+    await insertAll('suppliers', backup.suppliers || []);
+    await insertAll('milestones', backup.milestones || []);
+    await insertAll('invoices', backup.invoices || []);
+    await insertAll('photos', backup.photos || []);
+    await insertAll('funds', backup.funds || []);
   }
 
   async getStats(): Promise<{ budget: number; suppliers: number; milestones: number; invoices: number; photos: number; funds: number; total: number }> {
