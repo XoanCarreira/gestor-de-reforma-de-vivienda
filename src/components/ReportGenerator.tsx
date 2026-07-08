@@ -44,14 +44,14 @@ export default function ReportGenerator({ budget, suppliers, milestones, invoice
       doc.setTextColor(255, 255, 255);
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(24);
-      doc.text('REPORTE DE REFORMA DE VIVIENDA', 15, 25);
+      doc.text('REPORTE DE REFORMA DE VIVENDA', 15, 25);
 
       // Subtitle
       doc.setFont('helvetica', 'normal');
       doc.setFontSize(11);
       doc.setTextColor(241, 245, 249);
-      doc.text(`Fecha de generación: ${new Date().toLocaleDateString('es-ES')}`, 15, 35);
-      doc.text('Generado por ReformaGest - Aplicación Offline-First', 15, 41);
+      doc.text(`Fecha de xeración: ${new Date().toLocaleDateString('es-ES')}`, 15, 35);
+      doc.text('Xenerado por ReformaVivenda - App creada por XoanCoder', 15, 41);
 
       // Accent bar
       doc.setFillColor(accentColor[0], accentColor[1], accentColor[2]);
@@ -61,12 +61,12 @@ export default function ReportGenerator({ budget, suppliers, milestones, invoice
       doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(16);
-      doc.text('Resumen Ejecutivo del Proyecto', 15, 75);
+      doc.text('Resumen Executivo do Proxecto', 15, 75);
 
       doc.setFont('helvetica', 'normal');
       doc.setFontSize(10);
       doc.setTextColor(textColor[0], textColor[1], textColor[2]);
-      doc.text('Este documento contiene el estado financiero, avance de hitos y balance de proveedores de la obra en curso.', 15, 82);
+      doc.text('Este documento contén o estado financiero, avance de hitos e balance de proveedores da obra en curso.', 15, 82);
 
       // KPI Boxes Backgrounds
       doc.setFillColor(lightBg[0], lightBg[1], lightBg[2]);
@@ -87,7 +87,7 @@ export default function ReportGenerator({ budget, suppliers, milestones, invoice
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(9);
       doc.setTextColor(100, 116, 139);
-      doc.text('CUMULADO GASTADO', 82, 96);
+      doc.text('ACUMULADO GASTADO', 82, 96);
       doc.setFontSize(14);
       if (totalSpent > totalAllocated) {
         doc.setTextColor(239, 68, 68); // Red
@@ -118,7 +118,7 @@ export default function ReportGenerator({ budget, suppliers, milestones, invoice
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(14);
       doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
-      doc.text('Desglose del Presupuesto por Categoría', 15, 135);
+      doc.text('Desglose do Presuposto por Categoría', 15, 135);
 
       // Table Header
       let y = 142;
@@ -184,7 +184,7 @@ export default function ReportGenerator({ budget, suppliers, milestones, invoice
       // Footer of Page 1
       doc.setFontSize(8);
       doc.setTextColor(148, 163, 184);
-      doc.text('Página 1 de 2 - ReformaGest Reporte Automatizado', 15, 285);
+      doc.text('Páxina 1 de 2 - ReformaVivenda Reporte Automatizado', 15, 285);
 
       // --- PAGE 2: PROVIDERS & TIMELINE ---
       doc.addPage();
@@ -198,7 +198,7 @@ export default function ReportGenerator({ budget, suppliers, milestones, invoice
       doc.setTextColor(255, 255, 255);
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(10);
-      doc.text('REPORTE DETALLADO DE OBRA - CONTROL DE PROVEEDORES Y HITOS', 15, 10);
+      doc.text('REPORTE DETALLADO DE OBRA - CONTROL DE PROVEEDORES E HITOS', 15, 10);
 
       // Section 3: Suppliers Summary
       doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
@@ -249,7 +249,7 @@ export default function ReportGenerator({ budget, suppliers, milestones, invoice
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(14);
       doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
-      doc.text('Cronograma de Hitos y Planificación', 15, y + 15);
+      doc.text('Cronograma de Hitos e Planificación', 15, y + 15);
 
       y += 22;
       doc.setFillColor(primaryColor[0], primaryColor[1], primaryColor[2]);
@@ -309,18 +309,18 @@ export default function ReportGenerator({ budget, suppliers, milestones, invoice
       doc.setTextColor(180, 83, 9);
       doc.text('Nota de Auditoría:', 18, y + 5);
       doc.setFont('helvetica', 'normal');
-      doc.text('Cualquier cambio registrado sin conexión se consolidará en el servidor al recuperar la sincronización.', 18, y + 9);
+      doc.text('Calquer cambio rexistrado sen conexión consolidarase no servidor o recuperar a sincronización.', 18, y + 9);
 
       // Page footer 2
       doc.setFontSize(8);
       doc.setTextColor(148, 163, 184);
-      doc.text('Página 2 de 2 - ReformaGest Reporte Automatizado', 15, 285);
+      doc.text('Página 2 de 2 - ReformaVivenda Reporte Automatizado', 15, 285);
 
       // Save PDF
       doc.save(`reporte_reforma_${new Date().toISOString().slice(0,10)}.pdf`);
     } catch (e) {
       console.error('Error generating PDF:', e);
-      alert('Error al generar el PDF. Compruebe la conexión o intente más tarde.');
+      alert('Error o xenerar o PDF. Comprobe a conexión ou intente mais tarde.');
     } finally {
       setGenerating(false);
     }
@@ -334,7 +334,7 @@ export default function ReportGenerator({ budget, suppliers, milestones, invoice
       className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 disabled:from-slate-700 disabled:to-slate-800 disabled:cursor-not-allowed text-slate-950 font-semibold rounded-xl shadow-lg shadow-amber-950/20 active:scale-95 transition-all text-sm w-full sm:w-auto justify-center"
     >
       <FileDown className={`w-4 height-4 ${generating ? 'animate-bounce' : ''}`} />
-      <span>{generating ? 'Generando PDF...' : 'Descargar Reporte PDF'}</span>
+      <span>{generating ? 'Xenerando PDF...' : 'Descargar Reporte PDF'}</span>
     </button>
   );
 }

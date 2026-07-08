@@ -98,8 +98,8 @@ export default function SuppliersSection({
       {/* Header and Add Button */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white border border-slate-200 p-5 rounded-none shadow-sm">
         <div>
-          <h2 className="text-sm font-black text-slate-900 uppercase tracking-widest">Gestión de Proveedores</h2>
-          <p className="text-xs text-slate-500 mt-1">Administra los contratistas de la obra, pagos y presupuestos cerrados.</p>
+          <h2 className="text-sm font-black text-slate-900 uppercase tracking-widest">Xestión de Proveedores</h2>
+          <p className="text-xs text-slate-500 mt-1">Administra os contratistas da obra, pagos e presupostos cerrados.</p>
         </div>
         <button
           onClick={() => setIsAdding(!isAdding)}
@@ -113,10 +113,10 @@ export default function SuppliersSection({
       {/* Add Form (Expandable) */}
       {isAdding && (
         <form onSubmit={handleSaveAdd} className="p-5 bg-white border border-slate-200 shadow-sm rounded-none space-y-4 animate-fadeIn">
-          <h3 className="font-black text-slate-900 text-xs uppercase tracking-wider">Registrar Nuevo Proveedor</h3>
+          <h3 className="font-black text-slate-900 text-xs uppercase tracking-wider">Rexistrar Novo Proveedor</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-black text-slate-500 uppercase mb-1 tracking-wider">Nombre Comercial / Empresa</label>
+              <label className="block text-xs font-black text-slate-500 uppercase mb-1 tracking-wider">Nome Comercial / Empresa</label>
               <input
                 type="text"
                 required
@@ -138,7 +138,7 @@ export default function SuppliersSection({
               />
             </div>
             <div>
-              <label className="block text-xs font-black text-slate-500 uppercase mb-1 tracking-wider">Teléfono Móvil</label>
+              <label className="block text-xs font-black text-slate-500 uppercase mb-1 tracking-wider">Teléfono Móbil</label>
               <input
                 type="tel"
                 placeholder="600 000 000"
@@ -169,7 +169,7 @@ export default function SuppliersSection({
               />
             </div>
             <div>
-              <label className="block text-xs font-black text-slate-500 uppercase mb-1 tracking-wider">Importe Pagado a cuenta (€)</label>
+              <label className="block text-xs font-black text-slate-500 uppercase mb-1 tracking-wider">Importe Pagado a conta (€)</label>
               <input
                 type="number"
                 min="0"
@@ -180,21 +180,21 @@ export default function SuppliersSection({
               />
             </div>
             <div>
-              <label className="block text-xs font-black text-slate-500 uppercase mb-1 tracking-wider">Calificación (1-5 Estrellas)</label>
+              <label className="block text-xs font-black text-slate-500 uppercase mb-1 tracking-wider">Calificación (1-5 Estrelas)</label>
               <select
                 value={rating}
                 onChange={e => setRating(e.target.value)}
                 className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-none text-slate-900 text-sm focus:border-slate-900 outline-none"
               >
-                <option value="5">5 Estrellas (Excelente)</option>
-                <option value="4">4 Estrellas (Muy Bueno)</option>
-                <option value="3">3 Estrellas (Correcto)</option>
-                <option value="2">2 Estrellas (Insuficiente)</option>
+                <option value="5">5 Estrelas (Excelente)</option>
+                <option value="4">4 Estrelas (Moi Bo)</option>
+                <option value="3">3 Estrelas (Correcto)</option>
+                <option value="2">2 Estrelas (Insuficiente)</option>
                 <option value="1">1 Estrella (Deficiente)</option>
               </select>
             </div>
             <div>
-              <label className="block text-xs font-black text-slate-500 uppercase mb-1 tracking-wider">Comentarios / Observaciones</label>
+              <label className="block text-xs font-black text-slate-500 uppercase mb-1 tracking-wider">Comentarios / Observacións</label>
               <input
                 type="text"
                 placeholder="Ej. Suministra materiales por su cuenta..."
@@ -216,7 +216,7 @@ export default function SuppliersSection({
               type="submit"
               className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white font-black rounded-none text-xs sm:text-sm active:scale-95 transition-all uppercase tracking-wider"
             >
-              Guardar Proveedor
+              Gardar Proveedor
             </button>
           </div>
         </form>
@@ -239,7 +239,7 @@ export default function SuppliersSection({
                 <div className="space-y-3.5">
                   <div className="grid grid-cols-2 gap-2">
                     <div className="space-y-1">
-                      <label className="text-[10px] font-black text-slate-500 uppercase tracking-wider">Nombre</label>
+                      <label className="text-[10px] font-black text-slate-500 uppercase tracking-wider">Nome</label>
                       <input
                         type="text"
                         value={name}
@@ -297,7 +297,7 @@ export default function SuppliersSection({
                       />
                     </div>
                     <div className="space-y-1">
-                      <label className="text-[10px] font-black text-slate-500 uppercase tracking-wider">Estrellas</label>
+                      <label className="text-[10px] font-black text-slate-500 uppercase tracking-wider">Estrelas</label>
                       <select
                         value={rating}
                         onChange={e => setRating(e.target.value)}
@@ -396,7 +396,7 @@ export default function SuppliersSection({
                         <span className="text-slate-900 font-black">{sup.paidAmount.toLocaleString('es-ES')} €</span>
                       </div>
                       <div className="text-right">
-                        <span className="text-slate-400 text-[10px] block uppercase font-black tracking-wider">Pendiente</span>
+                        <span className="text-slate-400 text-[10px] block uppercase font-black tracking-wider">Pendente</span>
                         <span className={`font-black ${sup.pendingAmount > 0 ? 'text-amber-600' : 'text-emerald-600'}`}>
                           {sup.pendingAmount.toLocaleString('es-ES')} €
                         </span>
@@ -422,7 +422,7 @@ export default function SuppliersSection({
                           Liquidado
                         </span>
                       ) : (
-                        <span className="text-slate-400 font-medium">Pendiente de cobro final</span>
+                        <span className="text-slate-400 font-medium">Pendente de cobro final</span>
                       )}
                     </div>
                   </div>
@@ -435,7 +435,7 @@ export default function SuppliersSection({
                         className="flex items-center justify-center gap-1.5 py-2 bg-slate-50 hover:bg-slate-100 text-slate-800 rounded-none text-xs font-black transition-colors border border-slate-200 active:scale-95 uppercase tracking-wider"
                       >
                         <Phone className="w-3.5 h-3.5 text-slate-900" />
-                        <span>Llamar</span>
+                        <span>Chamar</span>
                       </a>
                     ) : (
                       <div className="py-2 bg-slate-50 text-slate-400 rounded-none text-xs text-center border border-slate-200 cursor-not-allowed font-black uppercase tracking-wider">

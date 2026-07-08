@@ -67,7 +67,7 @@ export default function GallerySection({ photos, onAddPhoto, onDeletePhoto }: Ga
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white border border-slate-200 p-5 rounded-none shadow-sm">
         <div>
           <h2 className="text-sm font-black text-slate-900 uppercase tracking-widest">Fotos de Avance de Obra</h2>
-          <p className="text-xs text-slate-500 mt-1">Registra de forma visual el progreso, añade anotaciones y consulta el histórico.</p>
+          <p className="text-xs text-slate-500 mt-1">Rexistra de forma visual o progreso, engade anotacións e consulta o histórico.</p>
         </div>
         <button
           onClick={() => setIsAdding(!isAdding)}
@@ -81,7 +81,7 @@ export default function GallerySection({ photos, onAddPhoto, onDeletePhoto }: Ga
       {/* Add Form */}
       {isAdding && (
         <form onSubmit={handleSavePhoto} className="p-5 bg-white border border-slate-200 shadow-sm rounded-none space-y-4 animate-fadeIn">
-          <h3 className="font-black text-slate-900 text-xs uppercase tracking-wider">Añadir Fotografía de Obra</h3>
+          <h3 className="font-black text-slate-900 text-xs uppercase tracking-wider">Engadir Fotografía de Obra</h3>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {/* Capture ButtonsZone */}
@@ -153,7 +153,7 @@ export default function GallerySection({ photos, onAddPhoto, onDeletePhoto }: Ga
             </div>
 
             <div>
-              <label className="block text-xs font-black text-slate-500 uppercase mb-1 tracking-wider">Fecha de Toma</label>
+              <label className="block text-xs font-black text-slate-500 uppercase mb-1 tracking-wider">Data de Toma</label>
               <input
                 type="date"
                 required
@@ -164,7 +164,7 @@ export default function GallerySection({ photos, onAddPhoto, onDeletePhoto }: Ga
             </div>
 
             <div className="sm:col-span-2">
-              <label className="block text-xs font-black text-slate-500 uppercase mb-1 tracking-wider">Notas adicionales / Detalles</label>
+              <label className="block text-xs font-black text-slate-500 uppercase mb-1 tracking-wider">Notas adicionais / Detalles</label>
               <input
                 type="text"
                 placeholder="Ej. Se usó tubería multicapa, pendiente de recibir inspection..."
@@ -187,7 +187,7 @@ export default function GallerySection({ photos, onAddPhoto, onDeletePhoto }: Ga
               type="submit"
               className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white font-black rounded-none text-xs sm:text-sm active:scale-95 transition-all uppercase tracking-wider"
             >
-              Guardar Fotografía
+              Gardar Fotografía
             </button>
           </div>
         </form>
@@ -197,8 +197,8 @@ export default function GallerySection({ photos, onAddPhoto, onDeletePhoto }: Ga
       {photos.length === 0 ? (
         <div className="p-8 text-center bg-slate-50 border border-slate-200 rounded-none">
           <Camera className="w-8 h-8 text-slate-400 mx-auto mb-2" />
-          <p className="text-sm font-black text-slate-800 uppercase tracking-wide text-xs">No hay fotos de avance cargadas.</p>
-          <p className="text-xs text-slate-500 mt-1">Utilice la cámara de su móvil o cargue fotos con el botón superior.</p>
+          <p className="text-sm font-black text-slate-800 uppercase tracking-wide text-xs">Non hai fotos de avance cargadas.</p>
+          <p className="text-xs text-slate-500 mt-1">Utilice a cámara do seu móbil ou cargue fotos co botón superior.</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">

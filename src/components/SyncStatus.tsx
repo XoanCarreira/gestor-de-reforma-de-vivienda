@@ -37,7 +37,7 @@ export default function SyncStatus({ stats, activityLogs, onClearData, onExportB
               <span className="text-slate-400">IndexedDB</span>
             </h2>
             <p className="text-xs text-slate-400 mt-1">
-              A aplicación garda e le toda a información directamente en este navegador.
+              A aplicación garda e lee toda a información directamente en este navegador.
             </p>
           </div>
         </div>
@@ -55,7 +55,7 @@ export default function SyncStatus({ stats, activityLogs, onClearData, onExportB
         <div>
           <h3 className="font-bold text-slate-900 text-sm uppercase tracking-wider mb-2">Backup de datos</h3>
           <p className="text-sm text-slate-600 leading-relaxed">
-            Descarga un archivo JSON con todos os datos actuais e recárgao máis tarde desde outro dispositivo ou desde Android.
+            Descarga un arquivo JSON con todos os datos actuais e recárgao máis tarde desde outro dispositivo ou desde Android.
           </p>
         </div>
 
@@ -140,18 +140,18 @@ export default function SyncStatus({ stats, activityLogs, onClearData, onExportB
 
           <div className="flex items-center gap-2 mt-3 text-[10px] text-slate-500 bg-slate-950/30 p-2 rounded-xl">
             <Info className="w-4 h-4 text-blue-400 shrink-0" />
-            <span>Todo queda almacenado localmente en IndexedDB. No existe sincronización externa en esta versión.</span>
+            <span>Todo queda almacenado localmente en IndexedDB. Non existe sincronización externa nesta versión.</span>
           </div>
         </div>
 
         <div className="p-5 bg-white border border-slate-200 shadow-sm rounded-3xl">
           <h3 className="font-bold text-slate-900 text-sm uppercase tracking-wider mb-3 flex items-center gap-2">
             <Clock className="w-4 h-4 text-amber-500" />
-            Mantenimiento de datos
+            Mantemento de datos
           </h3>
           <p className="text-sm text-slate-600 leading-relaxed">
-            Si quieres empezar desde cero, puedes vaciar la base local y volver a introducir datos reales.
-            Esto elimina fondos, presupuestos, proveedores, hitos, facturas y fotos guardadas en este navegador.
+            Se queres empezar desde cero, podes vaciar a base local e volver a introducir datos reais.
+            Esto elimina fondos, presupuestos, proveedores, hitos, facturas e fotos gardadas neste navegador.
           </p>
         </div>
       </div>

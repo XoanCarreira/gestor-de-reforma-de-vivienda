@@ -109,8 +109,8 @@ export default function DocumentsSection({
       {/* Header and Add Button */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white border border-slate-200 p-5 rounded-none shadow-sm">
         <div>
-          <h2 className="text-sm font-black text-slate-900 uppercase tracking-widest">Carga de Facturas y Gastos</h2>
-          <p className="text-xs text-slate-500 mt-1">Registra recibos, asócialos a un proveedor y liquida partidas automáticamente.</p>
+          <h2 className="text-sm font-black text-slate-900 uppercase tracking-widest">Carga de Facturas e Gastos</h2>
+          <p className="text-xs text-slate-500 mt-1">Rexistra recibos, asócialos a un proveedor e liquida partidas automáticamente.</p>
         </div>
         <button
           onClick={() => setIsUploading(!isUploading)}
@@ -129,7 +129,7 @@ export default function DocumentsSection({
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {/* File Drag and Drop zone */}
             <div className="sm:col-span-2">
-              <label className="block text-xs font-black text-slate-500 uppercase mb-1 tracking-wider">Archivo de la Factura (PDF o Imagen)</label>
+              <label className="block text-xs font-black text-slate-500 uppercase mb-1 tracking-wider">Arquivo da Factura (PDF ou Imaxe)</label>
               <div
                 onDragEnter={handleDrag}
                 onDragOver={handleDrag}
@@ -159,8 +159,8 @@ export default function DocumentsSection({
                   </div>
                 ) : (
                   <div>
-                    <p className="text-sm font-black text-slate-900 uppercase tracking-wide text-xs">Arrastre su factura aquí o haga clic para examinar</p>
-                    <p className="text-xs text-slate-500 mt-1">Soporta PDF, PNG y JPEG. Máx. 10MB.</p>
+                    <p className="text-sm font-black text-slate-900 uppercase tracking-wide text-xs">Arrastre a factura aquí ou faga clic para examinar</p>
+                    <p className="text-xs text-slate-500 mt-1">Soporta PDF, PNG e JPEG. Máx. 10MB.</p>
                   </div>
                 )}
               </div>
@@ -209,7 +209,7 @@ export default function DocumentsSection({
             </div>
 
             <div>
-              <label className="block text-xs font-black text-slate-500 uppercase mb-1 tracking-wider">Fecha Factura</label>
+              <label className="block text-xs font-black text-slate-500 uppercase mb-1 tracking-wider">Data Factura</label>
               <input
                 type="date"
                 required
@@ -230,10 +230,10 @@ export default function DocumentsSection({
               />
               <div className="text-xs">
                 <label htmlFor="updateFinancials" className="font-black text-slate-900 cursor-pointer block uppercase tracking-wider text-[11px]">
-                  Consolidación Automática de Cuentas (Recomendado)
+                  Consolidación Automática de Contas (Recomendado)
                 </label>
                 <span className="text-slate-500 block mt-1">
-                  Al activar, sumará este importe al GASTADO de la partida de presupuesto del proveedor, y lo sumará a sus PAGOS REALIZADOS automáticamente.
+                  O activar, sumará este importe ao GASTADO da partida de presupuesto do proveedor, e o sumará aos seus PAGOS REALIZADOS automáticamente.
                 </span>
               </div>
             </div>
@@ -251,7 +251,7 @@ export default function DocumentsSection({
               type="submit"
               className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white font-black rounded-none text-xs sm:text-sm active:scale-95 transition-all uppercase tracking-wider"
             >
-              Guardar Factura
+              Gardar Factura
             </button>
           </div>
         </form>
@@ -259,13 +259,13 @@ export default function DocumentsSection({
 
       {/* Invoice List */}
       <div className="space-y-3.5">
-        <h3 className="font-black text-slate-900 text-xs uppercase tracking-wider mb-2">Facturas Registradas</h3>
+        <h3 className="font-black text-slate-900 text-xs uppercase tracking-wider mb-2">Facturas Rexistradas</h3>
         
         {invoices.length === 0 ? (
           <div className="p-8 text-center bg-slate-50 border border-slate-200 rounded-none">
             <FileText className="w-8 h-8 text-slate-400 mx-auto mb-2" />
-            <p className="text-sm font-black text-slate-800 uppercase tracking-wide text-xs">No hay facturas cargadas todavía.</p>
-            <p className="text-xs text-slate-500 mt-1">Cargue su primera factura de obra con el botón superior.</p>
+            <p className="text-sm font-black text-slate-800 uppercase tracking-wide text-xs">Non hai facturas cargadas aínda.</p>
+            <p className="text-xs text-slate-500 mt-1">Cargue a súa primeira factura de obra co botón superior.</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -350,7 +350,7 @@ export default function DocumentsSection({
 
             <div className="p-5 space-y-4">
               <div className="bg-slate-50 p-4 rounded-none border border-slate-200 text-center font-mono">
-                <span className="text-xs text-slate-400 block uppercase font-black tracking-wider mb-1">Monto de la Factura</span>
+                <span className="text-xs text-slate-400 block uppercase font-black tracking-wider mb-1">Monto da Factura</span>
                 <span className="text-3xl font-black text-slate-900">{viewInvoice.amount.toLocaleString('es-ES')} €</span>
               </div>
 
@@ -363,7 +363,7 @@ export default function DocumentsSection({
                   </span>
                 </div>
                 <div className="bg-slate-50 p-2.5 rounded-none border border-slate-200">
-                  <span className="text-slate-400 block uppercase font-black tracking-wider text-[10px]">Fecha de Emisión</span>
+                  <span className="text-slate-400 block uppercase font-black tracking-wider text-[10px]">Data de Emisión</span>
                   <span className="text-slate-900 font-black">
                     {new Date(viewInvoice.date).toLocaleDateString('es-ES')}
                   </span>
@@ -372,7 +372,7 @@ export default function DocumentsSection({
 
               {/* Image viewer / PDF preview */}
               <div className="bg-slate-50 p-3 rounded-none border border-slate-200 flex flex-col items-center justify-center space-y-2">
-                <span className="text-[10px] text-slate-400 uppercase font-black tracking-wider">Vista previa del Documento</span>
+                <span className="text-[10px] text-slate-400 uppercase font-black tracking-wider">Vista previa do Documento</span>
                 
                 {/* Check if it is a base64 image */}
                 {viewInvoice.base64Data && viewInvoice.base64Data.startsWith('data:image/') ? (
@@ -385,8 +385,8 @@ export default function DocumentsSection({
                 ) : (
                   <div className="p-8 border border-dashed border-slate-200 rounded-none text-center space-y-1.5 w-full bg-white animate-fadeIn">
                     <FileText className="w-10 h-10 text-slate-900 mx-auto" />
-                    <span className="text-xs text-slate-900 block font-black uppercase tracking-wider">Documento Digitalizado PDF</span>
-                    <span className="text-[10px] text-slate-400 block">Cargado satisfactoriamente en almacenamiento offline (IndexedDB).</span>
+                    <span className="text-xs text-slate-900 block font-black uppercase tracking-wider">Documento Dixitalizado PDF</span>
+                    <span className="text-[10px] text-slate-400 block">Cargado satisfactoriamente no almacenamento offline (IndexedDB).</span>
                   </div>
                 )}
               </div>
@@ -397,7 +397,7 @@ export default function DocumentsSection({
                 onClick={() => setViewInvoice(null)}
                 className="px-4 py-2 bg-slate-900 hover:bg-slate-800 font-black text-xs rounded-none text-white active:scale-95 transition-all uppercase tracking-wider"
               >
-                Cerrar Panel
+                Pechar Panel
               </button>
             </div>
           </div>

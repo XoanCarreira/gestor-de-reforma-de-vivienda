@@ -93,7 +93,7 @@ export default function MilestonesSection({
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white border border-slate-200 p-5 rounded-none shadow-sm">
         <div>
           <h2 className="text-sm font-black text-slate-900 uppercase tracking-widest">Planificación e Hitos</h2>
-          <p className="text-xs text-slate-500 mt-1">Monitorea el cronograma del proyecto y detecta retrasos en plazos de entrega.</p>
+          <p className="text-xs text-slate-500 mt-1">Monitorea o cronograma do proxecto e detecta retrasos en prazos de entrega.</p>
         </div>
         <button
           onClick={() => setIsAdding(!isAdding)}
@@ -107,10 +107,10 @@ export default function MilestonesSection({
       {/* Add Form */}
       {isAdding && (
         <form onSubmit={handleSaveAdd} className="p-5 bg-white border border-slate-200 shadow-sm rounded-none space-y-4 animate-fadeIn">
-          <h3 className="font-black text-slate-900 text-xs uppercase tracking-wider">Nuevo Hito de Obra</h3>
+          <h3 className="font-black text-slate-900 text-xs uppercase tracking-wider">Novo Hito de Obra</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-black text-slate-500 uppercase mb-1 tracking-wider">Nombre del Hito / Tarea</label>
+              <label className="block text-xs font-black text-slate-500 uppercase mb-1 tracking-wider">Nombre do Hito / Tarea</label>
               <input
                 type="text"
                 required
@@ -121,7 +121,7 @@ export default function MilestonesSection({
               />
             </div>
             <div>
-              <label className="block text-xs font-black text-slate-500 uppercase mb-1 tracking-wider">Fecha Límite</label>
+              <label className="block text-xs font-black text-slate-500 uppercase mb-1 tracking-wider">Data Límite</label>
               <input
                 type="date"
                 required
@@ -147,7 +147,7 @@ export default function MilestonesSection({
                 onChange={e => setStatus(e.target.value as MilestoneStatus)}
                 className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-none text-slate-900 text-sm focus:border-slate-900 outline-none"
               >
-                <option value="pending">Pendiente</option>
+                <option value="pending">Pendente</option>
                 <option value="in_progress">En Curso</option>
                 <option value="completed">Completado</option>
                 <option value="delayed">Retrasado</option>
@@ -155,7 +155,7 @@ export default function MilestonesSection({
             </div>
             {status === 'completed' && (
               <div>
-                <label className="block text-xs font-black text-slate-500 uppercase mb-1 tracking-wider">Fecha de Finalización Real</label>
+                <label className="block text-xs font-black text-slate-500 uppercase mb-1 tracking-wider">Data de Finalización Real</label>
                 <input
                   type="date"
                   value={completedDate}
@@ -218,7 +218,7 @@ export default function MilestonesSection({
                       />
                     </div>
                     <div className="space-y-1">
-                      <label className="text-[10px] font-black text-slate-500 uppercase tracking-wider">Fecha Límite</label>
+                      <label className="text-[10px] font-black text-slate-500 uppercase tracking-wider">Data Límite</label>
                       <input
                         type="date"
                         value={dueDate}
@@ -242,7 +242,7 @@ export default function MilestonesSection({
                         onChange={e => setStatus(e.target.value as MilestoneStatus)}
                         className="w-full px-2.5 py-1.5 bg-slate-50 border border-slate-200 rounded-none text-xs text-slate-900 font-bold"
                       >
-                        <option value="pending">Pendiente</option>
+                        <option value="pending">Pendente</option>
                         <option value="in_progress">En Curso</option>
                         <option value="completed">Completado</option>
                         <option value="delayed">Retrasado</option>
@@ -250,7 +250,7 @@ export default function MilestonesSection({
                     </div>
                     {status === 'completed' && (
                       <div className="space-y-1">
-                        <label className="text-[10px] font-black text-slate-500 uppercase tracking-wider">Fecha Final Real</label>
+                        <label className="text-[10px] font-black text-slate-500 uppercase tracking-wider">Data Final Real</label>
                         <input
                           type="date"
                           value={completedDate}
@@ -317,7 +317,7 @@ export default function MilestonesSection({
                     <div className="flex flex-wrap items-center gap-3 text-[10px] text-slate-400 font-bold uppercase tracking-wider">
                       <span className="flex items-center gap-1">
                         <Calendar className="w-3.5 h-3.5 text-slate-400" />
-                        <span>Fecha Límite: {new Date(m.dueDate).toLocaleDateString('es-ES')}</span>
+                        <span>Data Límite: {new Date(m.dueDate).toLocaleDateString('es-ES')}</span>
                       </span>
 
                       {m.completedDate && (
@@ -330,7 +330,7 @@ export default function MilestonesSection({
                       {delayed && (
                         <span className="text-red-700 font-black flex items-center gap-1">
                           <AlertTriangle className="w-3.5 h-3.5 shrink-0" />
-                          <span>¡Vencido hace {Math.round((new Date(TODAY_STR).getTime() - new Date(m.dueDate).getTime()) / (1000 * 60 * 60 * 24))} días!</span>
+                          <span>¡Vencido fai {Math.round((new Date(TODAY_STR).getTime() - new Date(m.dueDate).getTime()) / (1000 * 60 * 60 * 24))} días!</span>
                         </span>
                       )}
                     </div>
