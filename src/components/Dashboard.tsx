@@ -51,7 +51,7 @@ export default function Dashboard({
       <div className="flex items-center justify-between p-3 bg-slate-50 border border-slate-200 text-slate-700 rounded-none text-xs sm:text-sm shadow-sm">
         <div className="flex items-center gap-2">
           <Database className="w-4 h-4 text-slate-900" />
-          <span><strong>Persistencia local activa.</strong> Todo lo que hagas se guarda en IndexedDB dentro de este navegador.</span>
+          <span><strong>Persistencia local activa.</strong> Todo o que fagas gárdase en IndexedDB dentro deste navegador.</span>
         </div>
         <button
           onClick={() => onNavigate('datos')}
@@ -90,7 +90,7 @@ export default function Dashboard({
             <div className="p-4 bg-amber-50/50 border-l-4 border-amber-500 shadow-sm text-slate-800 rounded-none">
               <div className="flex items-center gap-2 mb-2 font-black text-xs sm:text-sm text-amber-700 uppercase tracking-wider">
                 <Clock className="w-4 h-4 shrink-0" />
-                <h3>Alerta de Desviación de Plazos</h3>
+                <h3>Alerta de Desviación de Prazos</h3>
               </div>
               <ul className="space-y-2 text-xs sm:text-sm">
                 {delayedMilestones.map(m => (
@@ -117,7 +117,7 @@ export default function Dashboard({
         {/* KPI 1 */}
         <div className="p-5 bg-white border-l-4 border-amber-500 shadow-sm flex flex-col justify-between">
           <div>
-            <p className="text-xs font-black text-slate-400 uppercase tracking-wider">Presupuesto Total</p>
+            <p className="text-xs font-black text-slate-400 uppercase tracking-wider">Presuposto Total</p>
             <p className="text-2xl font-black text-slate-900 mt-2">
               {totalAllocated.toLocaleString('es-ES')} €
             </p>
@@ -128,13 +128,13 @@ export default function Dashboard({
         {/* KPI 2 */}
         <div className="p-5 bg-white border-l-4 border-emerald-500 shadow-sm flex flex-col justify-between">
           <div>
-            <p className="text-xs font-black text-slate-400 uppercase tracking-wider">Invertido / Ejecutado</p>
+            <p className="text-xs font-black text-slate-400 uppercase tracking-wider">Invertido / Executado</p>
             <p className={`text-2xl font-black mt-2 ${totalSpent > totalAllocated ? 'text-red-600' : 'text-slate-900'}`}>
               {totalSpent.toLocaleString('es-ES')} €
             </p>
           </div>
           <span className="text-[10px] font-medium text-slate-400 mt-2 block">
-            {progressPercent.toFixed(1)}% del asignado
+            {progressPercent.toFixed(1)}% do asignado
           </span>
         </div>
 
@@ -162,7 +162,7 @@ export default function Dashboard({
             </p>
           </div>
           <span className="text-[10px] font-medium text-slate-400 mt-2 block">
-            {milestonesPercent}% del cronograma
+            {milestonesPercent}% do cronograma
           </span>
         </div>
       </div>
@@ -171,13 +171,13 @@ export default function Dashboard({
         <div className="p-5 bg-white border border-slate-200 shadow-sm rounded-none">
           <p className="text-xs font-black text-slate-400 uppercase tracking-wider">Fondos disponibles</p>
           <p className="text-2xl font-black text-slate-900 mt-2">{totalFunds.toLocaleString('es-ES')} €</p>
-          <span className="text-[10px] text-slate-400 mt-2 block">Aportes, ingresos y financiación registrada</span>
+          <span className="text-[10px] text-slate-400 mt-2 block">Aportes, ingresos e financiación rexistrada</span>
         </div>
 
         <div className="p-5 bg-white border border-slate-200 shadow-sm rounded-none">
           <p className="text-xs font-black text-slate-400 uppercase tracking-wider">Gasto previsto</p>
           <p className="text-2xl font-black text-slate-900 mt-2">{totalAllocated.toLocaleString('es-ES')} €</p>
-          <span className="text-[10px] text-slate-400 mt-2 block">Suma de las partidas de presupuesto</span>
+          <span className="text-[10px] text-slate-400 mt-2 block">Suma das partidas de presuposto</span>
         </div>
 
         <div className={`p-5 border shadow-sm rounded-none ${hasDeficit ? 'bg-red-50 border-red-200' : 'bg-emerald-50 border-emerald-200'}`}>

@@ -1,6 +1,6 @@
 {
-  "name": "Gestor de Reforma de Vivienda",
-  "description": "Gestor integral de reformas con seguimiento de presupuesto, proveedores, cronograma de hitos, carga de facturas, fotos de avance, reportes PDF y soporte PWA offline.",
+  "name": "Xestor de Reforma de Vivenda",
+  "description": "Xestor integral de reformas con seguimiento de presuposto, proveedores, cronograma de hitos, carga de facturas, fotos de avance, reportes PDF e soporte PWA offline.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

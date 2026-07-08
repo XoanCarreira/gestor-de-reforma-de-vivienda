@@ -346,10 +346,10 @@ export default function App() {
             </div>
             <div>
               <span className="font-black tracking-tighter text-slate-900 font-sans text-sm sm:text-base uppercase block">
-                ReformaGest <span className="text-amber-600">Pro</span>
+                ReformaVivenda <span className="text-amber-600">Pro</span>
               </span>
               <span className="text-[8px] sm:text-[9px] text-slate-400 font-bold uppercase tracking-widest block leading-none mt-0.5">
-                Gestión Integral de Obra
+                Xestión Integral de Obra
               </span>
             </div>
           </div>
@@ -361,7 +361,7 @@ export default function App() {
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold transition-all active:scale-95 border bg-slate-50 border-slate-200 text-slate-700"
             >
               <HardDrive className="w-3.5 h-3.5" />
-              <span className="hidden xs:inline">{storageStats.total} registros</span>
+              <span className="hidden xs:inline">{storageStats.total} rexistros</span>
             </button>
 
             {/* Downloader PDF component */}
