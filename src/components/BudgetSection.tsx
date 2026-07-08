@@ -85,36 +85,36 @@ export default function BudgetSection({
       {/* Header and Add Button */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white border border-slate-200 p-5 rounded-none shadow-sm">
         <div>
-          <h2 className="text-sm font-black text-slate-900 uppercase tracking-widest">Control de Presupuesto</h2>
-          <p className="text-xs text-slate-500 mt-1">Sigue las desviaciones y gestiona las partidas de tu reforma.</p>
+          <h2 className="text-sm font-black text-slate-900 uppercase tracking-widest">Control de Presuposto</h2>
+          <p className="text-xs text-slate-500 mt-1">Sigue as desviacions e xestiona as partidas da tua reforma.</p>
         </div>
         <button
           onClick={() => setIsAdding(!isAdding)}
           className="flex items-center gap-1.5 px-4 py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-black rounded-none transition-all active:scale-95 text-xs uppercase tracking-wider shadow"
         >
           {isAdding ? <X className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
-          <span>{isAdding ? 'Cancelar' : 'Nueva Partida'}</span>
+          <span>{isAdding ? 'Cancelar' : 'Nova Partida'}</span>
         </button>
       </div>
 
       {/* Add Form (Expandable) */}
       {isAdding && (
         <form onSubmit={handleSaveAdd} className="p-5 bg-white border border-slate-200 shadow-sm rounded-none space-y-4 animate-fadeIn">
-          <h3 className="font-black text-slate-900 text-xs uppercase tracking-wider">Nueva Partida de Presupuesto</h3>
+          <h3 className="font-black text-slate-900 text-xs uppercase tracking-wider">Nueva Partida de Presuposto</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-xs font-black text-slate-500 uppercase mb-1 tracking-wider">Nombre de partida</label>
               <input
                 type="text"
                 required
-                placeholder="Ej. Alicatado del baño, Climatización..."
+                placeholder="Ej. Alicatado do baño, Climatización..."
                 value={name}
                 onChange={e => setName(e.target.value)}
                 className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-none text-slate-900 placeholder:text-slate-400 text-sm focus:border-slate-900 focus:ring-0 outline-none transition-colors"
               />
             </div>
             <div>
-              <label className="block text-xs font-black text-slate-500 uppercase mb-1 tracking-wider">Presupuesto asignado (€)</label>
+              <label className="block text-xs font-black text-slate-500 uppercase mb-1 tracking-wider">Presuposto asignado (€)</label>
               <input
                 type="number"
                 required
@@ -137,7 +137,7 @@ export default function BudgetSection({
               />
             </div>
             <div>
-              <label className="block text-xs font-black text-slate-500 uppercase mb-1 tracking-wider">Notas / Observaciones</label>
+              <label className="block text-xs font-black text-slate-500 uppercase mb-1 tracking-wider">Notas / Observacións</label>
               <input
                 type="text"
                 placeholder="Opcional. Ej. Plazo de inicio..."
@@ -188,7 +188,7 @@ export default function BudgetSection({
                 /* Edit Form Mode */
                 <div className="space-y-3.5">
                   <div className="space-y-1">
-                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-wider">Nombre</label>
+                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-wider">Nome</label>
                     <input
                       type="text"
                       value={name}
@@ -236,7 +236,7 @@ export default function BudgetSection({
                     <button
                       onClick={() => handleSaveEdit(cat.id)}
                       className="p-1.5 bg-slate-900 hover:bg-slate-800 rounded-none text-white transition-colors"
-                      title="Guardar"
+                      title="Gardar"
                     >
                       <Check className="w-4 h-4" />
                     </button>
@@ -317,10 +317,10 @@ export default function BudgetSection({
                         </div>
                       ) : deviation < 0 ? (
                         <span className="text-emerald-600 font-black uppercase tracking-wider text-[10px]">
-                          Ahorro: {Math.abs(deviation).toLocaleString('es-ES')} €
+                          Aforro: {Math.abs(deviation).toLocaleString('es-ES')} €
                         </span>
                       ) : (
-                        <span className="text-slate-400 font-bold uppercase tracking-wider text-[10px]">Ajustado</span>
+                        <span className="text-slate-400 font-bold uppercase tracking-wider text-[10px]">Axustado</span>
                       )}
                     </div>
                   </div>

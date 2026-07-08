@@ -149,7 +149,7 @@ export default function Dashboard({
             </p>
           </div>
           <span className="text-[10px] font-medium text-slate-400 mt-2 block">
-            {remainingBudget < 0 ? 'Sobrecoste neto detectado' : 'Disponible en reserva'}
+            {remainingBudget < 0 ? 'Sobrecosto neto detectado' : 'Dispoñible en reserva'}
           </span>
         </div>
 

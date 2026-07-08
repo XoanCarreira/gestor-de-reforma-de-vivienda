@@ -100,7 +100,7 @@ export default function MilestonesSection({
           className="flex items-center gap-1.5 px-4 py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-black rounded-none transition-all active:scale-95 text-xs uppercase tracking-wider shadow"
         >
           {isAdding ? <X className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
-          <span>{isAdding ? 'Cancelar' : 'Añadir Hito'}</span>
+          <span>{isAdding ? 'Cancelar' : 'Engadir Hito'}</span>
         </button>
       </div>
 
@@ -110,11 +110,11 @@ export default function MilestonesSection({
           <h3 className="font-black text-slate-900 text-xs uppercase tracking-wider">Novo Hito de Obra</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-black text-slate-500 uppercase mb-1 tracking-wider">Nombre do Hito / Tarea</label>
+              <label className="block text-xs font-black text-slate-500 uppercase mb-1 tracking-wider">Nome do Hito / Tarea</label>
               <input
                 type="text"
                 required
-                placeholder="Ej. Alicatado del baño, Falso Techo..."
+                placeholder="Ej. Alicatado do baño, Falso Techo..."
                 value={title}
                 onChange={e => setTitle(e.target.value)}
                 className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-none text-slate-900 placeholder:text-slate-400 text-sm focus:border-slate-900 focus:ring-0 outline-none transition-colors"
@@ -177,7 +177,7 @@ export default function MilestonesSection({
               type="submit"
               className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white font-black rounded-none text-xs sm:text-sm active:scale-95 transition-all uppercase tracking-wider"
             >
-              Guardar Hito
+              Gardar Hito
             </button>
           </div>
         </form>

@@ -101,8 +101,8 @@ export default function SyncStatus({ stats, activityLogs, onClearData, onExportB
 
       <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
         {[
-          { label: 'Total registros', value: stats.total },
-          { label: 'Presupuestos', value: stats.budget },
+          { label: 'Total rexistros', value: stats.total },
+          { label: 'Presupostos', value: stats.budget },
           { label: 'Fondos', value: stats.funds },
           { label: 'Proveedores', value: stats.suppliers },
           { label: 'Hitos', value: stats.milestones },
