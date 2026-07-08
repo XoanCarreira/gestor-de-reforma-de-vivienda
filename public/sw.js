@@ -1,9 +1,9 @@
 const CACHE_NAME = 'reforma-gestor-cache-v1';
-const BASE_PATH = '/gestor-de-reforma-de-vivienda/';
+const BASE_PATH = './';
 const ASSETS = [
   BASE_PATH,
-  `${BASE_PATH}index.html`,
-  `${BASE_PATH}manifest.json`
+  './index.html',
+  './manifest.json'
 ];
 
 // Install Event
@@ -74,7 +74,7 @@ self.addEventListener('fetch', (event) => {
         .catch(() => {
           // If offline and request is HTML, return the app entry point within the repo subpath.
           if (event.request.headers.get('accept').includes('text/html')) {
-            return caches.match(BASE_PATH);
+              return caches.match('./') || caches.match('./index.html');
           }
         });
     })
