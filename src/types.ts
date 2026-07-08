@@ -51,11 +51,3 @@ export interface ProgressPhoto {
   isSynced: boolean;
   isLocalOnly: boolean;
 }
-
-export interface SyncAction {
-  id: string;
-  actionType: 'insert' | 'update' | 'delete';
-  storeName: 'budget' | 'suppliers' | 'milestones' | 'invoices' | 'photos';
-  payload: any;
-  timestamp: number;
-}

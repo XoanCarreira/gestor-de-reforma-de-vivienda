@@ -1,6 +1,6 @@
 import { Suspense, lazy, useState, useEffect } from 'react';
 import { dbInstance } from './db';
-import { BudgetCategory, Supplier, Milestone, Invoice, ProgressPhoto, SyncAction } from './types';
+import { BudgetCategory, Supplier, Milestone, Invoice, ProgressPhoto } from './types';
 import Dashboard from './components/Dashboard';
 import BudgetSection from './components/BudgetSection';
 import SuppliersSection from './components/SuppliersSection';
@@ -8,7 +8,7 @@ import MilestonesSection from './components/MilestonesSection';
 import DocumentsSection from './components/DocumentsSection';
 import GallerySection from './components/GallerySection';
 import SyncStatus from './components/SyncStatus';
-import { LayoutDashboard, Wallet, Users, CalendarCheck, FileText, Camera, RefreshCw, HardHat, Cloud } from 'lucide-react';
+import { LayoutDashboard, Wallet, Users, CalendarCheck, FileText, Camera, HardDrive, Database } from 'lucide-react';
 
 const ReportGenerator = lazy(() => import('./components/ReportGenerator'));
 
@@ -21,12 +21,11 @@ export default function App() {
   const [milestones, setMilestones] = useState<Milestone[]>([]);
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [photos, setPhotos] = useState<ProgressPhoto[]>([]);
+  const [storageStats, setStorageStats] = useState({ budget: 0, suppliers: 0, milestones: 0, invoices: 0, photos: 0, total: 0 });
   
-  // Sync states
-  const [isOnline, setIsOnline] = useState(true);
-  const [syncQueue, setSyncQueue] = useState<SyncAction[]>([]);
-  const [syncing, setSyncing] = useState(false);
-  const [syncLogs, setSyncLogs] = useState<string[]>([]);
+  // Local activity log
+  const [activityLogs, setActivityLogs] = useState<string[]>([]);
+  const [clearingData, setClearingData] = useState(false);
 
   // PWA Register inside component lifecycle as well
   useEffect(() => {
@@ -43,32 +42,16 @@ export default function App() {
       });
     }
 
-    // Monitor physical network status
-    const handleOnline = () => {
-      setIsOnline(true);
-      logEvent('[Red] Conexión de red restablecida. Estado: ONLINE.');
-    };
-    const handleOffline = () => {
-      setIsOnline(false);
-      logEvent('[Red] Conexión de red perdida. Estado: OFFLINE. Operando en base local.');
-    };
-
-    window.addEventListener('online', handleOnline);
-    window.addEventListener('offline', handleOffline);
-    setIsOnline(window.navigator.onLine);
-
     // Initial database load
     initData();
 
     return () => {
-      window.removeEventListener('online', handleOnline);
-      window.removeEventListener('offline', handleOffline);
     };
   }, []);
 
   const logEvent = (msg: string) => {
     const timestamp = new Date().toLocaleTimeString('es-ES');
-    setSyncLogs(prev => [`[${timestamp}] ${msg}`, ...prev].slice(0, 50));
+    setActivityLogs(prev => [`[${timestamp}] ${msg}`, ...prev].slice(0, 50));
   };
 
   const initData = async () => {
@@ -78,6 +61,7 @@ export default function App() {
       logEvent('Base de datos conectada correctamente.');
       
       await reloadAllData();
+      setStorageStats(await dbInstance.getStats());
     } catch (e) {
       logEvent('Error al abrir la base de datos: ' + e);
     }
@@ -89,7 +73,6 @@ export default function App() {
     const mData = await dbInstance.getAll<Milestone>('milestones');
     const iData = await dbInstance.getAll<Invoice>('invoices');
     const pData = await dbInstance.getAll<ProgressPhoto>('photos');
-    const queue = await dbInstance.getSyncQueue();
 
     // Sort milestones by date
     mData.sort((a, b) => a.dueDate.localeCompare(b.dueDate));
@@ -99,44 +82,24 @@ export default function App() {
     setMilestones(mData);
     setInvoices(iData);
     setPhotos(pData);
-    setSyncQueue(queue);
+    setStorageStats(await dbInstance.getStats());
   };
 
-  // Synchronization triggering
-  const handleTriggerSync = async () => {
-    if (!isOnline) {
-      logEvent('[Sync] No se puede sincronizar mientras esté sin conexión.');
+  const handleClearDatabase = async () => {
+    const confirmed = window.confirm('Esto eliminará todas las partidas, proveedores, hitos, facturas y fotos guardadas en la base local. ¿Deseas continuar?');
+    if (!confirmed) {
       return;
     }
 
-    setSyncing(true);
-    logEvent('[Sync] Iniciando proceso de sincronización con servidor en la nube...');
-    
     try {
-      // Simulate network delay
-      await new Promise(resolve => setTimeout(resolve, 1500));
-
-      const result = await dbInstance.syncOfflineData();
-      logEvent(`[Sync] Servidor consolidó ${result.totalActionsSynced} acciones exitosamente.`);
-      if (result.syncedInvoicesCount > 0) logEvent(`[Sync] Facturas sincronizadas: ${result.syncedInvoicesCount}`);
-      if (result.syncedPhotosCount > 0) logEvent(`[Sync] Fotos de avance sincronizadas: ${result.syncedPhotosCount}`);
-      logEvent('[Sync] Sincronización finalizada. Base local al día.');
-
+      setClearingData(true);
+      await dbInstance.clearAllData();
       await reloadAllData();
+      logEvent('[Database] Base local vaciada y lista para nuevos datos.');
     } catch (e) {
-      logEvent('[Sync] Error inesperado en canal: ' + e);
+      logEvent('[Database] Error al vaciar la base local: ' + e);
     } finally {
-      setSyncing(false);
-    }
-  };
-
-  const handleToggleOnlineMode = () => {
-    const nextMode = !isOnline;
-    setIsOnline(nextMode);
-    if (nextMode) {
-      logEvent('[Simulador] Red activada por el usuario. Listo para sincronizar.');
-    } else {
-      logEvent('[Simulador] Red desactivada por el usuario (Trabajando 100% Offline).');
+      setClearingData(false);
     }
   };
 
@@ -220,8 +183,8 @@ export default function App() {
     const newInvoice: Invoice = {
       ...invoice,
       id: newId,
-      isSynced: isOnline,
-      isLocalOnly: !isOnline
+      isSynced: false,
+      isLocalOnly: true
     };
 
     await dbInstance.add('invoices', newInvoice);
@@ -277,8 +240,8 @@ export default function App() {
     const newPhoto: ProgressPhoto = {
       ...photo,
       id: 'p_' + Math.random().toString(36).substring(2, 9),
-      isSynced: isOnline,
-      isLocalOnly: !isOnline
+      isSynced: false,
+      isLocalOnly: true
     };
 
     await dbInstance.add('photos', newPhoto);
@@ -312,24 +275,14 @@ export default function App() {
             </div>
           </div>
 
-          {/* Sync Button & Report download side-by-side */}
+          {/* Local data badge & report download side-by-side */}
           <div className="flex items-center gap-2 sm:gap-4">
-            {/* Connection state Indicator badge */}
             <button
-              onClick={() => setActiveTab('sincronizacion')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold transition-all active:scale-95 border ${
-                isOnline 
-                  ? 'bg-emerald-50 border-emerald-200 text-emerald-700' 
-                  : 'bg-amber-50 border-amber-200 text-amber-700 animate-pulse'
-              }`}
+              onClick={() => setActiveTab('datos')}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold transition-all active:scale-95 border bg-slate-50 border-slate-200 text-slate-700"
             >
-              <span className={`w-2 h-2 rounded-full ${isOnline ? 'bg-emerald-500 animate-pulse' : 'bg-amber-500'}`} />
-              <span className="hidden xs:inline">{isOnline ? 'Sincronizado' : 'Sin Conexión'}</span>
-              {syncQueue.length > 0 && (
-                <span className="bg-amber-500 text-white text-[10px] font-extrabold px-1.5 rounded-full">
-                  {syncQueue.length}
-                </span>
-              )}
+              <HardDrive className="w-3.5 h-3.5" />
+              <span className="hidden xs:inline">{storageStats.total} registros</span>
             </button>
 
             {/* Downloader PDF component */}
@@ -361,10 +314,6 @@ export default function App() {
             suppliers={suppliers}
             milestones={milestones}
             onNavigate={setActiveTab}
-            isOnline={isOnline}
-            syncQueueLength={syncQueue.length}
-            onSync={handleTriggerSync}
-            syncing={syncing}
           />
         )}
 
@@ -402,7 +351,6 @@ export default function App() {
             budget={budget}
             onAddInvoice={handleAddInvoice}
             onDeleteInvoice={handleDeleteInvoice}
-            isOnline={isOnline}
           />
         )}
 
@@ -414,14 +362,12 @@ export default function App() {
           />
         )}
 
-        {activeTab === 'sincronizacion' && (
+        {activeTab === 'datos' && (
           <SyncStatus
-            isOnline={isOnline}
-            onToggleOnlineMode={handleToggleOnlineMode}
-            syncQueue={syncQueue}
-            onSync={handleTriggerSync}
-            syncing={syncing}
-            syncLogs={syncLogs}
+            stats={storageStats}
+            onClearData={handleClearDatabase}
+            clearing={clearingData}
+            activityLogs={activityLogs}
           />
         )}
       </main>
@@ -491,16 +437,13 @@ export default function App() {
           </button>
 
           <button
-            onClick={() => setActiveTab('sincronizacion')}
-            className={`flex flex-col items-center gap-1 p-2 rounded-xl transition-all relative ${
-              activeTab === 'sincronizacion' ? 'text-amber-600 scale-110 font-bold' : 'text-slate-400 hover:text-slate-600'
+            onClick={() => setActiveTab('datos')}
+            className={`flex flex-col items-center gap-1 p-2 rounded-xl transition-all ${
+              activeTab === 'datos' ? 'text-amber-600 scale-110 font-bold' : 'text-slate-400 hover:text-slate-600'
             }`}
           >
-            <RefreshCw className={`w-5 h-5 ${activeTab === 'sincronizacion' ? 'animate-spin-slow' : ''}`} />
-            <span className="text-[10px] xs:text-[11px] font-medium font-sans">Sync</span>
-            {syncQueue.length > 0 && (
-              <span className="absolute top-1 right-1 w-2 h-2 bg-amber-500 rounded-full animate-bounce" />
-            )}
+            <Database className="w-5 h-5" />
+            <span className="text-[10px] xs:text-[11px] font-medium font-sans">Datos</span>
           </button>
         </div>
       </nav>

@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { ProgressPhoto } from '../types';
-import { Camera, Image, Cloud, CloudOff, Plus, Trash2, Calendar, ZoomIn, X, Clock } from 'lucide-react';
+import { Camera, Image, Plus, Trash2, Calendar, ZoomIn, X, Clock } from 'lucide-react';
 
 interface GallerySectionProps {
   photos: ProgressPhoto[];
@@ -240,17 +240,11 @@ export default function GallerySection({ photos, onAddPhoto, onDeletePhoto }: Ga
                   <span>{new Date(photo.date).toLocaleDateString('es-ES')}</span>
                 </div>
 
-                {/* Top right corner: Sync badge */}
+                {/* Top right corner: Local storage badge */}
                 <div className="absolute top-2.5 right-2.5">
-                  {photo.isSynced ? (
-                    <span className="p-1 bg-white/95 border border-slate-200 text-emerald-800 rounded-none flex items-center justify-center" title="Sincronizado en la Nube">
-                      <Cloud className="w-3.5 h-3.5" />
-                    </span>
-                  ) : (
-                    <span className="p-1 bg-white/95 border border-slate-200 text-amber-800 rounded-none flex items-center justify-center animate-pulse" title="Sincronización pendiente (Trabajo Offline)">
-                      <CloudOff className="w-3.5 h-3.5" />
-                    </span>
-                  )}
+                  <span className="px-2 py-1 bg-white/95 border border-slate-200 text-slate-700 rounded-none flex items-center justify-center text-[9px] font-black uppercase tracking-wider" title="Guardado en IndexedDB local">
+                    Local
+                  </span>
                 </div>
               </div>
 
@@ -269,7 +263,7 @@ export default function GallerySection({ photos, onAddPhoto, onDeletePhoto }: Ga
 
                 <div className="flex justify-between items-center text-[10px] text-slate-400 font-bold uppercase tracking-wider pt-2 border-t border-slate-100">
                   <span className="font-bold">Formato: JPG / PNG</span>
-                  {!photo.isSynced && <span className="text-amber-800 font-black">Almacenado Local</span>}
+                  <span className="text-slate-700 font-black">Almacenado localmente</span>
                 </div>
               </div>
             </div>

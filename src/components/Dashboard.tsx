@@ -1,26 +1,18 @@
 import { BudgetCategory, Milestone, Supplier } from '../types';
-import { AlertTriangle, TrendingUp, CheckCircle, Clock, Users, HardHat, TrendingDown, RefreshCw } from 'lucide-react';
+import { AlertTriangle, TrendingUp, CheckCircle, Clock, Users, HardHat, TrendingDown, Database } from 'lucide-react';
 
 interface DashboardProps {
   budget: BudgetCategory[];
   suppliers: Supplier[];
   milestones: Milestone[];
   onNavigate: (tab: string) => void;
-  isOnline: boolean;
-  syncQueueLength: number;
-  onSync: () => void;
-  syncing: boolean;
 }
 
 export default function Dashboard({
   budget,
   suppliers,
   milestones,
-  onNavigate,
-  isOnline,
-  syncQueueLength,
-  onSync,
-  syncing
+  onNavigate
 }: DashboardProps) {
   const TODAY_STR = '2026-07-08'; // System reference date
 
@@ -51,39 +43,18 @@ export default function Dashboard({
 
   return (
     <div className="space-y-6">
-      {/* Sync / Offline Banner */}
-      {!isOnline && (
-        <div id="offline-bar" className="flex items-center justify-between p-3 bg-amber-50 border border-amber-200 text-amber-800 rounded-none text-xs sm:text-sm shadow-sm animate-pulse">
-          <div className="flex items-center gap-2">
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span>
-            </span>
-            <span><strong>Modo sin conexión activo.</strong> Los cambios se guardan localmente en tu dispositivo.</span>
-          </div>
-          {syncQueueLength > 0 && (
-            <span className="bg-amber-100 border border-amber-200 px-2.5 py-0.5 rounded-none text-[10px] font-black text-amber-800 uppercase tracking-wider">
-              {syncQueueLength} pendientes
-            </span>
-          )}
+      <div className="flex items-center justify-between p-3 bg-slate-50 border border-slate-200 text-slate-700 rounded-none text-xs sm:text-sm shadow-sm">
+        <div className="flex items-center gap-2">
+          <Database className="w-4 h-4 text-slate-900" />
+          <span><strong>Persistencia local activa.</strong> Todo lo que hagas se guarda en IndexedDB dentro de este navegador.</span>
         </div>
-      )}
-
-      {isOnline && syncQueueLength > 0 && (
-        <div id="sync-pending-bar" className="flex items-center justify-between p-3 bg-blue-50 border border-blue-200 text-blue-800 rounded-none text-xs sm:text-sm shadow-sm">
-          <div className="flex items-center gap-2">
-            <RefreshCw className={`w-4 h-4 text-blue-600 ${syncing ? 'animate-spin' : ''}`} />
-            <span>Tienes <strong>{syncQueueLength} cambios locales</strong> pendientes de consolidar con el servidor.</span>
-          </div>
-          <button
-            onClick={onSync}
-            disabled={syncing}
-            className="px-3 py-1 bg-slate-900 hover:bg-slate-800 text-white font-black text-xs rounded-none transition-all active:scale-95 uppercase tracking-wider shadow"
-          >
-            {syncing ? 'Sincronizando...' : 'Sincronizar'}
-          </button>
-        </div>
-      )}
+        <button
+          onClick={() => onNavigate('datos')}
+          className="px-3 py-1 bg-slate-900 hover:bg-slate-800 text-white font-black text-xs rounded-none transition-all active:scale-95 uppercase tracking-wider shadow"
+        >
+          Ver base local
+        </button>
+      </div>
 
       {/* Alertas Automáticas */}
       {(costDeviations.length > 0 || delayedMilestones.length > 0) && (

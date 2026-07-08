@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { Invoice, Supplier, BudgetCategory } from '../types';
-import { Upload, FileText, CheckCircle, Clock, Trash2, Link, Cloud, CloudOff, Plus, X, Eye } from 'lucide-react';
+import { Upload, FileText, CheckCircle, Clock, Trash2, Link, Plus, X, Eye } from 'lucide-react';
 
 interface DocumentsSectionProps {
   invoices: Invoice[];
@@ -8,7 +8,6 @@ interface DocumentsSectionProps {
   budget: BudgetCategory[];
   onAddInvoice: (invoice: Omit<Invoice, 'id' | 'isSynced' | 'isLocalOnly'>, updateFinancials: boolean) => void;
   onDeleteInvoice: (id: string) => void;
-  isOnline: boolean;
 }
 
 export default function DocumentsSection({
@@ -16,8 +15,7 @@ export default function DocumentsSection({
   suppliers,
   budget,
   onAddInvoice,
-  onDeleteInvoice,
-  isOnline
+  onDeleteInvoice
 }: DocumentsSectionProps) {
   const [isUploading, setIsUploading] = useState(false);
   const [dragActive, setDragActive] = useState(false);
@@ -86,16 +84,13 @@ export default function DocumentsSection({
       return;
     }
 
-    // Default invoice data uri if no file uploaded
-    const mockPdfUri = base64Data || `data:application/pdf;base64,JVBERi0xLjQKJ...[MOCK_PDF_DATA]`;
-
     onAddInvoice({
       title,
       amount: Number(amount),
       supplierId,
       date,
       fileName: fileName || 'factura_digital.pdf',
-      base64Data: mockPdfUri
+      base64Data: base64Data || undefined
     }, updateFinancials);
 
     // Reset Form
@@ -308,18 +303,9 @@ export default function DocumentsSection({
                     </div>
 
                     <div className="flex items-center gap-1.5">
-                      {/* Offline/Online Sync badge */}
-                      {invoice.isSynced ? (
-                        <span className="text-[9px] font-black text-emerald-800 bg-emerald-50 border border-emerald-200 px-1.5 py-0.5 rounded-none flex items-center gap-0.5 uppercase tracking-wider" title="Sincronizado en la nube">
-                          <Cloud className="w-2.5 h-2.5" />
-                          <span>Nube</span>
-                        </span>
-                      ) : (
-                        <span className="text-[9px] font-black text-amber-800 bg-amber-50 border border-amber-200 px-1.5 py-0.5 rounded-none flex items-center gap-0.5 animate-pulse uppercase tracking-wider" title="Sincronización pendiente (Trabajo Offline)">
-                          <CloudOff className="w-2.5 h-2.5" />
-                          <span>Local</span>
-                        </span>
-                      )}
+                      <span className="text-[9px] font-black text-slate-700 bg-slate-100 border border-slate-200 px-1.5 py-0.5 rounded-none uppercase tracking-wider" title="Guardado en la base local">
+                        Local
+                      </span>
 
                       <button
                         onClick={() => setViewInvoice(invoice)}
@@ -384,7 +370,7 @@ export default function DocumentsSection({
                 </div>
               </div>
 
-              {/* Image viewer / PDF preview simulation */}
+              {/* Image viewer / PDF preview */}
               <div className="bg-slate-50 p-3 rounded-none border border-slate-200 flex flex-col items-center justify-center space-y-2">
                 <span className="text-[10px] text-slate-400 uppercase font-black tracking-wider">Vista previa del Documento</span>
                 
