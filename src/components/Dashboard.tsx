@@ -167,10 +167,16 @@ export default function Dashboard({
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <div className="p-5 bg-white border border-slate-200 shadow-sm rounded-none">
-          <p className="text-xs font-black text-slate-400 uppercase tracking-wider">Fondos disponibles</p>
+          <p className="text-xs font-black text-slate-400 uppercase tracking-wider">Fondos dispoñibles</p>
           <p className="text-2xl font-black text-slate-900 mt-2">{(totalFunds - totalSpent).toLocaleString('es-ES')} €</p>
+          <span className="text-[10px] text-slate-400 mt-2 block">Saldo total actual</span>
+        </div>
+
+        <div className="p-5 bg-white border border-slate-200 shadow-sm rounded-none">
+          <p className="text-xs font-black text-slate-400 uppercase tracking-wider">Fondos totais</p>
+          <p className="text-2xl font-black text-slate-900 mt-2">{totalFunds.toLocaleString('es-ES')} €</p>
           <span className="text-[10px] text-slate-400 mt-2 block">Aportes, ingresos e financiación rexistrada</span>
         </div>
 
