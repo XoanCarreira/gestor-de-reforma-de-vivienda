@@ -5,6 +5,7 @@ import {defineConfig} from 'vite';
 
 export default defineConfig(() => {
   return {
+    base: '/gestor-de-reforma-de-vivienda/',
     plugins: [react(), tailwindcss()],
     resolve: {
       alias: {
