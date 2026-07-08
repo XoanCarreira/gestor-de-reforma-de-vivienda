@@ -1,4 +1,5 @@
-import { Database, Trash2, HardDrive, Info, Clock } from 'lucide-react';
+import { useRef } from 'react';
+import { Database, HardDrive, Info, Clock, Download, Upload, Trash2 } from 'lucide-react';
 
 interface LocalDataStats {
   budget: number;
@@ -14,10 +15,15 @@ interface SyncStatusProps {
   stats: LocalDataStats;
   activityLogs: string[];
   onClearData: () => void;
+  onExportBackup: () => void;
+  onImportBackupFile: (file: File) => void;
   clearing: boolean;
+  backupProcessing: boolean;
 }
 
-export default function SyncStatus({ stats, activityLogs, onClearData, clearing }: SyncStatusProps) {
+export default function SyncStatus({ stats, activityLogs, onClearData, onExportBackup, onImportBackupFile, clearing, backupProcessing }: SyncStatusProps) {
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
   return (
     <div className="space-y-6">
       <div className="p-5 bg-slate-800/40 border border-slate-700/50 rounded-3xl flex flex-col md:flex-row items-center justify-between gap-4">
@@ -43,6 +49,54 @@ export default function SyncStatus({ stats, activityLogs, onClearData, clearing 
         >
           {clearing ? 'Vaciando...' : 'Vaciar base local'}
         </button>
+      </div>
+
+      <div className="p-5 bg-white border border-slate-200 shadow-sm rounded-3xl space-y-4">
+        <div>
+          <h3 className="font-bold text-slate-900 text-sm uppercase tracking-wider mb-2">Backup de datos</h3>
+          <p className="text-sm text-slate-600 leading-relaxed">
+            Descarga un archivo JSON con todos os datos actuais e recárgao máis tarde desde outro dispositivo ou desde Android.
+          </p>
+        </div>
+
+        <div className="flex flex-col sm:flex-row gap-3">
+          <button
+            onClick={onExportBackup}
+            disabled={backupProcessing}
+            className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-2xl text-xs sm:text-sm font-bold active:scale-95 transition-all shadow border bg-slate-900 hover:bg-slate-800 border-transparent text-white disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <Download className="w-4 h-4" />
+            {backupProcessing ? 'Procesando...' : 'Descargar backup'}
+          </button>
+
+          <button
+            onClick={() => fileInputRef.current?.click()}
+            disabled={backupProcessing}
+            className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-2xl text-xs sm:text-sm font-bold active:scale-95 transition-all shadow border bg-emerald-500 hover:bg-emerald-600 border-transparent text-slate-950 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <Upload className="w-4 h-4" />
+            Cargar backup
+          </button>
+
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="application/json,.json"
+            className="hidden"
+            onChange={e => {
+              const file = e.target.files?.[0];
+              if (file) {
+                onImportBackupFile(file);
+                e.currentTarget.value = '';
+              }
+            }}
+          />
+        </div>
+
+        <div className="flex items-center gap-2 text-[10px] text-slate-500 bg-slate-50 p-2 rounded-xl border border-slate-200">
+          <Info className="w-4 h-4 text-blue-400 shrink-0" />
+          <span>O formato é un JSON estándar, lixeiro e compatible con ficheiros descargados e recuperados en Android.</span>
+        </div>
       </div>
 
       <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
