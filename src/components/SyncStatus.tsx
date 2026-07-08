@@ -26,7 +26,7 @@ export default function SyncStatus({ stats, activityLogs, onClearData, onExportB
 
   return (
     <div className="space-y-6">
-      <div className="p-5 bg-slate-800/40 border border-slate-700/50 rounded-3xl flex flex-col md:flex-row items-center justify-between gap-4">
+      <div className="p-5 bg-slate-800/100 border border-slate-700/50 rounded-3xl flex flex-col md:flex-row items-center justify-between gap-4">
         <div className="flex items-center gap-3">
           <div className="p-3 rounded-2xl bg-slate-100/10 text-slate-200">
             <Database className="w-6 h-6" />
@@ -37,7 +37,7 @@ export default function SyncStatus({ stats, activityLogs, onClearData, onExportB
               <span className="text-slate-400">IndexedDB</span>
             </h2>
             <p className="text-xs text-slate-400 mt-1">
-              La aplicación guarda y lee toda la información directamente en este navegador.
+              A aplicación garda e le toda a información directamente en este navegador.
             </p>
           </div>
         </div>
@@ -121,14 +121,14 @@ export default function SyncStatus({ stats, activityLogs, onClearData, onExportB
           <div>
             <h3 className="font-bold text-slate-100 text-sm uppercase tracking-wider mb-2 flex items-center gap-2">
               <HardDrive className="w-4 h-4 text-emerald-400" />
-              Registro de actividad local
+              Rexistro de actividade da base local
             </h3>
-            <p className="text-[11px] text-slate-500 mb-3">Eventos de carga, guardado y limpieza de la base de datos.</p>
+            <p className="text-[11px] text-slate-500 mb-3">Eventos de carga, gardado e limpeza da base de datos.</p>
           </div>
 
           <div className="bg-slate-950 font-mono text-xs text-slate-300 p-4 rounded-2xl border border-slate-900 overflow-y-auto h-[28vh] flex-1 flex flex-col space-y-1.5 select-all">
             {activityLogs.length === 0 ? (
-              <span className="text-slate-600 italic">Esperando actividad de la base local...</span>
+              <span className="text-slate-600 italic">Esperando actividade da base local...</span>
             ) : (
               activityLogs.map((log, index) => (
                 <div key={index} className="leading-relaxed break-all">
