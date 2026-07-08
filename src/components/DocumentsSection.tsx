@@ -1,0 +1,422 @@
+import React, { useState, useRef } from 'react';
+import { Invoice, Supplier, BudgetCategory } from '../types';
+import { Upload, FileText, CheckCircle, Clock, Trash2, Link, Cloud, CloudOff, Plus, X, Eye } from 'lucide-react';
+
+interface DocumentsSectionProps {
+  invoices: Invoice[];
+  suppliers: Supplier[];
+  budget: BudgetCategory[];
+  onAddInvoice: (invoice: Omit<Invoice, 'id' | 'isSynced' | 'isLocalOnly'>, updateFinancials: boolean) => void;
+  onDeleteInvoice: (id: string) => void;
+  isOnline: boolean;
+}
+
+export default function DocumentsSection({
+  invoices,
+  suppliers,
+  budget,
+  onAddInvoice,
+  onDeleteInvoice,
+  isOnline
+}: DocumentsSectionProps) {
+  const [isUploading, setIsUploading] = useState(false);
+  const [dragActive, setDragActive] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Form states
+  const [title, setTitle] = useState('');
+  const [amount, setAmount] = useState('');
+  const [supplierId, setSupplierId] = useState('');
+  const [date, setDate] = useState('2026-07-08');
+  const [updateFinancials, setUpdateFinancials] = useState(true);
+  const [base64Data, setBase64Data] = useState<string>('');
+  const [fileName, setFileName] = useState('');
+
+  // View modal state
+  const [viewInvoice, setViewInvoice] = useState<Invoice | null>(null);
+
+  // Handle Drag & Drop
+  const handleDrag = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.type === 'dragenter' || e.type === 'dragover') {
+      setDragActive(true);
+    } else if (e.type === 'dragleave') {
+      setDragActive(false);
+    }
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
+
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      handleFile(e.dataTransfer.files[0]);
+    }
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      handleFile(e.target.files[0]);
+    }
+  };
+
+  const handleFile = (file: File) => {
+    setFileName(file.name);
+    if (!title) {
+      // Auto-populate title with file name without extension
+      const cleanName = file.name.substring(0, file.name.lastIndexOf('.')) || file.name;
+      setTitle(cleanName);
+    }
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      if (event.target?.result) {
+        setBase64Data(event.target.result as string);
+      }
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleSaveInvoice = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!title || isNaN(Number(amount)) || !supplierId) {
+      alert('Por favor complete todos los campos obligatorios.');
+      return;
+    }
+
+    // Default invoice data uri if no file uploaded
+    const mockPdfUri = base64Data || `data:application/pdf;base64,JVBERi0xLjQKJ...[MOCK_PDF_DATA]`;
+
+    onAddInvoice({
+      title,
+      amount: Number(amount),
+      supplierId,
+      date,
+      fileName: fileName || 'factura_digital.pdf',
+      base64Data: mockPdfUri
+    }, updateFinancials);
+
+    // Reset Form
+    setTitle('');
+    setAmount('');
+    setSupplierId('');
+    setDate('2026-07-08');
+    setUpdateFinancials(true);
+    setBase64Data('');
+    setFileName('');
+    setIsUploading(false);
+  };
+
+  return (
+    <div className="space-y-6">
+      {/* Header and Add Button */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white border border-slate-200 p-5 rounded-none shadow-sm">
+        <div>
+          <h2 className="text-sm font-black text-slate-900 uppercase tracking-widest">Carga de Facturas y Gastos</h2>
+          <p className="text-xs text-slate-500 mt-1">Registra recibos, asócialos a un proveedor y liquida partidas automáticamente.</p>
+        </div>
+        <button
+          onClick={() => setIsUploading(!isUploading)}
+          className="flex items-center gap-1.5 px-4 py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-black rounded-none transition-all active:scale-95 text-xs uppercase tracking-wider shadow"
+        >
+          {isUploading ? <X className="w-4 h-4" /> : <Upload className="w-4 h-4" />}
+          <span>{isUploading ? 'Cancelar Carga' : 'Cargar Factura'}</span>
+        </button>
+      </div>
+
+      {/* Upload/Carga Form */}
+      {isUploading && (
+        <form onSubmit={handleSaveInvoice} className="p-5 bg-white border border-slate-200 shadow-sm rounded-none space-y-4 animate-fadeIn">
+          <h3 className="font-black text-slate-900 text-xs uppercase tracking-wider">Cargar Factura de Proveedor</h3>
+          
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {/* File Drag and Drop zone */}
+            <div className="sm:col-span-2">
+              <label className="block text-xs font-black text-slate-500 uppercase mb-1 tracking-wider">Archivo de la Factura (PDF o Imagen)</label>
+              <div
+                onDragEnter={handleDrag}
+                onDragOver={handleDrag}
+                onDragLeave={handleDrag}
+                onDrop={handleDrop}
+                onClick={() => fileInputRef.current?.click()}
+                className={`border-2 border-dashed rounded-none p-6 text-center cursor-pointer transition-all flex flex-col items-center justify-center gap-2 ${
+                  dragActive 
+                    ? 'border-slate-900 bg-slate-50 text-slate-900' 
+                    : fileName 
+                      ? 'border-emerald-500 bg-emerald-50 text-emerald-800' 
+                      : 'border-slate-300 bg-slate-50 hover:border-slate-400 hover:bg-slate-100/50'
+                }`}
+              >
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  onChange={handleFileChange}
+                  accept=".pdf,image/*"
+                  className="hidden"
+                />
+                <Upload className={`w-8 h-8 ${fileName ? 'text-emerald-600' : 'text-slate-400'}`} />
+                {fileName ? (
+                  <div>
+                    <p className="text-sm font-black text-emerald-700">{fileName}</p>
+                    <p className="text-xs text-slate-500 mt-1 font-bold uppercase tracking-wider text-[9px]">Haga clic para cambiar de archivo</p>
+                  </div>
+                ) : (
+                  <div>
+                    <p className="text-sm font-black text-slate-900 uppercase tracking-wide text-xs">Arrastre su factura aquí o haga clic para examinar</p>
+                    <p className="text-xs text-slate-500 mt-1">Soporta PDF, PNG y JPEG. Máx. 10MB.</p>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Standard inputs */}
+            <div>
+              <label className="block text-xs font-black text-slate-500 uppercase mb-1 tracking-wider">Concepto / Título</label>
+              <input
+                type="text"
+                required
+                placeholder="Ej. Liquidación pladur salón..."
+                value={title}
+                onChange={e => setTitle(e.target.value)}
+                className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-none text-slate-900 placeholder:text-slate-400 text-sm focus:border-slate-900 focus:ring-0 outline-none transition-colors"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-black text-slate-500 uppercase mb-1 tracking-wider">Importe Factura (€)</label>
+              <input
+                type="number"
+                required
+                min="0.01"
+                step="0.01"
+                placeholder="0.00"
+                value={amount}
+                onChange={e => setAmount(e.target.value)}
+                className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-none text-slate-900 placeholder:text-slate-400 text-sm focus:border-slate-900 focus:ring-0 outline-none transition-colors"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-black text-slate-500 uppercase mb-1 tracking-wider">Proveedor Asociado</label>
+              <select
+                required
+                value={supplierId}
+                onChange={e => setSupplierId(e.target.value)}
+                className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-none text-slate-900 text-sm focus:border-slate-900 outline-none font-bold"
+              >
+                <option value="">-- Seleccionar Proveedor --</option>
+                {suppliers.map(s => (
+                  <option key={s.id} value={s.id}>{s.name} ({s.service})</option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-xs font-black text-slate-500 uppercase mb-1 tracking-wider">Fecha Factura</label>
+              <input
+                type="date"
+                required
+                value={date}
+                onChange={e => setDate(e.target.value)}
+                className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-none text-slate-900 text-sm focus:border-slate-900 outline-none font-bold"
+              />
+            </div>
+
+            {/* Smart accounting integration toggle */}
+            <div className="sm:col-span-2 bg-slate-50 p-3.5 border border-slate-200 rounded-none flex items-start gap-2">
+              <input
+                type="checkbox"
+                id="updateFinancials"
+                checked={updateFinancials}
+                onChange={e => setUpdateFinancials(e.target.checked)}
+                className="mt-1 w-4 h-4 text-slate-900 border-slate-300 rounded focus:ring-slate-900 focus:ring-0"
+              />
+              <div className="text-xs">
+                <label htmlFor="updateFinancials" className="font-black text-slate-900 cursor-pointer block uppercase tracking-wider text-[11px]">
+                  Consolidación Automática de Cuentas (Recomendado)
+                </label>
+                <span className="text-slate-500 block mt-1">
+                  Al activar, sumará este importe al GASTADO de la partida de presupuesto del proveedor, y lo sumará a sus PAGOS REALIZADOS automáticamente.
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex justify-end gap-2 border-t border-slate-100 pt-3">
+            <button
+              type="button"
+              onClick={() => setIsUploading(false)}
+              className="px-4 py-2 border border-slate-200 text-slate-600 font-bold rounded-none text-xs sm:text-sm hover:bg-slate-50 active:scale-95 transition-all"
+            >
+              Cancelar
+            </button>
+            <button
+              type="submit"
+              className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white font-black rounded-none text-xs sm:text-sm active:scale-95 transition-all uppercase tracking-wider"
+            >
+              Guardar Factura
+            </button>
+          </div>
+        </form>
+      )}
+
+      {/* Invoice List */}
+      <div className="space-y-3.5">
+        <h3 className="font-black text-slate-900 text-xs uppercase tracking-wider mb-2">Facturas Registradas</h3>
+        
+        {invoices.length === 0 ? (
+          <div className="p-8 text-center bg-slate-50 border border-slate-200 rounded-none">
+            <FileText className="w-8 h-8 text-slate-400 mx-auto mb-2" />
+            <p className="text-sm font-black text-slate-800 uppercase tracking-wide text-xs">No hay facturas cargadas todavía.</p>
+            <p className="text-xs text-slate-500 mt-1">Cargue su primera factura de obra con el botón superior.</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {invoices.map(invoice => {
+              const matchedSupplier = suppliers.find(s => s.id === invoice.supplierId);
+
+              return (
+                <div
+                  key={invoice.id}
+                  className="p-4 bg-white border border-slate-200 hover:border-slate-400 rounded-none flex items-center justify-between gap-4 transition-all shadow-sm"
+                >
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div className="p-2.5 bg-slate-50 border border-slate-200 rounded-none text-slate-900 shrink-0">
+                      <FileText className="w-5 h-5 text-slate-900" />
+                    </div>
+                    <div className="min-w-0">
+                      <h4 className="font-black text-slate-900 text-sm truncate">{invoice.title}</h4>
+                      <p className="text-[11px] text-slate-500 font-medium">
+                        Asociado a: <span className="text-slate-800 font-black">{matchedSupplier?.name || 'Desconocido'}</span>
+                      </p>
+                      <div className="flex items-center gap-2 text-[10px] text-slate-400 font-bold uppercase tracking-wider mt-1">
+                        <span>{new Date(invoice.date).toLocaleDateString('es-ES')}</span>
+                        <span>•</span>
+                        <span className="truncate max-w-[120px]">{invoice.fileName}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="text-right shrink-0 flex flex-col items-end gap-1.5">
+                    <div>
+                      <span className="text-[10px] text-slate-400 block uppercase font-black tracking-wider">Monto</span>
+                      <span className="font-mono font-black text-sm sm:text-base text-slate-900">
+                        {invoice.amount.toLocaleString('es-ES')} €
+                      </span>
+                    </div>
+
+                    <div className="flex items-center gap-1.5">
+                      {/* Offline/Online Sync badge */}
+                      {invoice.isSynced ? (
+                        <span className="text-[9px] font-black text-emerald-800 bg-emerald-50 border border-emerald-200 px-1.5 py-0.5 rounded-none flex items-center gap-0.5 uppercase tracking-wider" title="Sincronizado en la nube">
+                          <Cloud className="w-2.5 h-2.5" />
+                          <span>Nube</span>
+                        </span>
+                      ) : (
+                        <span className="text-[9px] font-black text-amber-800 bg-amber-50 border border-amber-200 px-1.5 py-0.5 rounded-none flex items-center gap-0.5 animate-pulse uppercase tracking-wider" title="Sincronización pendiente (Trabajo Offline)">
+                          <CloudOff className="w-2.5 h-2.5" />
+                          <span>Local</span>
+                        </span>
+                      )}
+
+                      <button
+                        onClick={() => setViewInvoice(invoice)}
+                        className="p-1 text-slate-400 hover:text-slate-900 hover:bg-slate-50 rounded-none transition-colors"
+                        title="Ver Documento"
+                      >
+                        <Eye className="w-4 h-4" />
+                      </button>
+
+                      <button
+                        onClick={() => onDeleteInvoice(invoice.id)}
+                        className="p-1 text-slate-400 hover:text-red-600 hover:bg-slate-50 rounded-none transition-colors"
+                        title="Eliminar"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+
+      {/* Invoice Viewer Modal */}
+      {viewInvoice && (
+        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-fadeIn">
+          <div className="bg-white border border-slate-200 rounded-none max-w-lg w-full max-h-[85vh] overflow-y-auto flex flex-col justify-between shadow-lg">
+            <div className="p-5 border-b border-slate-100 flex justify-between items-start">
+              <div>
+                <h3 className="font-black text-base text-slate-900 uppercase tracking-wide">{viewInvoice.title}</h3>
+                <p className="text-xs text-slate-400 mt-1 font-bold">{viewInvoice.fileName}</p>
+              </div>
+              <button
+                onClick={() => setViewInvoice(null)}
+                className="p-1 bg-slate-50 hover:bg-slate-100 rounded-none text-slate-400 hover:text-slate-900 transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="p-5 space-y-4">
+              <div className="bg-slate-50 p-4 rounded-none border border-slate-200 text-center font-mono">
+                <span className="text-xs text-slate-400 block uppercase font-black tracking-wider mb-1">Monto de la Factura</span>
+                <span className="text-3xl font-black text-slate-900">{viewInvoice.amount.toLocaleString('es-ES')} €</span>
+              </div>
+
+              {/* Displaying details */}
+              <div className="grid grid-cols-2 gap-4 text-xs">
+                <div className="bg-slate-50 p-2.5 rounded-none border border-slate-200">
+                  <span className="text-slate-400 block uppercase font-black tracking-wider text-[10px]">Proveedor</span>
+                  <span className="text-slate-900 font-black">
+                    {suppliers.find(s => s.id === viewInvoice.supplierId)?.name || 'Sin asignar'}
+                  </span>
+                </div>
+                <div className="bg-slate-50 p-2.5 rounded-none border border-slate-200">
+                  <span className="text-slate-400 block uppercase font-black tracking-wider text-[10px]">Fecha de Emisión</span>
+                  <span className="text-slate-900 font-black">
+                    {new Date(viewInvoice.date).toLocaleDateString('es-ES')}
+                  </span>
+                </div>
+              </div>
+
+              {/* Image viewer / PDF preview simulation */}
+              <div className="bg-slate-50 p-3 rounded-none border border-slate-200 flex flex-col items-center justify-center space-y-2">
+                <span className="text-[10px] text-slate-400 uppercase font-black tracking-wider">Vista previa del Documento</span>
+                
+                {/* Check if it is a base64 image */}
+                {viewInvoice.base64Data && viewInvoice.base64Data.startsWith('data:image/') ? (
+                  <img
+                    src={viewInvoice.base64Data}
+                    alt={viewInvoice.title}
+                    referrerPolicy="no-referrer"
+                    className="max-h-[30vh] max-w-full rounded-none border border-slate-200 object-contain shadow-sm"
+                  />
+                ) : (
+                  <div className="p-8 border border-dashed border-slate-200 rounded-none text-center space-y-1.5 w-full bg-white animate-fadeIn">
+                    <FileText className="w-10 h-10 text-slate-900 mx-auto" />
+                    <span className="text-xs text-slate-900 block font-black uppercase tracking-wider">Documento Digitalizado PDF</span>
+                    <span className="text-[10px] text-slate-400 block">Cargado satisfactoriamente en almacenamiento offline (IndexedDB).</span>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className="p-4 bg-slate-50 border-t border-slate-100 text-right">
+              <button
+                onClick={() => setViewInvoice(null)}
+                className="px-4 py-2 bg-slate-900 hover:bg-slate-800 font-black text-xs rounded-none text-white active:scale-95 transition-all uppercase tracking-wider"
+              >
+                Cerrar Panel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
