@@ -88,9 +88,9 @@ self.addEventListener("install", event => {
   event.waitUntil(
     caches.open(CACHE).then(cache =>
       cache.addAll([
-        "./",
-        "./index.html",
-        "./manifest.json"
+        "/",              // ← ruta correcta
+        "/index.html",
+        "/manifest.json"
       ])
     )
   );
@@ -105,9 +105,21 @@ self.addEventListener("activate", event => {
 });
 
 self.addEventListener("fetch", event => {
+  // Evitar erros con extensións de Chrome
+  if (event.request.url.startsWith('chrome-extension')) return;
+
   event.respondWith(
     caches.match(event.request).then(resp => {
-      return resp || fetch(event.request);
+      return (
+        resp ||
+        fetch(event.request).then(response => {
+          // Cache dinámico
+          const clone = response.clone();
+          caches.open(CACHE).then(cache => cache.put(event.request, clone));
+          return response;
+        })
+      );
     })
   );
 });
+
