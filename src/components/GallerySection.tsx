@@ -14,9 +14,10 @@ export default function GallerySection({ photos, onAddPhoto, onDeletePhoto }: Ga
   const cameraInputRef = useRef<HTMLInputElement>(null);
 
   // Form states
+  const dataHoxe = new Date().toLocaleDateString('es-ES'); 
   const [title, setTitle] = useState('');
   const [notes, setNotes] = useState('');
-  const [date, setDate] = useState('2026-07-08');
+  const [date, setDate] = useState(dataHoxe); // Default to today in YYYY-MM-DD format 
   const [base64Data, setBase64Data] = useState('');
 
   // Zoom view state
@@ -56,7 +57,7 @@ export default function GallerySection({ photos, onAddPhoto, onDeletePhoto }: Ga
     // Reset Form
     setTitle('');
     setNotes('');
-    setDate('2026-07-08');
+    setDate(dataHoxe);
     setBase64Data('');
     setIsAdding(false);
   };
@@ -217,7 +218,7 @@ export default function GallerySection({ photos, onAddPhoto, onDeletePhoto }: Ga
                 />
                 
                 {/* Hover overlay with zoom button */}
-                <div className="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                <div className="absolute inset-0 bg-slate-900/40 opacity-100 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
                   <button
                     onClick={() => setActivePhoto(photo)}
                     className="p-2 bg-white text-slate-900 rounded-none border border-slate-200 shadow hover:bg-slate-50 transition-all active:scale-90"
