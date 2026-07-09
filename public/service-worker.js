@@ -1,3 +1,4 @@
+/*
 const CACHE_NAME = 'reforma-gestor-cache-v1';
 const BASE_PATH = './';
 const ASSETS = [
@@ -5,7 +6,6 @@ const ASSETS = [
   './index.html',
   './manifest.json'
 ];
-
 // Install Event
 self.addEventListener('install', (event) => {
   event.waitUntil(
@@ -56,7 +56,7 @@ self.addEventListener('fetch', (event) => {
               caches.open(CACHE_NAME).then((cache) => cache.put(event.request, networkResponse));
             }
           })
-          .catch(() => { /* ignore network failure offline */ });
+          .catch(() => { "Ignore network errors, we have the cached response" });
         return cachedResponse;
       }
 
@@ -77,6 +77,37 @@ self.addEventListener('fetch', (event) => {
               return caches.match('./') || caches.match('./index.html');
           }
         });
+    })
+  );
+});
+
+*/
+const CACHE = 'reforma-gestor-cache-v1';
+
+self.addEventListener("install", event => {
+  event.waitUntil(
+    caches.open(CACHE).then(cache =>
+      cache.addAll([
+        "./",
+        "./index.html",
+        "./manifest.json"
+      ])
+    )
+  );
+});
+
+self.addEventListener("activate", event => {
+  event.waitUntil(
+    caches.keys().then(keys =>
+      Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)))
+    )
+  );
+});
+
+self.addEventListener("fetch", event => {
+  event.respondWith(
+    caches.match(event.request).then(resp => {
+      return resp || fetch(event.request);
     })
   );
 });
