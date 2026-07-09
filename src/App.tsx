@@ -37,10 +37,10 @@ export default function App() {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register(`${import.meta.env.BASE_URL}sw.js`)
           .then((reg) => {
-            logEvent('[PWA] Service Worker registrado exitosamente con alcance: ' + reg.scope);
+            logEvent('[PWA] Service Worker rexistrado exitosamente con alcance: ' + reg.scope);
           })
           .catch((err) => {
-            logEvent('[PWA] Error en registro de Service Worker: ' + err);
+            logEvent('[PWA] Erro no rexistro de Service Worker: ' + err);
           });
       });
     }
@@ -66,7 +66,7 @@ export default function App() {
       await reloadAllData();
       setStorageStats(await dbInstance.getStats());
     } catch (e) {
-      logEvent('Error al abrir la base de datos: ' + e);
+      logEvent('Erro o abrir a base de datos: ' + e);
     }
   };
 
@@ -91,7 +91,7 @@ export default function App() {
   };
 
   const handleClearDatabase = async () => {
-    const confirmed = window.confirm('Esto eliminará todas las partidas, proveedores, hitos, facturas y fotos guardadas en la base local. ¿Deseas continuar?');
+    const confirmed = window.confirm('Esto eliminará todas as partidas, proveedores, hitos, facturas e fotos gardadas na base local. ¿Desexas continuar?');
     if (!confirmed) {
       return;
     }
@@ -100,9 +100,9 @@ export default function App() {
       setClearingData(true);
       await dbInstance.clearAllData();
       await reloadAllData();
-      logEvent('[Database] Base local vaciada y lista para nuevos datos.');
+      logEvent('[Database] Base local vaciada e lista para novos datos.');
     } catch (e) {
-      logEvent('[Database] Error al vaciar la base local: ' + e);
+      logEvent('[Database] Erro ao vaciar a base local: ' + e);
     } finally {
       setClearingData(false);
     }
@@ -179,7 +179,7 @@ export default function App() {
 
   const handleUpdateBudgetCategory = async (cat: BudgetCategory) => {
     await dbInstance.update('budget', cat);
-    logEvent(`[Database] Partida de presupuesto actualizada: "${cat.name}"`);
+    logEvent(`[Database] Partida de presuposto actualizada: "${cat.name}"`);
     await reloadAllData();
   };
 
@@ -197,7 +197,7 @@ export default function App() {
       id: 's_' + Math.random().toString(36).substring(2, 9)
     };
     await dbInstance.add('suppliers', newSup);
-    logEvent(`[Database] Proveedor registrado: "${newSup.name}" para el servicio de "${newSup.service}"`);
+    logEvent(`[Database] Proveedor rexistrado: "${newSup.name}" para o servizo de "${newSup.service}"`);
     await reloadAllData();
   };
 
@@ -221,7 +221,7 @@ export default function App() {
       id: 'm_' + Math.random().toString(36).substring(2, 9)
     };
     await dbInstance.add('milestones', newMilestone);
-    logEvent(`[Database] Planificación de Hito agregada: "${newMilestone.title}" con límite al ${newMilestone.dueDate}`);
+    logEvent(`[Database] Planificación de Hito agregada: "${newMilestone.title}" con límite o ${newMilestone.dueDate}`);
     await reloadAllData();
   };
 
@@ -306,7 +306,7 @@ export default function App() {
     };
 
     await dbInstance.add('photos', newPhoto);
-    logEvent(`[Database] Avance visual guardado: "${newPhoto.title}"`);
+    logEvent(`[Database] Avance visual gardado: "${newPhoto.title}"`);
     await reloadAllData();
   };
 
@@ -324,7 +324,7 @@ export default function App() {
       id: 'f_' + Math.random().toString(36).substring(2, 9)
     };
     await dbInstance.add('funds', newFund);
-    logEvent(`[Database] Fondo registrado: "${newFund.source}" por ${newFund.amount}€`);
+    logEvent(`[Database] Fondo rexistrado: "${newFund.source}" por ${newFund.amount}€`);
     await reloadAllData();
   };
 
@@ -346,7 +346,7 @@ export default function App() {
             </div>
             <div>
               <span className="font-black tracking-tighter text-slate-900 font-sans text-sm sm:text-base uppercase block">
-                ReformaVivenda <span className="text-amber-600">Pro</span>
+                ReformaVivenda <span className="text-amber-600">XC</span>
               </span>
               <span className="text-[8px] sm:text-[9px] text-slate-400 font-bold uppercase tracking-widest block leading-none mt-0.5">
                 Xestión Integral de Obra

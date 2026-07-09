@@ -14,7 +14,7 @@ export class Database {
 
       request.onerror = (event) => {
         console.error('IndexedDB open error:', event);
-        reject(new Error('No se pudo abrir la base de datos local.'));
+        reject(new Error('Non se puido abrir a base de datos local.'));
       };
 
       request.onsuccess = (event) => {
@@ -42,7 +42,7 @@ export class Database {
   // Generic Operations
   private getStore(storeName: string, mode: IDBTransactionMode = 'readonly'): IDBObjectStore {
     if (!this.db) {
-      throw new Error('Base de datos no inicializada.');
+      throw new Error('Base de datos non inicializada.');
     }
     const tx = this.db.transaction(storeName, mode);
     return tx.objectStore(storeName);

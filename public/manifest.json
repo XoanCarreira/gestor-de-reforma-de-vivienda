@@ -1,17 +1,48 @@
 {
-  "short_name": "Reforma vivenda",
   "name": "Xestor para reforma vivenda",
-  "icons": [
-    {
-      "src": "data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 512 512%22><rect width=%22100%%22 height=%22100%%22 fill=%22%231e293b%22/><path d=%22M256 100 L412 250 L370 250 L370 412 L142 412 L142 250 L100 250 Z%22 fill=%22none%22 stroke=%22%23f59e0b%22 stroke-width=%2224%22 stroke-linejoin=%22round%22/><rect x=%22220%22 y=%22290%22 width=%2272%22 height=%22122%22 fill=%22%2310b981%22/></svg>",
-      "sizes": "192x192 512x512",
-      "type": "image/svg+xml"
-    }
-  ],
+  "short_name": "Reforma vivenda",
   "start_url": "./",
   "background_color": "#0f172a",
   "theme_color": "#1e293b",
   "display": "standalone",
   "orientation": "portrait",
-  "description": "Xestor para reforma vivenda - Presuposto, proveedores, hitos e carga de facturas offline-first."
+  "description": "Xestor para reforma vivenda - Presuposto, proveedores, hitos e carga de facturas offline-first.",
+  "lang": "gl-ES",
+  "icons": [
+    {
+      "src": "./assets/Logo-reformas-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "./assets/Logo-reformas-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "./assets/Logo-reformas-167.png",
+      "sizes": "167x167",
+      "type": "image/png"
+    },
+    {
+      "src": "./assets/Logo-reformas-152.png",
+      "sizes": "152x152",
+      "type": "image/png"
+    },
+    {
+      "src": "./assets/Logo-reformas-96.png",
+      "sizes": "96x96",
+      "type": "image/png"
+    },
+    {
+      "src": "./assets/Logo-reformas-48.png",
+      "sizes": "48x48",
+      "type": "image/png"
+    },
+    {
+      "src": "./assets/Logo-reformas-16.png",
+      "sizes": "16x16",
+      "type": "image/png"
+    }
+  ]
 }
