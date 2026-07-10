@@ -35,7 +35,7 @@ export default function App() {
     // Service Worker registration
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register(`${import.meta.env.BASE_URL}sw.js`)
+        navigator.serviceWorker.register(`${import.meta.env.BASE_URL}service-worker.js`)
           .then((reg) => {
             logEvent('[PWA] Service Worker rexistrado exitosamente con alcance: ' + reg.scope);
           })
