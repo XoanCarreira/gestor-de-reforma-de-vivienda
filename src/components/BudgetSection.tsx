@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { BudgetCategory } from '../types';
-import { Plus, Edit2, Trash2, Check, X, AlertTriangle, TrendingUp, DollarSign } from 'lucide-react';
+import { Plus, Edit2, Trash2, Check, X, AlertTriangle } from 'lucide-react';
 
 interface BudgetSectionProps {
   budget: BudgetCategory[];
@@ -140,7 +140,7 @@ export default function BudgetSection({
               <label className="block text-xs font-black text-slate-500 uppercase mb-1 tracking-wider">Notas / Observacións</label>
               <input
                 type="text"
-                placeholder="Opcional. Ej. Plazo de inicio..."
+                placeholder="Opcional. Ej. Prazo de inicio..."
                 value={notes}
                 onChange={e => setNotes(e.target.value)}
                 className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-none text-slate-900 placeholder:text-slate-400 text-sm focus:border-slate-900 focus:ring-0 outline-none transition-colors"

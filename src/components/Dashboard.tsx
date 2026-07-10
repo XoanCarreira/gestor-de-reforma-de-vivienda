@@ -1,5 +1,5 @@
 import { BudgetCategory, Milestone, Supplier, FundEntry } from '../types';
-import { AlertTriangle, TrendingUp, CheckCircle, Clock, Users, HardHat, TrendingDown, Database } from 'lucide-react';
+import { AlertTriangle, TrendingUp, Clock, HardHat, Database } from 'lucide-react';
 
 interface DashboardProps {
   budget: BudgetCategory[];

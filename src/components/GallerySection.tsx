@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { ProgressPhoto } from '../types';
-import { Camera, Image, Plus, Trash2, Calendar, ZoomIn, X, Clock } from 'lucide-react';
+import { Camera, Image, Trash2, Calendar, ZoomIn, X, } from 'lucide-react';
 
 interface GallerySectionProps {
   photos: ProgressPhoto[];

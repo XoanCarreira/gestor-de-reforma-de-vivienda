@@ -1,6 +1,6 @@
 import { jsPDF } from 'jspdf';
 import { BudgetCategory, Supplier, Milestone, Invoice } from '../types';
-import { FileDown, Calendar, TrendingUp, AlertTriangle } from 'lucide-react';
+import { FileDown } from 'lucide-react';
 import { useState } from 'react';
 
 interface ReportProps {

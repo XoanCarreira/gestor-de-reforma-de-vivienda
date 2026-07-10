@@ -1,5 +1,5 @@
 import { useRef } from 'react';
-import { Database, HardDrive, Info, Clock, Download, Upload, Trash2 } from 'lucide-react';
+import { Database, HardDrive, Info, Clock, Download, Upload } from 'lucide-react';
 
 interface LocalDataStats {
   budget: number;

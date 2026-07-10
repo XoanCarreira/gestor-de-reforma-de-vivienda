@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { Invoice, Supplier, BudgetCategory } from '../types';
-import { Upload, FileText, CheckCircle, Clock, Trash2, Link, Plus, X, Eye } from 'lucide-react';
+import { Upload, FileText, Trash2, X, Eye } from 'lucide-react';
 
 interface DocumentsSectionProps {
   invoices: Invoice[];

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Milestone, MilestoneStatus } from '../types';
-import { Plus, Edit2, Trash2, Check, X, Calendar, AlertTriangle, Clock, PlayCircle, CheckCircle2 } from 'lucide-react';
+import { Plus, Edit2, Trash2, Check, X, Calendar, AlertTriangle, PlayCircle, CheckCircle2 } from 'lucide-react';
 
 interface MilestonesSectionProps {
   milestones: Milestone[];

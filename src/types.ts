@@ -1,3 +1,4 @@
+// Presuposto
 export interface BudgetCategory {
   id: string;
   name: string;
@@ -6,6 +7,7 @@ export interface BudgetCategory {
   notes?: string;
 }
 
+// Proveedores
 export interface Supplier {
   id: string;
   name: string;
@@ -19,8 +21,10 @@ export interface Supplier {
   notes?: string;
 }
 
+// Estado Hitos
 export type MilestoneStatus = 'pending' | 'in_progress' | 'completed' | 'delayed';
 
+// Hitos
 export interface Milestone {
   id: string;
   title: string;
@@ -30,6 +34,7 @@ export interface Milestone {
   completedDate?: string; // YYYY-MM-DD
 }
 
+// Facturas
 export interface Invoice {
   id: string;
   title: string;
@@ -42,6 +47,7 @@ export interface Invoice {
   isLocalOnly: boolean;
 }
 
+// Fotos de Progreso
 export interface ProgressPhoto {
   id: string;
   title: string;
@@ -52,6 +58,7 @@ export interface ProgressPhoto {
   isLocalOnly: boolean;
 }
 
+// Entradas de Fondos
 export interface FundEntry {
   id: string;
   source: string;
@@ -60,6 +67,7 @@ export interface FundEntry {
   notes?: string;
 }
 
+// Backup da aplicación
 export interface AppBackup {
   version: number;
   exportedAt: string;

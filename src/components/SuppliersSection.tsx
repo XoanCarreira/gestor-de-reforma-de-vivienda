@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Supplier } from '../types';
-import { Plus, Edit2, Trash2, Check, X, Phone, Mail, Award, MessageSquare } from 'lucide-react';
+import { Plus, Edit2, Trash2, Check, X, Phone, Mail, MessageSquare } from 'lucide-react';
 
 interface SuppliersSectionProps {
   suppliers: Supplier[];
@@ -106,7 +106,7 @@ export default function SuppliersSection({
           className="flex items-center gap-1.5 px-4 py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-black rounded-none transition-all active:scale-95 text-xs uppercase tracking-wider shadow"
         >
           {isAdding ? <X className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
-          <span>{isAdding ? 'Cancelar' : 'Nuevo Proveedor'}</span>
+          <span>{isAdding ? 'Cancelar' : 'Novo Proveedor'}</span>
         </button>
       </div>
 

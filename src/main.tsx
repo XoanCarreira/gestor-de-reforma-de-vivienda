@@ -8,7 +8,7 @@ createRoot(document.getElementById('root')!).render(
     <App />
   </StrictMode>,
 );
-// Revisar
+// Carga service worker para habilitar PWA
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker
