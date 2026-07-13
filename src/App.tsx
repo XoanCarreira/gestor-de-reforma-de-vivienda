@@ -173,7 +173,7 @@ export default function App() {
       id: 'b_' + Math.random().toString(36).substring(2, 9)
     };
     await dbInstance.add('budget', newCat);
-    logEvent(`[Database] Partida de presupuesto creada: "${newCat.name}" asignándole ${newCat.allocated}€`);
+    logEvent(`[Database] Partida de presupuesto creada: "${newCat.name}" asignándolle ${newCat.allocated}€`);
     await reloadAllData();
   };
 
@@ -341,9 +341,12 @@ export default function App() {
       <header className="sticky top-0 bg-white/95 backdrop-blur-sm border-b-2 border-slate-200 z-30 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2 sm:gap-3">
+            
             <div className="w-9 h-9 bg-amber-500 rounded-sm flex items-center justify-center font-black text-white text-lg italic shadow-sm select-none">
-              R
+            <img src="../icons/Logo-reformas-48.png" alt="" />
+              
             </div>
+            
             <div>
               <span className="font-black tracking-tighter text-slate-900 font-sans text-sm sm:text-base uppercase block">
                 ReformaVivenda <span className="text-amber-600">XC</span>

@@ -110,7 +110,7 @@ export default function DocumentsSection({
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white border border-slate-200 p-5 rounded-none shadow-sm">
         <div>
           <h2 className="text-sm font-black text-slate-900 uppercase tracking-widest">Carga de Facturas e Gastos</h2>
-          <p className="text-xs text-slate-500 mt-1">Rexistra recibos, asócialos a un proveedor e liquida partidas automáticamente.</p>
+          <p className="text-xs text-slate-500 mt-1">Rexistra recibos, asociaos a un proveedor e liquida partidas automáticamente.</p>
         </div>
         <button
           onClick={() => setIsUploading(!isUploading)}
@@ -155,7 +155,7 @@ export default function DocumentsSection({
                 {fileName ? (
                   <div>
                     <p className="text-sm font-black text-emerald-700">{fileName}</p>
-                    <p className="text-xs text-slate-500 mt-1 font-bold uppercase tracking-wider text-[9px]">Haga clic para cambiar de archivo</p>
+                    <p className="text-xs text-slate-500 mt-1 font-bold uppercase tracking-wider text-[9px]">Faga clic para cambiar de arquivo</p>
                   </div>
                 ) : (
                   <div>

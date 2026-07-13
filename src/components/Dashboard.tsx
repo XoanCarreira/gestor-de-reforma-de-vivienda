@@ -16,7 +16,8 @@ export default function Dashboard({
   funds,
   onNavigate
 }: DashboardProps) {
-  const TODAY_STR = '2026-07-08'; // System reference date
+
+  const TODAY_STR = new Date().toISOString().split('T')[0]; // System reference date
 
   // Calculations
   const totalAllocated = budget.reduce((sum, c) => sum + c.allocated, 0);

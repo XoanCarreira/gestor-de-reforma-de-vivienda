@@ -24,7 +24,7 @@ export default function BudgetSection({
   const [spent, setSpent] = useState('');
   const [notes, setNotes] = useState('');
 
-  // Quick cost edit state (to increase spent easily from site)
+  // Edición rápida de gasto acumulado
   const [quickSpentIncrement, setQuickSpentIncrement] = useState<{ [id: string]: string }>({});
 
   const handleSaveAdd = (e: React.FormEvent) => {
@@ -159,7 +159,7 @@ export default function BudgetSection({
               type="submit"
               className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white font-black rounded-none text-xs sm:text-sm active:scale-95 transition-all uppercase tracking-wider"
             >
-              Guardar Partida
+              Gardar Partida
             </button>
           </div>
         </form>
@@ -276,7 +276,7 @@ export default function BudgetSection({
                     )}
                   </div>
 
-                  {/* Mid: Progress and deviations */}
+                  {/* Mid: Progreso e desviacións */}
                   <div className="space-y-2">
                     <div className="flex justify-between items-end text-xs font-mono">
                       <div>

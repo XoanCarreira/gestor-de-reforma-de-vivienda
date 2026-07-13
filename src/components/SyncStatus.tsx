@@ -37,7 +37,7 @@ export default function SyncStatus({ stats, activityLogs, onClearData, onExportB
               <span className="text-slate-400">IndexedDB</span>
             </h2>
             <p className="text-xs text-slate-400 mt-1">
-              A aplicación garda e lee toda a información directamente en este navegador.
+              A aplicación garda e lee toda a información directamente neste navegador.
             </p>
           </div>
         </div>
@@ -55,7 +55,7 @@ export default function SyncStatus({ stats, activityLogs, onClearData, onExportB
         <div>
           <h3 className="font-bold text-slate-900 text-sm uppercase tracking-wider mb-2">Backup de datos</h3>
           <p className="text-sm text-slate-600 leading-relaxed">
-            Descarga un arquivo JSON con todos os datos actuais e recárgao máis tarde desde outro dispositivo ou desde Android.
+            Descarga un arquivo JSON con todos os datos actuais e recargao máis tarde neste ou outro dispositivo.
           </p>
         </div>
 
@@ -150,7 +150,7 @@ export default function SyncStatus({ stats, activityLogs, onClearData, onExportB
             Mantemento de datos
           </h3>
           <p className="text-sm text-slate-600 leading-relaxed">
-            Se queres empezar desde cero, podes vaciar a base local e volver a introducir datos reais.
+            Se queres comezar de cero, podes vaciar a base local e volver a introducir novos datos.
             Esto elimina fondos, presupuestos, proveedores, hitos, facturas e fotos gardadas neste navegador.
           </p>
         </div>
