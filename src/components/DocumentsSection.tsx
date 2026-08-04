@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { Invoice, Supplier, BudgetCategory } from '../types';
 import { Upload, FileText, Trash2, X, Eye } from 'lucide-react';
+import { utils } from '../utils/date';
 
 interface DocumentsSectionProps {
   invoices: Invoice[];
@@ -25,7 +26,7 @@ export default function DocumentsSection({
   const [title, setTitle] = useState('');
   const [amount, setAmount] = useState('');
   const [supplierId, setSupplierId] = useState('');
-  const [date, setDate] = useState('2026-07-08');
+  const [date, setDate] = useState(utils.getToday());
   const [updateFinancials, setUpdateFinancials] = useState(true);
   const [base64Data, setBase64Data] = useState<string>('');
   const [fileName, setFileName] = useState('');
@@ -97,7 +98,7 @@ export default function DocumentsSection({
     setTitle('');
     setAmount('');
     setSupplierId('');
-    setDate('2026-07-08');
+    setDate(utils.getToday());
     setUpdateFinancials(true);
     setBase64Data('');
     setFileName('');

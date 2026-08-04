@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { ProgressPhoto } from '../types';
 import { Camera, Image, Trash2, Calendar, ZoomIn, X, } from 'lucide-react';
+import { utils } from '../utils/date';
 
 interface GallerySectionProps {
   photos: ProgressPhoto[];
@@ -14,10 +15,9 @@ export default function GallerySection({ photos, onAddPhoto, onDeletePhoto }: Ga
   const cameraInputRef = useRef<HTMLInputElement>(null);
 
   // Form states
-  const dataHoxe = new Date().toLocaleDateString('es-ES'); 
   const [title, setTitle] = useState('');
   const [notes, setNotes] = useState('');
-  const [date, setDate] = useState(dataHoxe); // Default to today in YYYY-MM-DD format 
+  const [date, setDate] = useState(utils.getToday()); // Default to today in YYYY-MM-DD format 
   const [base64Data, setBase64Data] = useState('');
 
   // Zoom view state
@@ -57,7 +57,7 @@ export default function GallerySection({ photos, onAddPhoto, onDeletePhoto }: Ga
     // Reset Form
     setTitle('');
     setNotes('');
-    setDate(dataHoxe);
+    setDate(utils.getToday());
     setBase64Data('');
     setIsAdding(false);
   };

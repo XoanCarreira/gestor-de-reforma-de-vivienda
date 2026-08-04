@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { FundEntry } from '../types';
 import { Plus, Trash2, X, PiggyBank, Landmark } from 'lucide-react';
+import { utils } from '../utils/date';
 
 interface FundsSectionProps {
   funds: FundEntry[];
@@ -13,7 +14,7 @@ export default function FundsSection({ funds, onAddFund, onDeleteFund }: FundsSe
 
   const [source, setSource] = useState('');
   const [amount, setAmount] = useState('');
-  const [date, setDate] = useState('2026-07-08');
+  const [date, setDate] = useState(utils.getToday());
   const [notes, setNotes] = useState('');
 
   const totalFunds = funds.reduce((sum, fund) => sum + fund.amount, 0);
@@ -31,7 +32,7 @@ export default function FundsSection({ funds, onAddFund, onDeleteFund }: FundsSe
 
     setSource('');
     setAmount('');
-    setDate('2026-07-08');
+    setDate(utils.getToday());
     setNotes('');
     setIsAdding(false);
   };

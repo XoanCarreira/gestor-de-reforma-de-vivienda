@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Milestone, MilestoneStatus } from '../types';
 import { Plus, Edit2, Trash2, Check, X, Calendar, AlertTriangle, PlayCircle, CheckCircle2 } from 'lucide-react';
+import { utils } from '../utils/date';
 
 interface MilestonesSectionProps {
   milestones: Milestone[];
@@ -15,7 +16,7 @@ export default function MilestonesSection({
   onUpdateMilestone,
   onDeleteMilestone
 }: MilestonesSectionProps) {
-  const TODAY_STR = '2026-07-08'; // Reference System Date
+  const TODAY_STR = utils.getToday(); // Reference System Date
 
   const [isAdding, setIsAdding] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -23,7 +24,7 @@ export default function MilestonesSection({
   // Form states
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [dueDate, setDueDate] = useState('');
+  const [dueDate, setDueDate] = useState(utils.getToday());
   const [status, setStatus] = useState<MilestoneStatus>('pending');
   const [completedDate, setCompletedDate] = useState('');
 
@@ -42,7 +43,7 @@ export default function MilestonesSection({
     // Reset
     setTitle('');
     setDescription('');
-    setDueDate('');
+    setDueDate(utils.getToday());
     setStatus('pending');
     setCompletedDate('');
     setIsAdding(false);

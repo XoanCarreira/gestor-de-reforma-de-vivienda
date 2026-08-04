@@ -1,5 +1,6 @@
 import { BudgetCategory, Milestone, Supplier, FundEntry } from '../types';
 import { AlertTriangle, TrendingUp, Clock, HardHat, Database } from 'lucide-react';
+import { utils } from '../utils/date';
 
 interface DashboardProps {
   budget: BudgetCategory[];
@@ -17,9 +18,9 @@ export default function Dashboard({
   onNavigate
 }: DashboardProps) {
 
-  const TODAY_STR = new Date().toISOString().split('T')[0]; // System reference date
+  const TODAY_STR = utils.getToday(); // Data referencia do sistema
 
-  // Calculations
+  // Cálculos
   const totalAllocated = budget.reduce((sum, c) => sum + c.allocated, 0);
   const totalSpent = budget.reduce((sum, c) => sum + c.spent, 0);
   const totalPaid = suppliers.reduce((sum, s) => sum + s.paidAmount, 0);
@@ -27,16 +28,16 @@ export default function Dashboard({
   const totalFunds = funds.reduce((sum, entry) => sum + entry.amount, 0);
   const fundsBalance = totalFunds - totalAllocated;
   const hasDeficit = fundsBalance < 0;
-  
+
   const remainingBudget = totalAllocated - totalSpent;
   const progressPercent = totalAllocated > 0 ? (totalSpent / totalAllocated) * 100 : 0;
 
-  // Milestones Progress
+  // Progreso hitos
   const totalMilestones = milestones.length;
   const completedMilestones = milestones.filter(m => m.status === 'completed').length;
   const milestonesPercent = totalMilestones > 0 ? Math.round((completedMilestones / totalMilestones) * 100) : 0;
 
-  // Deviation alerts
+  // Alertas desviacións
   const costDeviations = budget.filter(c => c.spent > c.allocated);
   const nearLimitCategories = budget.filter(c => c.spent > 0 && c.spent <= c.allocated && (c.spent / c.allocated) >= 0.9);
 
@@ -140,9 +141,8 @@ export default function Dashboard({
         </div>
 
         {/* KPI 3 */}
-        <div className={`p-5 border-l-4 shadow-sm flex flex-col justify-between ${
-          remainingBudget < 0 ? 'bg-red-50 border-red-500' : 'bg-white border-slate-950'
-        }`}>
+        <div className={`p-5 border-l-4 shadow-sm flex flex-col justify-between ${remainingBudget < 0 ? 'bg-red-50 border-red-500' : 'bg-white border-slate-950'
+          }`}>
           <div>
             <p className="text-xs font-black text-slate-400 uppercase tracking-wider">Restante</p>
             <p className={`text-2xl font-black mt-2 ${remainingBudget < 0 ? 'text-red-700' : 'text-slate-900'}`}>
@@ -204,7 +204,7 @@ export default function Dashboard({
         <div className="lg:col-span-2 p-5 bg-white border border-slate-200 shadow-sm rounded-none">
           <h3 className="font-black text-sm uppercase tracking-widest text-slate-900 mb-4 flex items-center gap-2">
             <TrendingUp className="w-4 h-4 text-amber-500" />
-            Comparativa Presupuesto vs Invertido
+            Comparativa Presuposto vs Invertido
           </h3>
 
           <div className="space-y-4">
@@ -227,13 +227,12 @@ export default function Dashboard({
                     {/* Spent Bar */}
                     <div
                       style={{ width: `${Math.min(capPercent, 100)}%` }}
-                      className={`h-full transition-all duration-500 ${
-                        isOver 
-                          ? 'bg-red-500' 
-                          : capPercent >= 90 
-                            ? 'bg-amber-500' 
-                            : 'bg-slate-900'
-                      }`}
+                      className={`h-full transition-all duration-500 ${isOver
+                        ? 'bg-red-500'
+                        : capPercent >= 90
+                          ? 'bg-amber-500'
+                          : 'bg-slate-900'
+                        }`}
                     />
                     {/* If over-budget, draw a warning indicator at 100% */}
                     {isOver && (
@@ -266,7 +265,7 @@ export default function Dashboard({
           <div>
             <h3 className="font-black text-sm uppercase tracking-widest text-slate-900 mb-4 flex items-center gap-2">
               <HardHat className="w-4 h-4 text-slate-900" />
-              Progreso de Obra
+              Progreso de Obra a {utils.getToday().split('-').reverse().join('/')}
             </h3>
 
             {/* Circular Progress Wheel */}
