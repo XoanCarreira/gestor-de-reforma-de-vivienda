@@ -30,11 +30,16 @@ export default function FundsSection({ funds, onAddFund, onDeleteFund }: FundsSe
       notes: notes || undefined
     });
 
+    // Reset
+    resetForm();
+    setIsAdding(false);
+  };
+
+  const resetForm = () => {
     setSource('');
     setAmount('');
     setDate(utils.getToday());
     setNotes('');
-    setIsAdding(false);
   };
 
   return (
@@ -45,7 +50,7 @@ export default function FundsSection({ funds, onAddFund, onDeleteFund }: FundsSe
           <p className="text-xs text-slate-500 mt-1">Rexistra cada achega, préstamo, subvención ou entrada de diñeiro coa súa orixe.</p>
         </div>
         <button
-          onClick={() => setIsAdding(!isAdding)}
+          onClick={() => { setIsAdding(!isAdding); resetForm(); }}
           className="flex items-center gap-1.5 px-4 py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-black rounded-none transition-all active:scale-95 text-xs uppercase tracking-wider shadow"
         >
           {isAdding ? <X className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
@@ -86,7 +91,7 @@ export default function FundsSection({ funds, onAddFund, onDeleteFund }: FundsSe
             </div>
           </div>
           <div className="flex justify-end gap-2 border-t border-slate-100 pt-3">
-            <button type="button" onClick={() => setIsAdding(false)} className="px-4 py-2 border border-slate-200 text-slate-600 font-bold rounded-none text-xs sm:text-sm hover:bg-slate-50 active:scale-95 transition-all">Cancelar</button>
+            <button type="button" onClick={() => {setIsAdding(false); resetForm();}} className="px-4 py-2 border border-slate-200 text-slate-600 font-bold rounded-none text-xs sm:text-sm hover:bg-slate-50 active:scale-95 transition-all">Cancelar</button>
             <button type="submit" className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white font-black rounded-none text-xs sm:text-sm active:scale-95 transition-all uppercase tracking-wider">Gardar fondo</button>
           </div>
         </form>

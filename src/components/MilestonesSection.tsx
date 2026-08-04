@@ -41,12 +41,16 @@ export default function MilestonesSection({
     });
 
     // Reset
+    resetForm();
+    setIsAdding(false);
+  };
+
+  const resetForm = () => {
     setTitle('');
     setDescription('');
     setDueDate(utils.getToday());
     setStatus('pending');
     setCompletedDate('');
-    setIsAdding(false);
   };
 
   const handleStartEdit = (m: Milestone) => {
@@ -97,7 +101,7 @@ export default function MilestonesSection({
           <p className="text-xs text-slate-500 mt-1">Monitorea o cronograma do proxecto e detecta retrasos en prazos de entrega.</p>
         </div>
         <button
-          onClick={() => setIsAdding(!isAdding)}
+          onClick={() => {setIsAdding(!isAdding); resetForm();}}
           className="flex items-center gap-1.5 px-4 py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-black rounded-none transition-all active:scale-95 text-xs uppercase tracking-wider shadow"
         >
           {isAdding ? <X className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
@@ -169,7 +173,7 @@ export default function MilestonesSection({
           <div className="flex justify-end gap-2 border-t border-slate-100 pt-3">
             <button
               type="button"
-              onClick={() => setIsAdding(false)}
+              onClick={() => { setIsAdding(false); resetForm(); }}
               className="px-4 py-2 border border-slate-200 text-slate-600 font-bold rounded-none text-xs sm:text-sm hover:bg-slate-50 active:scale-95 transition-all"
             >
               Cancelar

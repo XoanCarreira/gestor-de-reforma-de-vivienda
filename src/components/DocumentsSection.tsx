@@ -31,10 +31,10 @@ export default function DocumentsSection({
   const [base64Data, setBase64Data] = useState<string>('');
   const [fileName, setFileName] = useState('');
 
-  // View modal state
+  // Estado para ver a factura en detalle
   const [viewInvoice, setViewInvoice] = useState<Invoice | null>(null);
 
-  // Handle Drag & Drop
+  // Manexador de arrastrar e soltar arquivos
   const handleDrag = (e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -78,6 +78,7 @@ export default function DocumentsSection({
     reader.readAsDataURL(file);
   };
 
+  // Manexador de gardar a factura
   const handleSaveInvoice = (e: React.FormEvent) => {
     e.preventDefault();
     if (!title || isNaN(Number(amount)) || !supplierId) {
@@ -105,6 +106,18 @@ export default function DocumentsSection({
     setIsUploading(false);
   };
 
+  const resetForm = () => {
+    setTitle('');
+    setAmount('');
+    setSupplierId('');
+    setDate(utils.getToday());
+    setUpdateFinancials(true);
+    setBase64Data('');
+    setFileName('');
+  };
+
+
+
   return (
     <div className="space-y-6">
       {/* Header and Add Button */}
@@ -114,7 +127,7 @@ export default function DocumentsSection({
           <p className="text-xs text-slate-500 mt-1">Rexistra recibos, asociaos a un proveedor e liquida partidas automáticamente.</p>
         </div>
         <button
-          onClick={() => setIsUploading(!isUploading)}
+          onClick={() => {setIsUploading(!isUploading); resetForm();}}
           className="flex items-center gap-1.5 px-4 py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-black rounded-none transition-all active:scale-95 text-xs uppercase tracking-wider shadow"
         >
           {isUploading ? <X className="w-4 h-4" /> : <Upload className="w-4 h-4" />}
@@ -234,7 +247,7 @@ export default function DocumentsSection({
                   Consolidación Automática de Contas (Recomendado)
                 </label>
                 <span className="text-slate-500 block mt-1">
-                  O activar, sumará este importe ao GASTADO da partida de presupuesto do proveedor, e o sumará aos seus PAGOS REALIZADOS automáticamente.
+                  O activar, sumará este importe ao GASTADO da partida do presuposto do proveedor, e o sumará aos seus PAGOS REALIZADOS automáticamente.
                 </span>
               </div>
             </div>
@@ -243,7 +256,7 @@ export default function DocumentsSection({
           <div className="flex justify-end gap-2 border-t border-slate-100 pt-3">
             <button
               type="button"
-              onClick={() => setIsUploading(false)}
+              onClick={() => { setIsUploading(false); resetForm(); }}
               className="px-4 py-2 border border-slate-200 text-slate-600 font-bold rounded-none text-xs sm:text-sm hover:bg-slate-50 active:scale-95 transition-all"
             >
               Cancelar

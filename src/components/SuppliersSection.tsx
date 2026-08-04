@@ -48,14 +48,7 @@ export default function SuppliersSection({
     });
 
     // Reset
-    setName('');
-    setService('');
-    setPhone('');
-    setEmail('');
-    setContractedAmount('');
-    setPaidAmount('');
-    setRating('5');
-    setNotes('');
+    resetForm();
     setIsAdding(false);
   };
 
@@ -93,6 +86,17 @@ export default function SuppliersSection({
     setEditingId(null);
   };
 
+  const resetForm = () => {
+    setName('');
+    setService('');
+    setPhone('');
+    setEmail('');
+    setContractedAmount('');
+    setPaidAmount('');
+    setRating('5');
+    setNotes('');
+  };
+
   return (
     <div className="space-y-6">
       {/* Header and Add Button */}
@@ -102,7 +106,7 @@ export default function SuppliersSection({
           <p className="text-xs text-slate-500 mt-1">Administra os contratistas da obra, pagos e presupostos cerrados.</p>
         </div>
         <button
-          onClick={() => setIsAdding(!isAdding)}
+          onClick={() => {setIsAdding(!isAdding); resetForm();}}
           className="flex items-center gap-1.5 px-4 py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-black rounded-none transition-all active:scale-95 text-xs uppercase tracking-wider shadow"
         >
           {isAdding ? <X className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
@@ -207,7 +211,7 @@ export default function SuppliersSection({
           <div className="flex justify-end gap-2 border-t border-slate-100 pt-3">
             <button
               type="button"
-              onClick={() => setIsAdding(false)}
+              onClick={() => { setIsAdding(false); resetForm(); }}
               className="px-4 py-2 border border-slate-200 text-slate-600 font-bold rounded-none text-xs sm:text-sm hover:bg-slate-50 active:scale-95 transition-all"
             >
               Cancelar
@@ -407,11 +411,10 @@ export default function SuppliersSection({
                     <div className="relative h-2.5 bg-slate-100 rounded-none overflow-hidden border border-slate-200">
                       <div
                         style={{ width: `${Math.min(paidPercent, 100)}%` }}
-                        className={`h-full transition-all duration-500 ${
-                          isFullyPaid 
-                            ? 'bg-emerald-500' 
+                        className={`h-full transition-all duration-500 ${isFullyPaid
+                            ? 'bg-emerald-500'
                             : 'bg-slate-900'
-                        }`}
+                          }`}
                       />
                     </div>
 

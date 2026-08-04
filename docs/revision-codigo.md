@@ -23,7 +23,7 @@
 - [ ] **3. Doble registro del Service Worker**
   Se registra tanto en `main.tsx` como en el `useEffect` de `App.tsx`. Dejarlo en un único sitio (recomendado: `main.tsx`).
 
-- [ ] **4. Estado de formulario compartido entre "añadir" y "editar" sin resetear**
+- [x] **4. Estado de formulario compartido entre "añadir" y "editar" sin resetear**
   En `BudgetSection.tsx`, `SuppliersSection.tsx` y `MilestonesSection.tsx`, cancelar una edición no limpia los campos (`name`, `allocated`, `spent`, `notes`...). Si luego se abre el formulario de alta, aparecen datos residuales.
   **Solución:**
   ```ts
@@ -32,6 +32,7 @@
     setName(''); setAllocated(''); setSpent(''); setNotes('');
   };
   ```
+  Solucionado creando `resetForm()` y añadiendolo en botones `Cancelar`.
 
 ---
 
