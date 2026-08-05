@@ -26,6 +26,7 @@ export default function DocumentsSection({
   const [title, setTitle] = useState('');
   const [amount, setAmount] = useState('');
   const [supplierId, setSupplierId] = useState('');
+  const [categoryId, setCategoryId] = useState('');
   const [date, setDate] = useState(utils.getToday());
   const [updateFinancials, setUpdateFinancials] = useState(true);
   const [base64Data, setBase64Data] = useState<string>('');
@@ -88,6 +89,7 @@ export default function DocumentsSection({
 
     onAddInvoice({
       title,
+      categoryId,
       amount: Number(amount),
       supplierId,
       date,
@@ -96,18 +98,13 @@ export default function DocumentsSection({
     }, updateFinancials);
 
     // Reset Form
-    setTitle('');
-    setAmount('');
-    setSupplierId('');
-    setDate(utils.getToday());
-    setUpdateFinancials(true);
-    setBase64Data('');
-    setFileName('');
+    resetForm();
     setIsUploading(false);
   };
 
   const resetForm = () => {
     setTitle('');
+    setCategoryId('');
     setAmount('');
     setSupplierId('');
     setDate(utils.getToday());
@@ -223,6 +220,21 @@ export default function DocumentsSection({
             </div>
 
             <div>
+              <label className="block text-xs font-black text-slate-500 uppercase mb-1 tracking-wider">Servicio Asociado</label>
+              <select
+                required
+                value={categoryId}
+                onChange={e => setCategoryId(e.target.value)}
+                className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-none text-slate-900 text-sm focus:border-slate-900 outline-none font-bold"
+              >
+                <option value="">-- Seleccionar Servicio --</option>
+                {budget.map(s => (
+                  <option key={s.id} value={s.id}>{s.name}</option>
+                ))}
+              </select>
+            </div>
+
+            <div>
               <label className="block text-xs font-black text-slate-500 uppercase mb-1 tracking-wider">Data Factura</label>
               <input
                 type="date"
@@ -247,7 +259,7 @@ export default function DocumentsSection({
                   Consolidación Automática de Contas (Recomendado)
                 </label>
                 <span className="text-slate-500 block mt-1">
-                  O activar, sumará este importe ao GASTADO da partida do presuposto do proveedor, e o sumará aos seus PAGOS REALIZADOS automáticamente.
+                  O activar, sumará este importe ao PAGADO do proveedor e tamén o reflectirá na partida do presuposto correspondente automaticamente.
                 </span>
               </div>
             </div>

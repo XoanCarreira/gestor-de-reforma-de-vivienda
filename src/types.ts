@@ -37,6 +37,7 @@ export interface Milestone {
 // Facturas
 export interface Invoice {
   id: string;
+  categoryId: string;
   title: string;
   amount: number;
   supplierId: string;

@@ -185,6 +185,10 @@ export default function App() {
 
   const handleDeleteBudgetCategory = async (id: string) => {
     const cat = budget.find(x => x.id === id);
+    const confirmed = window.confirm(`Esto eliminará a partida: "${cat?.name}" \n ¿Desexas continuar?`);
+    if (!confirmed) {
+      return;
+    }
     await dbInstance.delete('budget', id);
     logEvent(`[Database] Partida eliminada: "${cat?.name || id}"`);
     await reloadAllData();
@@ -209,6 +213,10 @@ export default function App() {
 
   const handleDeleteSupplier = async (id: string) => {
     const sup = suppliers.find(x => x.id === id);
+    const confirmed = window.confirm(`Esto eliminará o proveedor: "${sup?.name}" \n ¿Desexas continuar?`);
+    if (!confirmed) {
+      return;
+    }
     await dbInstance.delete('suppliers', id);
     logEvent(`[Database] Proveedor eliminado: "${sup?.name || id}"`);
     await reloadAllData();
@@ -233,6 +241,10 @@ export default function App() {
 
   const handleDeleteMilestone = async (id: string) => {
     const m = milestones.find(x => x.id === id);
+    const confirmed = window.confirm(`Esto eliminará o hito: "${m?.title}" \n ¿Desexas continuar?`);
+    if (!confirmed) {
+      return;
+    }
     await dbInstance.delete('milestones', id);
     logEvent(`[Database] Hito de planificación eliminado: "${m?.title || id}"`);
     await reloadAllData();
@@ -256,24 +268,17 @@ export default function App() {
       const supplier = suppliers.find(s => s.id === invoice.supplierId);
       if (supplier) {
         // 1. Update supplier balance
+        const updatedPaidAmount = supplier.paidAmount + invoice.amount;
         const updatedSupplier: Supplier = {
           ...supplier,
-          paidAmount: supplier.paidAmount + invoice.amount,
-          pendingAmount: Math.max(0, supplier.contractedAmount - (supplier.paidAmount + invoice.amount))
+          paidAmount: updatedPaidAmount,
+          pendingAmount: Math.max(0, supplier.contractedAmount - updatedPaidAmount)
         };
         await dbInstance.update('suppliers', updatedSupplier);
         logEvent(`[Cuentas] Proveedor "${supplier.name}" actualizado: Pagado +${invoice.amount}€`);
 
-        // 2. Link supplier service to corresponding budget category spent amount!
-        // Try to match category name with supplier's service name
-        const matchedCategory = budget.find(c => 
-          c.name.toLowerCase().includes(supplier.service.toLowerCase()) || 
-          supplier.service.toLowerCase().includes(c.name.toLowerCase()) ||
-          (supplier.service === 'Albañilería y Tabiquería' && c.name.includes('Albañilería')) ||
-          (supplier.service === 'Fontanería y Calefacción' && c.name.includes('Fontanería')) ||
-          (supplier.service === 'Carpintería Exterior' && c.name.includes('Carpintería')) ||
-          (supplier.service === 'Electricidad' && c.name.includes('Electricidad'))
-        );
+        // 2. Link invoice directly to the selected budget category.
+        const matchedCategory = budget.find(c => c.id === invoice.categoryId);
 
         if (matchedCategory) {
           const updatedCategory: BudgetCategory = {
@@ -281,7 +286,7 @@ export default function App() {
             spent: matchedCategory.spent + invoice.amount
           };
           await dbInstance.update('budget', updatedCategory);
-          logEvent(`[Cuentas] Partida de obra "${matchedCategory.name}" aumentada: Gastado +${invoice.amount}€`);
+          logEvent(`[Cuentas] Partida de obra "${matchedCategory.name}" actualizada: Gastado +${invoice.amount}€`);
         }
       }
     }
@@ -291,6 +296,10 @@ export default function App() {
 
   const handleDeleteInvoice = async (id: string) => {
     const inv = invoices.find(x => x.id === id);
+    const confirmed = window.confirm(`Esto eliminará a factura: "${inv?.title}" \n ¿Desexas continuar?`);
+    if (!confirmed) {
+      return;
+    }
     await dbInstance.delete('invoices', id);
     logEvent(`[Database] Factura eliminada: "${inv?.title || id}"`);
     await reloadAllData();
@@ -312,6 +321,10 @@ export default function App() {
 
   const handleDeletePhoto = async (id: string) => {
     const ph = photos.find(x => x.id === id);
+    const confirmed = window.confirm(`Esto eliminará a foto: "${ph?.title}" \n ¿Desexas continuar?`);
+    if (!confirmed) {
+      return;
+    }
     await dbInstance.delete('photos', id);
     logEvent(`[Database] Fotografía eliminada: "${ph?.title || id}"`);
     await reloadAllData();
@@ -330,6 +343,10 @@ export default function App() {
 
   const handleDeleteFund = async (id: string) => {
     const fund = funds.find(x => x.id === id);
+    const confirmed = window.confirm(`Esto eliminará a partida de: "${fund?.source}" \n ¿Desexas continuar?`);
+    if (!confirmed) {
+      return;
+    }
     await dbInstance.delete('funds', id);
     logEvent(`[Database] Fondo eliminado: "${fund?.source || id}"`);
     await reloadAllData();

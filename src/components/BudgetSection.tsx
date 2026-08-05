@@ -39,10 +39,7 @@ export default function BudgetSection({
     });
 
     // Reset
-    setName('');
-    setAllocated('');
-    setSpent('');
-    setNotes('');
+    resetForm();
     setIsAdding(false);
   };
 
@@ -81,7 +78,6 @@ export default function BudgetSection({
   };
 
   const resetForm = () => {
-    setEditingId(null);
     setName('');
     setAllocated('');
     setSpent('');

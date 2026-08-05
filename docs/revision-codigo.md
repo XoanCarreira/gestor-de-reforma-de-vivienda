@@ -10,6 +10,7 @@
 - [x] **1. Fecha "hoy" inconsistente entre componentes**
   `Dashboard.tsx` usa `new Date().toISOString().split('T')[0]`, pero `MilestonesSection.tsx` y `FundsSection.tsx` tienen la fecha **hardcodeada** `'2026-07-08'`. Un mismo hito puede aparecer "vencido" en un sitio y "al día" en otro.
   **Solución:** crear un helper único `getToday()` en `utils/date.ts` y usarlo en todos los componentes.
+  **Solucionado** con helper `getToday()`.
 
 - [x] **2. Formato de fecha incorrecto en `GallerySection.tsx`**
   ```ts
@@ -19,6 +20,7 @@
   ```ts
   const dataHoxe = new Date().toISOString().split('T')[0];
   ```
+  **Solucionado** usando helper `getToday()`.
 
 - [ ] **3. Doble registro del Service Worker**
   Se registra tanto en `main.tsx` como en el `useEffect` de `App.tsx`. Dejarlo en un único sitio (recomendado: `main.tsx`).
@@ -32,18 +34,20 @@
     setName(''); setAllocated(''); setSpent(''); setNotes('');
   };
   ```
-  Solucionado creando `resetForm()` y añadiendolo en botones `Cancelar`.
+  **Solucionado** creando `resetForm()` y añadiendolo en botones `Cancelar`.
 
 ---
 
 ## 🟠 Riesgos de datos / UX
 
-- [ ] **5. Sin confirmación al eliminar registros individuales**
+- [x] **5. Sin confirmación al eliminar registros individuales**
   `handleClearDatabase` sí pide `window.confirm(...)`, pero borrar una partida, proveedor, hito, factura o foto es inmediato. Añadir confirmación (nativa o modal reutilizable) antes de cada borrado individual.
+  **Solucionado** añadiendo un `window.confirm(...)` en cada `handleDelete...` en `App.tsx`.
 
-- [ ] **6. Vinculación factura → partida de presupuesto por coincidencia de texto (frágil)**
+- [x] **6. Vinculación factura → partida de presupuesto por coincidencia de texto (frágil)**
   En `App.tsx`, `handleAddInvoice` enlaza proveedor y categoría mediante comparación de strings hardcodeados (`c.name.includes(supplier.service)` + casos especiales). Si el texto no coincide exactamente, la consolidación falla en silencio.
   **Solución:** añadir campo explícito `categoryId?: string` en `Invoice` y que el usuario seleccione la partida en un `<select>`, igual que ya hace con el proveedor.
+  **Solucionado** con el select.
 
 - [ ] **7. Validación de formularios permisiva**
   `isNaN(Number(allocated))` no descarta negativos; el `min="0"` del HTML no siempre lo impide (teclado en móvil, pegar texto). Validar explícitamente `Number(x) < 0` en `BudgetSection`, `FundsSection` y `SuppliersSection`.
@@ -116,6 +120,5 @@
 
 ### Progreso
 
-`0 / 24` puntos completados
+`5 / 24` puntos completados
 
-*(Actualiza este contador manualmente o cuenta las casillas marcadas conforme avances.)*
