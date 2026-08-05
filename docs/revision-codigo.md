@@ -22,8 +22,9 @@
   ```
   **Solucionado** usando helper `getToday()`.
 
-- [ ] **3. Doble registro del Service Worker**
+- [x] **3. Doble registro del Service Worker**
   Se registra tanto en `main.tsx` como en el `useEffect` de `App.tsx`. Dejarlo en un único sitio (recomendado: `main.tsx`).
+  **Solucionado** eliminando en `App.tsx`.
 
 - [x] **4. Estado de formulario compartido entre "añadir" y "editar" sin resetear**
   En `BudgetSection.tsx`, `SuppliersSection.tsx` y `MilestonesSection.tsx`, cancelar una edición no limpia los campos (`name`, `allocated`, `spent`, `notes`...). Si luego se abre el formulario de alta, aparecen datos residuales.
@@ -52,7 +53,7 @@
 - [ ] **7. Validación de formularios permisiva**
   `isNaN(Number(allocated))` no descarta negativos; el `min="0"` del HTML no siempre lo impide (teclado en móvil, pegar texto). Validar explícitamente `Number(x) < 0` en `BudgetSection`, `FundsSection` y `SuppliersSection`.
 
-- [ ] **8. Sin límite real de tamaño de archivo**
+- [x] **8. Sin límite real de tamaño de archivo**
   `DocumentsSection.tsx` anuncia "Máx. 10MB" pero no comprueba `file.size`. Añadir:
   ```ts
   const MAX_SIZE = 10 * 1024 * 1024;
@@ -61,6 +62,7 @@
     return;
   }
   ```
+  **Solucionado** comprobando `MAX_FILE_SIZE`.
 
 - [ ] **9. Fotos guardadas sin comprimir**
   `GallerySection` guarda el base64 tal cual desde la cámara (puede ser varios MB por foto). Comprimir/redimensionar con `<canvas>` antes de guardar (p. ej. máx. 1600px de ancho, JPEG calidad ~0.7) para no saturar IndexedDB.
@@ -80,8 +82,9 @@
   }
   ```
 
-- [ ] **11. Mezcla de idiomas (galego/castellano) inconsistente**
+- [x] **11. Mezcla de idiomas (galego/castellano) inconsistente**
   El UI mezcla gallego ("Xestión", "Rexistro", "Non hai...") y castellano ("Presuposto asignado", "Calificación") en la misma pantalla. Unificar idioma o implementar i18n real (`react-i18next`).
+  **Solucionado** revisando y corrigiendo
 
 - [ ] **12. Ruta de imagen frágil**
   ```html
@@ -120,5 +123,5 @@
 
 ### Progreso
 
-`5 / 24` puntos completados
+`8 / 24` puntos completados
 

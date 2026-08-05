@@ -15,7 +15,7 @@ const ReportGenerator = lazy(() => import('./components/ReportGenerator'));
 
 export default function App() {
   const [activeTab, setActiveTab] = useState('dashboard');
-  
+
   // Data states
   const [budget, setBudget] = useState<BudgetCategory[]>([]);
   const [suppliers, setSuppliers] = useState<Supplier[]>([]);
@@ -24,13 +24,13 @@ export default function App() {
   const [photos, setPhotos] = useState<ProgressPhoto[]>([]);
   const [funds, setFunds] = useState<FundEntry[]>([]);
   const [storageStats, setStorageStats] = useState({ budget: 0, suppliers: 0, milestones: 0, invoices: 0, photos: 0, funds: 0, total: 0 });
-  
+
   // Local activity log
   const [activityLogs, setActivityLogs] = useState<string[]>([]);
   const [clearingData, setClearingData] = useState(false);
   const [backupProcessing, setBackupProcessing] = useState(false);
 
-  // PWA Register inside component lifecycle as well
+
   useEffect(() => {
     // Initial database load
     initData();
@@ -49,7 +49,7 @@ export default function App() {
       logEvent('Inicializando IndexedDB local (ReformaGestDB)...');
       await dbInstance.init();
       logEvent('Base de datos conectada correctamente.');
-      
+
       await reloadAllData();
       setStorageStats(await dbInstance.getStats());
     } catch (e) {
@@ -345,12 +345,12 @@ export default function App() {
       <header className="sticky top-0 bg-white/95 backdrop-blur-sm border-b-2 border-slate-200 z-30 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2 sm:gap-3">
-            
+
             <div className="w-9 h-9 bg-amber-500 rounded-sm flex items-center justify-center font-black text-white text-lg italic shadow-sm select-none">
-            <img src="../icons/Logo-reformas-48.png" alt="" />
-              
+              <img src="../icons/Logo-reformas-48.png" alt="" />
+
             </div>
-            
+
             <div>
               <span className="font-black tracking-tighter text-slate-900 font-sans text-sm sm:text-base uppercase block">
                 ReformaVivenda <span className="text-amber-600">XC</span>
@@ -476,9 +476,8 @@ export default function App() {
           {/* Nav Tab Items */}
           <button
             onClick={() => setActiveTab('dashboard')}
-            className={`flex flex-col items-center gap-1 p-2 rounded-xl transition-all ${
-              activeTab === 'dashboard' ? 'text-amber-600 scale-110 font-bold' : 'text-slate-400 hover:text-slate-600'
-            }`}
+            className={`flex flex-col items-center gap-1 p-2 rounded-xl transition-all ${activeTab === 'dashboard' ? 'text-amber-600 scale-110 font-bold' : 'text-slate-400 hover:text-slate-600'
+              }`}
           >
             <LayoutDashboard className="w-5 h-5" />
             <span className="text-[10px] xs:text-[11px] font-medium">Inicio</span>
@@ -486,9 +485,8 @@ export default function App() {
 
           <button
             onClick={() => setActiveTab('orzamento')}
-            className={`flex flex-col items-center gap-1 p-2 rounded-xl transition-all ${
-              activeTab === 'orzamento' ? 'text-amber-600 scale-110 font-bold' : 'text-slate-400 hover:text-slate-600'
-            }`}
+            className={`flex flex-col items-center gap-1 p-2 rounded-xl transition-all ${activeTab === 'orzamento' ? 'text-amber-600 scale-110 font-bold' : 'text-slate-400 hover:text-slate-600'
+              }`}
           >
             <Wallet className="w-5 h-5" />
             <span className="text-[10px] xs:text-[11px] font-medium">Costos</span>
@@ -496,9 +494,8 @@ export default function App() {
 
           <button
             onClick={() => setActiveTab('fondos')}
-            className={`flex flex-col items-center gap-1 p-2 rounded-xl transition-all ${
-              activeTab === 'fondos' ? 'text-emerald-600 scale-110 font-bold' : 'text-slate-400 hover:text-slate-600'
-            }`}
+            className={`flex flex-col items-center gap-1 p-2 rounded-xl transition-all ${activeTab === 'fondos' ? 'text-emerald-600 scale-110 font-bold' : 'text-slate-400 hover:text-slate-600'
+              }`}
           >
             <Landmark className="w-5 h-5" />
             <span className="text-[10px] xs:text-[11px] font-medium">Fondos</span>
@@ -506,9 +503,8 @@ export default function App() {
 
           <button
             onClick={() => setActiveTab('proveedores')}
-            className={`flex flex-col items-center gap-1 p-2 rounded-xl transition-all ${
-              activeTab === 'proveedores' ? 'text-amber-600 scale-110 font-bold' : 'text-slate-400 hover:text-slate-600'
-            }`}
+            className={`flex flex-col items-center gap-1 p-2 rounded-xl transition-all ${activeTab === 'proveedores' ? 'text-amber-600 scale-110 font-bold' : 'text-slate-400 hover:text-slate-600'
+              }`}
           >
             <Users className="w-5 h-5" />
             <span className="text-[10px] xs:text-[11px] font-medium">Empresas</span>
@@ -516,9 +512,8 @@ export default function App() {
 
           <button
             onClick={() => setActiveTab('hitos')}
-            className={`flex flex-col items-center gap-1 p-2 rounded-xl transition-all ${
-              activeTab === 'hitos' ? 'text-amber-600 scale-110 font-bold' : 'text-slate-400 hover:text-slate-600'
-            }`}
+            className={`flex flex-col items-center gap-1 p-2 rounded-xl transition-all ${activeTab === 'hitos' ? 'text-amber-600 scale-110 font-bold' : 'text-slate-400 hover:text-slate-600'
+              }`}
           >
             <CalendarCheck className="w-5 h-5" />
             <span className="text-[10px] xs:text-[11px] font-medium">Hitos</span>
@@ -526,9 +521,8 @@ export default function App() {
 
           <button
             onClick={() => setActiveTab('documentos')}
-            className={`flex flex-col items-center gap-1 p-2 rounded-xl transition-all ${
-              activeTab === 'documentos' ? 'text-amber-600 scale-110 font-bold' : 'text-slate-400 hover:text-slate-600'
-            }`}
+            className={`flex flex-col items-center gap-1 p-2 rounded-xl transition-all ${activeTab === 'documentos' ? 'text-amber-600 scale-110 font-bold' : 'text-slate-400 hover:text-slate-600'
+              }`}
           >
             <FileText className="w-5 h-5" />
             <span className="text-[10px] xs:text-[11px] font-medium">Facturas</span>
@@ -536,9 +530,8 @@ export default function App() {
 
           <button
             onClick={() => setActiveTab('galeria')}
-            className={`flex flex-col items-center gap-1 p-2 rounded-xl transition-all ${
-              activeTab === 'galeria' ? 'text-amber-600 scale-110 font-bold' : 'text-slate-400 hover:text-slate-600'
-            }`}
+            className={`flex flex-col items-center gap-1 p-2 rounded-xl transition-all ${activeTab === 'galeria' ? 'text-amber-600 scale-110 font-bold' : 'text-slate-400 hover:text-slate-600'
+              }`}
           >
             <Camera className="w-5 h-5" />
             <span className="text-[10px] xs:text-[11px] font-medium">Fotos</span>
@@ -546,9 +539,8 @@ export default function App() {
 
           <button
             onClick={() => setActiveTab('datos')}
-            className={`flex flex-col items-center gap-1 p-2 rounded-xl transition-all ${
-              activeTab === 'datos' ? 'text-amber-600 scale-110 font-bold' : 'text-slate-400 hover:text-slate-600'
-            }`}
+            className={`flex flex-col items-center gap-1 p-2 rounded-xl transition-all ${activeTab === 'datos' ? 'text-amber-600 scale-110 font-bold' : 'text-slate-400 hover:text-slate-600'
+              }`}
           >
             <Database className="w-5 h-5" />
             <span className="text-[10px] xs:text-[11px] font-medium font-sans">Datos</span>

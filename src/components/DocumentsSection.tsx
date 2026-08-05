@@ -32,6 +32,9 @@ export default function DocumentsSection({
   const [base64Data, setBase64Data] = useState<string>('');
   const [fileName, setFileName] = useState('');
 
+  // Tamaño máximo dos arquivos (10MB)
+  const MAX_FILE_SIZE = 10 * 1024 * 1024;
+
   // Estado para ver a factura en detalle
   const [viewInvoice, setViewInvoice] = useState<Invoice | null>(null);
 
@@ -63,6 +66,12 @@ export default function DocumentsSection({
   };
 
   const handleFile = (file: File) => {
+    // Comproba tamaño arquivo antes de subilo
+    if(file.size > MAX_FILE_SIZE){
+      alert("Subida cancelada. Arquivo demasiado grande");
+      return;
+    }
+    
     setFileName(file.name);
     if (!title) {
       // Auto-populate title with file name without extension
