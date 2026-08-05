@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Supplier } from '../types';
-import { Plus, Edit2, Trash2, Check, X, Phone, Mail, MessageSquare } from 'lucide-react';
+import { Plus, Edit2, Trash2, Check, X, Phone, Mail, MessageSquare, Eye } from 'lucide-react';
 
 interface SuppliersSectionProps {
   suppliers: Supplier[];
@@ -27,6 +27,9 @@ export default function SuppliersSection({
   const [paidAmount, setPaidAmount] = useState('');
   const [rating, setRating] = useState('5');
   const [notes, setNotes] = useState('');
+
+  // Estado para ver o proveedor en detalle
+  const [viewSupplier, setViewSupplier] = useState<Supplier | null>(null);
 
   const handleSaveAdd = (e: React.FormEvent) => {
     e.preventDefault();
@@ -106,7 +109,7 @@ export default function SuppliersSection({
           <p className="text-xs text-slate-500 mt-1">Administra os contratistas da obra, pagos e orzamentos cerrados.</p>
         </div>
         <button
-          onClick={() => {setIsAdding(!isAdding); resetForm();}}
+          onClick={() => { setIsAdding(!isAdding); resetForm(); }}
           className="flex items-center gap-1.5 px-4 py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-black rounded-none transition-all active:scale-95 text-xs uppercase tracking-wider shadow"
         >
           {isAdding ? <X className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
@@ -357,6 +360,13 @@ export default function SuppliersSection({
                       </div>
                       <div className="flex items-center gap-1.5">
                         <button
+                          onClick={() => setViewSupplier(sup)}
+                          className="p-1.5 text-slate-400 hover:text-green-600 bg-slate-50 hover:bg-slate-100 rounded-none transition-all active:scale-90"
+                          title="Ver Proveedor"
+                        >
+                          <Eye className="w-3.5 h-3.5" />
+                        </button>
+                        <button
                           onClick={() => handleStartEdit(sup)}
                           className="p-1.5 text-slate-400 hover:text-slate-950 bg-slate-50 hover:bg-slate-100 rounded-none transition-all active:scale-90"
                         >
@@ -412,8 +422,8 @@ export default function SuppliersSection({
                       <div
                         style={{ width: `${Math.min(paidPercent, 100)}%` }}
                         className={`h-full transition-all duration-500 ${isFullyPaid
-                            ? 'bg-emerald-500'
-                            : 'bg-slate-900'
+                          ? 'bg-emerald-500'
+                          : 'bg-slate-900'
                           }`}
                       />
                     </div>
@@ -465,6 +475,75 @@ export default function SuppliersSection({
           );
         })}
       </div>
+
+      {/* View Supplier Modal */}
+      {viewSupplier && (
+        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-fadeIn">
+          <div className="bg-white border border-slate-200 rounded-none max-w-lg w-full max-h-[85vh] overflow-y-auto flex flex-col justify-between shadow-lg">
+            <div className="p-5 border-b border-slate-100 flex justify-between items-start">
+              <div>
+                <h3 className="font-black text-base text-slate-900 uppercase tracking-wide">{viewSupplier.name}</h3>
+                <p className="text-xs text-slate-400 mt-1 font-bold">{viewSupplier.service}</p>
+              </div>
+              <button
+                onClick={() => setViewSupplier(null)}
+                className="p-1 bg-slate-50 hover:bg-slate-100 rounded-none text-slate-400 hover:text-slate-900 transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="p-5 space-y-4">
+              {/* Displaying financial summary */}
+              <div className="bg-slate-50 p-4 rounded-none border border-slate-200 text-center font-mono">
+                <span className="text-xs text-slate-400 block uppercase font-black tracking-wider mb-1">Orzamento asignado</span>
+                <span className="text-3xl font-black text-slate-900">{viewSupplier.contractedAmount.toLocaleString('es-ES')} €</span>
+              </div>
+
+              <div className="bg-slate-50 p-4 rounded-none border border-slate-200 text-center font-mono">
+                <span className="text-xs text-slate-400 block uppercase font-black tracking-wider mb-1">Pagado</span>
+                <span className="text-3xl font-black text-slate-900">{viewSupplier.paidAmount.toLocaleString('es-ES')} €</span>
+              </div>
+
+              {/* Displaying details */}
+              <div className="grid grid-cols-2 gap-4 text-xs">
+                <div className="bg-slate-50 p-2.5 rounded-none border border-slate-200">
+                  <span className="text-slate-400 block uppercase font-black tracking-wider text-[10px]">Teléfono</span>
+                  <span className="text-slate-900 font-black">
+                    {suppliers.find(s => s.id === viewSupplier.id)?.phone || 'Sin asignar'}
+                  </span>
+                </div>
+                <div className="bg-slate-50 p-2.5 rounded-none border border-slate-200">
+                  <span className="text-slate-400 block uppercase font-black tracking-wider text-[10px]">Email</span>
+                  <span className="text-slate-900 font-black">
+                    {suppliers.find(s => s.id === viewSupplier.id)?.email || 'Sin asignar'}
+                  </span>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 gap-4 text-xs">
+                <div className="bg-slate-50 p-2.5 rounded-none border border-slate-200">
+                  <span className="text-slate-400 block uppercase font-black tracking-wider text-[10px]">Notas</span>
+                  <span className="text-slate-900 font-black">
+                    {suppliers.find(s => s.id === viewSupplier.id)?.notes || 'Sin asignar'}
+                  </span>
+                </div>
+              </div>
+
+              
+            </div>
+
+            <div className="p-4 bg-slate-50 border-t border-slate-100 text-right">
+              <button
+                onClick={() => setViewSupplier(null)}
+                className="px-4 py-2 bg-slate-900 hover:bg-slate-800 font-black text-xs rounded-none text-white active:scale-95 transition-all uppercase tracking-wider"
+              >
+                Pechar Panel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

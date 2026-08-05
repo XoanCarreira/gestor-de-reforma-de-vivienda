@@ -90,7 +90,7 @@ export default function BudgetSection({
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white border border-slate-200 p-5 rounded-none shadow-sm">
         <div>
           <h2 className="text-sm font-black text-slate-900 uppercase tracking-widest">Control de orzamento</h2>
-          <p className="text-xs text-slate-500 mt-1">Segue as desviacions e xestiona as partidas da tua reforma.</p>
+          <p className="text-xs text-slate-500 mt-1">Segue as desviacións e xestiona as partidas da túa reforma.</p>
         </div>
         <button
           onClick={() => { setIsAdding(!isAdding); resetForm(); }}
@@ -104,10 +104,10 @@ export default function BudgetSection({
       {/* Add Form (Expandable) */}
       {isAdding && (
         <form onSubmit={handleSaveAdd} className="p-5 bg-white border border-slate-200 shadow-sm rounded-none space-y-4 animate-fadeIn">
-          <h3 className="font-black text-slate-900 text-xs uppercase tracking-wider">Nueva Partida de orzamento</h3>
+          <h3 className="font-black text-slate-900 text-xs uppercase tracking-wider">Nova partida de orzamento</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-black text-slate-500 uppercase mb-1 tracking-wider">Nombre de partida</label>
+              <label className="block text-xs font-black text-slate-500 uppercase mb-1 tracking-wider">Nome da partida</label>
               <input
                 type="text"
                 required
@@ -118,7 +118,7 @@ export default function BudgetSection({
               />
             </div>
             <div>
-              <label className="block text-xs font-black text-slate-500 uppercase mb-1 tracking-wider">orzamento asignado (€)</label>
+              <label className="block text-xs font-black text-slate-500 uppercase mb-1 tracking-wider">Orzamento asignado (€)</label>
               <input
                 type="number"
                 required
@@ -144,7 +144,7 @@ export default function BudgetSection({
               <label className="block text-xs font-black text-slate-500 uppercase mb-1 tracking-wider">Notas / Observacións</label>
               <input
                 type="text"
-                placeholder="Opcional. Ej. Prazo de inicio..."
+                placeholder="Prazo de inicio..."
                 value={notes}
                 onChange={e => setNotes(e.target.value)}
                 className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-none text-slate-900 placeholder:text-slate-400 text-sm focus:border-slate-900 focus:ring-0 outline-none transition-colors"
@@ -349,7 +349,7 @@ export default function BudgetSection({
                       disabled={!quickSpentIncrement[cat.id] || isNaN(Number(quickSpentIncrement[cat.id])) || Number(quickSpentIncrement[cat.id]) <= 0}
                       className="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 disabled:bg-slate-200 disabled:text-slate-400 text-white rounded-none text-xs font-black transition-all shrink-0 uppercase tracking-wider"
                     >
-                      Añadir
+                      Engadir
                     </button>
                   </div>
                 </div>
