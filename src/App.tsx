@@ -32,19 +32,6 @@ export default function App() {
 
   // PWA Register inside component lifecycle as well
   useEffect(() => {
-    // Service Worker registration
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register(`${import.meta.env.BASE_URL}service-worker.js`)
-          .then((reg) => {
-            logEvent('[PWA] Service Worker rexistrado exitosamente con alcance: ' + reg.scope);
-          })
-          .catch((err) => {
-            logEvent('[PWA] Erro no rexistro de Service Worker: ' + err);
-          });
-      });
-    }
-
     // Initial database load
     initData();
 
