@@ -119,7 +119,7 @@ export default function Dashboard({
         {/* KPI 1 */}
         <div className="p-5 bg-white border-l-4 border-amber-500 shadow-sm flex flex-col justify-between">
           <div>
-            <p className="text-xs font-black text-slate-400 uppercase tracking-wider">Presuposto Total</p>
+            <p className="text-xs font-black text-slate-400 uppercase tracking-wider">orzamento Total</p>
             <p className="text-2xl font-black text-slate-900 mt-2">
               {totalAllocated.toLocaleString('es-ES')} €
             </p>
@@ -130,7 +130,7 @@ export default function Dashboard({
         {/* KPI 2 */}
         <div className="p-5 bg-white border-l-4 border-emerald-500 shadow-sm flex flex-col justify-between">
           <div>
-            <p className="text-xs font-black text-slate-400 uppercase tracking-wider">Invertido / Executado</p>
+            <p className="text-xs font-black text-slate-400 uppercase tracking-wider">Investido / Executado</p>
             <p className={`text-2xl font-black mt-2 ${totalSpent > totalAllocated ? 'text-red-600' : 'text-slate-900'}`}>
               {totalSpent.toLocaleString('es-ES')} €
             </p>
@@ -184,7 +184,7 @@ export default function Dashboard({
         <div className="p-5 bg-white border border-slate-200 shadow-sm rounded-none">
           <p className="text-xs font-black text-slate-400 uppercase tracking-wider">Gasto previsto</p>
           <p className="text-2xl font-black text-slate-900 mt-2">{totalAllocated.toLocaleString('es-ES')} €</p>
-          <span className="text-[10px] text-slate-400 mt-2 block">Suma das partidas de presuposto</span>
+          <span className="text-[10px] text-slate-400 mt-2 block">Suma das partidas de orzamento</span>
         </div>
 
         <div className={`p-5 border shadow-sm rounded-none ${hasDeficit ? 'bg-red-50 border-red-200' : 'bg-emerald-50 border-emerald-200'}`}>
@@ -204,7 +204,7 @@ export default function Dashboard({
         <div className="lg:col-span-2 p-5 bg-white border border-slate-200 shadow-sm rounded-none">
           <h3 className="font-black text-sm uppercase tracking-widest text-slate-900 mb-4 flex items-center gap-2">
             <TrendingUp className="w-4 h-4 text-amber-500" />
-            Comparativa Presuposto vs Invertido
+            Comparativa orzamento vs Investido
           </h3>
 
           <div className="space-y-4">

@@ -259,7 +259,7 @@ export default function DocumentsSection({
                   Consolidación Automática de Contas (Recomendado)
                 </label>
                 <span className="text-slate-500 block mt-1">
-                  O activar, sumará este importe ao PAGADO do proveedor e tamén o reflectirá na partida do presuposto correspondente automaticamente.
+                  O activar, sumará este importe ao PAGADO do proveedor e tamén o reflectirá na partida do orzamento correspondente automaticamente.
                 </span>
               </div>
             </div>

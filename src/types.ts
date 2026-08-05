@@ -1,4 +1,4 @@
-// Presuposto
+// orzamento
 export interface BudgetCategory {
   id: string;
   name: string;

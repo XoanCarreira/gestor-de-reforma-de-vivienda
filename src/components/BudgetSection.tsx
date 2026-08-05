@@ -89,8 +89,8 @@ export default function BudgetSection({
       {/* Header and Add Button */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white border border-slate-200 p-5 rounded-none shadow-sm">
         <div>
-          <h2 className="text-sm font-black text-slate-900 uppercase tracking-widest">Control de Presuposto</h2>
-          <p className="text-xs text-slate-500 mt-1">Sigue as desviacions e xestiona as partidas da tua reforma.</p>
+          <h2 className="text-sm font-black text-slate-900 uppercase tracking-widest">Control de orzamento</h2>
+          <p className="text-xs text-slate-500 mt-1">Segue as desviacions e xestiona as partidas da tua reforma.</p>
         </div>
         <button
           onClick={() => { setIsAdding(!isAdding); resetForm(); }}
@@ -104,7 +104,7 @@ export default function BudgetSection({
       {/* Add Form (Expandable) */}
       {isAdding && (
         <form onSubmit={handleSaveAdd} className="p-5 bg-white border border-slate-200 shadow-sm rounded-none space-y-4 animate-fadeIn">
-          <h3 className="font-black text-slate-900 text-xs uppercase tracking-wider">Nueva Partida de Presuposto</h3>
+          <h3 className="font-black text-slate-900 text-xs uppercase tracking-wider">Nueva Partida de orzamento</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-xs font-black text-slate-500 uppercase mb-1 tracking-wider">Nombre de partida</label>
@@ -118,7 +118,7 @@ export default function BudgetSection({
               />
             </div>
             <div>
-              <label className="block text-xs font-black text-slate-500 uppercase mb-1 tracking-wider">Presuposto asignado (€)</label>
+              <label className="block text-xs font-black text-slate-500 uppercase mb-1 tracking-wider">orzamento asignado (€)</label>
               <input
                 type="number"
                 required

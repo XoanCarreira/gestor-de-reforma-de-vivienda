@@ -103,7 +103,7 @@ export default function SuppliersSection({
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white border border-slate-200 p-5 rounded-none shadow-sm">
         <div>
           <h2 className="text-sm font-black text-slate-900 uppercase tracking-widest">Xestión de Proveedores</h2>
-          <p className="text-xs text-slate-500 mt-1">Administra os contratistas da obra, pagos e presupostos cerrados.</p>
+          <p className="text-xs text-slate-500 mt-1">Administra os contratistas da obra, pagos e orzamentos cerrados.</p>
         </div>
         <button
           onClick={() => {setIsAdding(!isAdding); resetForm();}}
@@ -124,7 +124,7 @@ export default function SuppliersSection({
               <input
                 type="text"
                 required
-                placeholder="Ej. Fontanería Hnos. Martínez"
+                placeholder="Fontanería M. Rajoy"
                 value={name}
                 onChange={e => setName(e.target.value)}
                 className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-none text-slate-900 placeholder:text-slate-400 text-sm focus:border-slate-900 focus:ring-0 outline-none transition-colors"
@@ -201,7 +201,7 @@ export default function SuppliersSection({
               <label className="block text-xs font-black text-slate-500 uppercase mb-1 tracking-wider">Comentarios / Observacións</label>
               <input
                 type="text"
-                placeholder="Ej. Suministra materiales por su cuenta..."
+                placeholder="Ej. Suministra materiais pola súa conta..."
                 value={notes}
                 onChange={e => setNotes(e.target.value)}
                 className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-none text-slate-900 placeholder:text-slate-400 text-sm focus:border-slate-900 focus:ring-0 outline-none transition-colors"

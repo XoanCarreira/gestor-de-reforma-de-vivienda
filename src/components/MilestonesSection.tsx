@@ -119,7 +119,7 @@ export default function MilestonesSection({
               <input
                 type="text"
                 required
-                placeholder="Ej. Alicatado do baño, Falso Techo..."
+                placeholder="Ej. Alicatado do baño, Falso Teito..."
                 value={title}
                 onChange={e => setTitle(e.target.value)}
                 className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-none text-slate-900 placeholder:text-slate-400 text-sm focus:border-slate-900 focus:ring-0 outline-none transition-colors"
@@ -139,7 +139,7 @@ export default function MilestonesSection({
               <label className="block text-xs font-black text-slate-500 uppercase mb-1 tracking-wider">Descripción / Alcance</label>
               <input
                 type="text"
-                placeholder="Ej. Colocación de baldosas de gres y sellado de juntas..."
+                placeholder="Ej. Colocación de baldosas de gres e selado de xuntas..."
                 value={description}
                 onChange={e => setDescription(e.target.value)}
                 className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-none text-slate-900 placeholder:text-slate-400 text-sm focus:border-slate-900 focus:ring-0 outline-none transition-colors"

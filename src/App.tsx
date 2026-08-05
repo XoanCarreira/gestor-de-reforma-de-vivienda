@@ -173,13 +173,13 @@ export default function App() {
       id: 'b_' + Math.random().toString(36).substring(2, 9)
     };
     await dbInstance.add('budget', newCat);
-    logEvent(`[Database] Partida de presupuesto creada: "${newCat.name}" asignándolle ${newCat.allocated}€`);
+    logEvent(`[Database] Partida de orzamento creada: "${newCat.name}" asignándolle ${newCat.allocated}€`);
     await reloadAllData();
   };
 
   const handleUpdateBudgetCategory = async (cat: BudgetCategory) => {
     await dbInstance.update('budget', cat);
-    logEvent(`[Database] Partida de presuposto actualizada: "${cat.name}"`);
+    logEvent(`[Database] Partida de orzamento actualizada: "${cat.name}"`);
     await reloadAllData();
   };
 
@@ -417,7 +417,7 @@ export default function App() {
           />
         )}
 
-        {activeTab === 'presupuesto' && (
+        {activeTab === 'orzamento' && (
           <BudgetSection
             budget={budget}
             onAddCategory={handleAddBudgetCategory}
@@ -498,9 +498,9 @@ export default function App() {
           </button>
 
           <button
-            onClick={() => setActiveTab('presupuesto')}
+            onClick={() => setActiveTab('orzamento')}
             className={`flex flex-col items-center gap-1 p-2 rounded-xl transition-all ${
-              activeTab === 'presupuesto' ? 'text-amber-600 scale-110 font-bold' : 'text-slate-400 hover:text-slate-600'
+              activeTab === 'orzamento' ? 'text-amber-600 scale-110 font-bold' : 'text-slate-400 hover:text-slate-600'
             }`}
           >
             <Wallet className="w-5 h-5" />

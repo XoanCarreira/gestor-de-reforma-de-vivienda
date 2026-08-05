@@ -66,7 +66,7 @@ export default function ReportGenerator({ budget, suppliers, milestones, invoice
       doc.setFont('helvetica', 'normal');
       doc.setFontSize(10);
       doc.setTextColor(textColor[0], textColor[1], textColor[2]);
-      doc.text('Este documento contén o estado financiero, avance de hitos e balance de proveedores da obra en curso.', 15, 82);
+      doc.text('Este documento contén o estado financeiro, avance de hitos e balance de proveedores da obra en curso.', 15, 82);
 
       // KPI Boxes Backgrounds
       doc.setFillColor(lightBg[0], lightBg[1], lightBg[2]);
@@ -74,16 +74,16 @@ export default function ReportGenerator({ budget, suppliers, milestones, invoice
       doc.rect(77, 90, 55, 30, 'F');
       doc.rect(140, 90, 55, 30, 'F');
 
-      // KPI 1: Presupuesto total
+      // KPI 1: Orzamento total
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(9);
       doc.setTextColor(100, 116, 139);
-      doc.text('PRESUPUESTO ACORDADO', 20, 96);
+      doc.text('ORZAMENTO ACORDADO', 20, 96);
       doc.setFontSize(14);
       doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
       doc.text(`${totalAllocated.toLocaleString('es-ES')} EUR`, 20, 106);
 
-      // KPI 2: Total invertido
+      // KPI 2: Total investido
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(9);
       doc.setTextColor(100, 116, 139);
@@ -118,7 +118,7 @@ export default function ReportGenerator({ budget, suppliers, milestones, invoice
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(14);
       doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
-      doc.text('Desglose do Presuposto por Categoría', 15, 135);
+      doc.text('Desglose do Orzamento por Categoría', 15, 135);
 
       // Table Header
       let y = 142;
