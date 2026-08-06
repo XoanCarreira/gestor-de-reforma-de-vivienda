@@ -489,7 +489,7 @@ export default function App() {
               }`}
           >
             <Wallet className="w-5 h-5" />
-            <span className="text-[10px] xs:text-[11px] font-medium">Costos</span>
+            <span className="text-[10px] xs:text-[11px] font-medium">Partidas</span>
           </button>
 
           <button

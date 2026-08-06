@@ -143,13 +143,13 @@ export default function Dashboard({
         <div className={`p-5 border-l-4 shadow-sm flex flex-col justify-between ${remainingBudget < 0 ? 'bg-red-50 border-red-500' : 'bg-white border-slate-950'
           }`}>
           <div>
-            <p className="text-xs font-black text-slate-400 uppercase tracking-wider">Restante</p>
+            <p className="text-xs font-black text-slate-400 uppercase tracking-wider">Pendente Executar</p>
             <p className={`text-2xl font-black mt-2 ${remainingBudget < 0 ? 'text-red-700' : 'text-slate-900'}`}>
               {remainingBudget.toLocaleString('es-ES')} €
             </p>
           </div>
           <span className="text-[10px] font-medium text-slate-400 mt-2 block">
-            {remainingBudget < 0 ? 'Sobrecosto neto detectado' : 'Dispoñible en reserva'}
+            {remainingBudget < 0 ? 'Orzamento excedido' : 'Pendente de gasto'}
           </span>
         </div>
 
@@ -167,6 +167,7 @@ export default function Dashboard({
         </div>
       </div>
 
+      {/* KPI Fondos dispoñibles logo de pagos */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <div className="p-5 bg-white border border-slate-200 shadow-sm rounded-none">
           <p className="text-xs font-black text-slate-400 uppercase tracking-wider">Fondos dispoñibles</p>
@@ -174,25 +175,28 @@ export default function Dashboard({
           <span className="text-[10px] text-slate-400 mt-2 block">Saldo total actual</span>
         </div>
 
+        {/* Suma de fondos aportados*/}
         <div className="p-5 bg-white border border-slate-200 shadow-sm rounded-none">
           <p className="text-xs font-black text-slate-400 uppercase tracking-wider">Fondos totais</p>
           <p className="text-2xl font-black text-slate-900 mt-2">{totalFunds.toLocaleString('es-ES')} €</p>
           <span className="text-[10px] text-slate-400 mt-2 block">Aportes, ingresos e financiación rexistrada</span>
         </div>
 
+        {/* Suma das facturas pagadas */}
         <div className="p-5 bg-white border border-slate-200 shadow-sm rounded-none">
-          <p className="text-xs font-black text-slate-400 uppercase tracking-wider">Gasto previsto</p>
-          <p className="text-2xl font-black text-slate-900 mt-2">{totalAllocated.toLocaleString('es-ES')} €</p>
-          <span className="text-[10px] text-slate-400 mt-2 block">Suma das partidas de orzamento</span>
+          <p className="text-xs font-black text-slate-400 uppercase tracking-wider">Facturas pagadas</p>
+          <p className="text-2xl font-black text-slate-900 mt-2">{totalPaid.toLocaleString('es-ES')} €</p>
+          <span className="text-[10px] text-slate-400 mt-2 block">Suma das facturas pagadas</span>
         </div>
 
+        {/* Balance de fondos - orzamento */}
         <div className={`p-5 border shadow-sm rounded-none ${hasDeficit ? 'bg-red-50 border-red-200' : 'bg-emerald-50 border-emerald-200'}`}>
-          <p className="text-xs font-black text-slate-400 uppercase tracking-wider">Balance fondos - previsto</p>
+          <p className="text-xs font-black text-slate-400 uppercase tracking-wider">Balance fondos - orzamento</p>
           <p className={`text-2xl font-black mt-2 ${hasDeficit ? 'text-red-700' : 'text-emerald-700'}`}>
             {fundsBalance.toLocaleString('es-ES')} €
           </p>
           <span className="text-[10px] text-slate-500 mt-2 block">
-            {hasDeficit ? 'Déficit detectado' : 'Superávit disponible'}
+            {hasDeficit ? 'Déficit detectado' : 'Superávit dispoñible'}
           </span>
         </div>
       </div>
@@ -229,7 +233,7 @@ export default function Dashboard({
                         ? 'bg-red-500'
                         : capPercent >= 90
                           ? 'bg-amber-500'
-                          : 'bg-slate-900'
+                          : 'bg-green-800'
                         }`}
                     />
                     {/* If over-budget, draw a warning indicator at 100% */}
@@ -244,7 +248,7 @@ export default function Dashboard({
 
           <div className="mt-5 flex flex-wrap gap-4 text-[10px] sm:text-xs text-slate-400 border-t border-slate-100 pt-3">
             <div className="flex items-center gap-1.5">
-              <span className="w-2.5 h-2.5 bg-slate-900" />
+              <span className="w-2.5 h-2.5 bg-green-800" />
               <span className="font-bold uppercase tracking-wider text-[9px]">Correcto (&lt;90%)</span>
             </div>
             <div className="flex items-center gap-1.5">
