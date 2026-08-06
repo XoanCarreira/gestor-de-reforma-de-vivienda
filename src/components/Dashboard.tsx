@@ -1,6 +1,7 @@
 import { BudgetCategory, Milestone, Supplier, FundEntry } from '../types';
 import { AlertTriangle, TrendingUp, Clock, HardHat, Database } from 'lucide-react';
 import { utils } from '../utils/date';
+import { getBudgetStatus, getBudgetTotals } from '../utils/budget';
 
 interface DashboardProps {
   budget: BudgetCategory[];
@@ -21,8 +22,7 @@ export default function Dashboard({
   const TODAY_STR = utils.getToday(); // Data referencia do sistema
 
   // Cálculos
-  const totalAllocated = budget.reduce((sum, c) => sum + c.allocated, 0);
-  const totalSpent = budget.reduce((sum, c) => sum + c.spent, 0);
+  const { totalAllocated, totalSpent } = getBudgetTotals(budget);
   const totalPaid = suppliers.reduce((sum, s) => sum + s.paidAmount, 0);
   const totalContracted = suppliers.reduce((sum, s) => sum + s.contractedAmount, 0);
   const totalFunds = funds.reduce((sum, entry) => sum + entry.amount, 0);
@@ -38,8 +38,7 @@ export default function Dashboard({
   const milestonesPercent = totalMilestones > 0 ? Math.round((completedMilestones / totalMilestones) * 100) : 0;
 
   // Alertas desviacións
-  const costDeviations = budget.filter(c => c.spent > c.allocated);
-  const nearLimitCategories = budget.filter(c => c.spent > 0 && c.spent <= c.allocated && (c.spent / c.allocated) >= 0.9);
+  const costDeviations = budget.filter(c => getBudgetStatus(c).isOver);
 
   // Time / milestone warnings
   const delayedMilestones = milestones.filter(m => {
@@ -209,8 +208,7 @@ export default function Dashboard({
 
           <div className="space-y-4">
             {budget.map(cat => {
-              const capPercent = cat.allocated > 0 ? (cat.spent / cat.allocated) * 100 : 0;
-              const isOver = cat.spent > cat.allocated;
+              const { percentUsed: capPercent, isOver } = getBudgetStatus(cat);
               return (
                 <div key={cat.id} className="space-y-1">
                   <div className="flex justify-between text-xs sm:text-sm">

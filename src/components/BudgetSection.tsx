@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { BudgetCategory } from '../types';
+import { getBudgetStatus} from '../utils/budget';
 import { Plus, Edit2, Trash2, Check, X, AlertTriangle } from 'lucide-react';
 
 interface BudgetSectionProps {
@@ -173,9 +174,7 @@ export default function BudgetSection({
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {budget.map(cat => {
           const isEditing = editingId === cat.id;
-          const deviation = cat.spent - cat.allocated;
-          const percentUsed = cat.allocated > 0 ? (cat.spent / cat.allocated) * 100 : 0;
-          const isOver = cat.spent > cat.allocated;
+          const { percentUsed, deviation, isOver} = getBudgetStatus(cat);
 
           return (
             <div

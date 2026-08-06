@@ -71,7 +71,7 @@
 
 ## 🟡 Consistencia y mantenibilidad
 
-- [ ] **10. Lógica de cálculo de presupuesto duplicada en 3 sitios**
+- [x] **10. Lógica de cálculo de presupuesto duplicada en 3 sitios**
   `percentUsed`, `isOver`, `deviation` se repiten en `BudgetSection.tsx`, `Dashboard.tsx` y `ReportGenerator.tsx`. Extraer a `utils/budget.ts`:
   ```ts
   export function getBudgetStatus(cat: BudgetCategory) {
@@ -81,6 +81,7 @@
     return { percentUsed, deviation, isOver };
   }
   ```
+  **Solucionado** pasando lógica a `utils/budget.tx`
 
 - [x] **11. Mezcla de idiomas (galego/castellano) inconsistente**
   El UI mezcla gallego ("Xestión", "Rexistro", "Non hai...") y castellano ("Presuposto asignado", "Calificación") en la misma pantalla. Unificar idioma o implementar i18n real (`react-i18next`).
@@ -123,5 +124,5 @@
 
 ### Progreso
 
-`8 / 24` puntos completados
+`9 / 24` puntos completados
 

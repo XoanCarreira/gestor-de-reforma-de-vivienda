@@ -1,5 +1,3 @@
-
-
 {/** Exportar funcións para manexo de datas */}
 export const utils = {
   getToday: () => {
