@@ -46,6 +46,8 @@ export interface Invoice {
   fileName: string;
   isSynced: boolean;
   isLocalOnly: boolean;
+  supplierName: string;
+  service: string;
 }
 
 // Fotos de Progreso

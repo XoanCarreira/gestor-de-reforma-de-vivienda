@@ -118,7 +118,7 @@ export default function Dashboard({
         {/* KPI 1 */}
         <div className="p-5 bg-white border-l-4 border-amber-500 shadow-sm flex flex-col justify-between">
           <div>
-            <p className="text-xs font-black text-slate-400 uppercase tracking-wider">orzamento Total</p>
+            <p className="text-xs font-black text-slate-400 uppercase tracking-wider">Orzamento Total</p>
             <p className="text-2xl font-black text-slate-900 mt-2">
               {totalAllocated.toLocaleString('es-ES')} €
             </p>
