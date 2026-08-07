@@ -1,10 +1,30 @@
-// orzamento
+// Presuposto
 export interface BudgetCategory {
   id: string;
   name: string;
   allocated: number;
   spent: number;
   notes?: string;
+}
+
+// Origen del movimiento de gasto: de dónde procede el registro.
+// 'invoice' se crea automáticamente al consolidar una factura, 'quick' desde
+// el cargo rápido de la partida, y 'manual' desde un ajuste directo del histórico.
+export type ExpenseSource = 'invoice' | 'quick' | 'manual';
+
+// Movimiento individual de gasto asociado a una partida de presupuesto.
+// Es la fuente de verdad del detalle: BudgetCategory.spent sigue siendo el
+// acumulado rápido usado para cálculos (barras de progreso, KPIs...), pero
+// cada BudgetExpense permite reconstruir de dónde salió cada euro gastado.
+export interface BudgetExpense {
+  id: string;
+  categoryId: string;      // Referencia a BudgetCategory.id
+  amount: number;
+  date: string;             // YYYY-MM-DD, fecha del gasto (no de creación del registro)
+  source: ExpenseSource;
+  description?: string;     // Ej. "Factura: Alicatado baño" o nota manual
+  invoiceId?: string;       // Solo si source === 'invoice', para trazabilidad con la factura origen
+  createdAt: string;        // Timestamp ISO de creación del registro (auditoría)
 }
 
 // Proveedores
@@ -37,7 +57,6 @@ export interface Milestone {
 // Facturas
 export interface Invoice {
   id: string;
-  categoryId: string;
   title: string;
   amount: number;
   supplierId: string;
@@ -46,8 +65,6 @@ export interface Invoice {
   fileName: string;
   isSynced: boolean;
   isLocalOnly: boolean;
-  supplierName: string;
-  service: string;
 }
 
 // Fotos de Progreso
@@ -80,4 +97,5 @@ export interface AppBackup {
   invoices: Invoice[];
   photos: ProgressPhoto[];
   funds: FundEntry[];
+  budgetExpenses: BudgetExpense[]; // Movimientos detallados de gasto por partida
 }

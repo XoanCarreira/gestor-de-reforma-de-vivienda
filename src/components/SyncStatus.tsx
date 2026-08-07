@@ -8,6 +8,7 @@ interface LocalDataStats {
   invoices: number;
   photos: number;
   funds: number;
+  budgetExpenses: number;
   total: number;
 }
 
@@ -102,7 +103,8 @@ export default function SyncStatus({ stats, activityLogs, onClearData, onExportB
       <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
         {[
           { label: 'Total rexistros', value: stats.total },
-          { label: 'Orzamentos', value: stats.budget },
+          { label: 'Presupostos', value: stats.budget },
+          { label: 'Movementos de gasto', value: stats.budgetExpenses },
           { label: 'Fondos', value: stats.funds },
           { label: 'Proveedores', value: stats.suppliers },
           { label: 'Hitos', value: stats.milestones },
@@ -151,7 +153,7 @@ export default function SyncStatus({ stats, activityLogs, onClearData, onExportB
           </h3>
           <p className="text-sm text-slate-600 leading-relaxed">
             Se queres comezar de cero, podes vaciar a base local e volver a introducir novos datos.
-            Esto elimina fondos, orzamentos, proveedores, hitos, facturas e fotos gardadas neste navegador.
+            Esto elimina fondos, presupuestos, proveedores, hitos, facturas e fotos gardadas neste navegador.
           </p>
         </div>
       </div>

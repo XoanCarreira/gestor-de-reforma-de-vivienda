@@ -1,6 +1,6 @@
 import { Suspense, lazy, useState, useEffect } from 'react';
 import { dbInstance } from './db';
-import { AppBackup, BudgetCategory, Supplier, Milestone, Invoice, ProgressPhoto, FundEntry } from './types';
+import { AppBackup, BudgetCategory, Supplier, Milestone, Invoice, ProgressPhoto, FundEntry, BudgetExpense, ExpenseSource } from './types';
 import Dashboard from './components/Dashboard';
 import BudgetSection from './components/BudgetSection';
 import FundsSection from './components/FundsSection';
@@ -15,7 +15,7 @@ const ReportGenerator = lazy(() => import('./components/ReportGenerator'));
 
 export default function App() {
   const [activeTab, setActiveTab] = useState('dashboard');
-
+  
   // Data states
   const [budget, setBudget] = useState<BudgetCategory[]>([]);
   const [suppliers, setSuppliers] = useState<Supplier[]>([]);
@@ -23,15 +23,29 @@ export default function App() {
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [photos, setPhotos] = useState<ProgressPhoto[]>([]);
   const [funds, setFunds] = useState<FundEntry[]>([]);
-  const [storageStats, setStorageStats] = useState({ budget: 0, suppliers: 0, milestones: 0, invoices: 0, photos: 0, funds: 0, total: 0 });
-
+  const [budgetExpenses, setBudgetExpenses] = useState<BudgetExpense[]>([]);
+  const [storageStats, setStorageStats] = useState({ budget: 0, suppliers: 0, milestones: 0, invoices: 0, photos: 0, funds: 0, budgetExpenses: 0, total: 0 });
+  
   // Local activity log
   const [activityLogs, setActivityLogs] = useState<string[]>([]);
   const [clearingData, setClearingData] = useState(false);
   const [backupProcessing, setBackupProcessing] = useState(false);
 
-
+  // PWA Register inside component lifecycle as well
   useEffect(() => {
+    // Service Worker registration
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register(`${import.meta.env.BASE_URL}service-worker.js`)
+          .then((reg) => {
+            logEvent('[PWA] Service Worker rexistrado exitosamente con alcance: ' + reg.scope);
+          })
+          .catch((err) => {
+            logEvent('[PWA] Erro no rexistro de Service Worker: ' + err);
+          });
+      });
+    }
+
     // Initial database load
     initData();
 
@@ -49,7 +63,7 @@ export default function App() {
       logEvent('Inicializando IndexedDB local (ReformaGestDB)...');
       await dbInstance.init();
       logEvent('Base de datos conectada correctamente.');
-
+      
       await reloadAllData();
       setStorageStats(await dbInstance.getStats());
     } catch (e) {
@@ -64,9 +78,12 @@ export default function App() {
     const iData = await dbInstance.getAll<Invoice>('invoices');
     const pData = await dbInstance.getAll<ProgressPhoto>('photos');
     const fData = await dbInstance.getAll<FundEntry>('funds');
+    const eData = await dbInstance.getAll<BudgetExpense>('budgetExpenses');
 
     // Sort milestones by date
     mData.sort((a, b) => a.dueDate.localeCompare(b.dueDate));
+    // Movementos de gasto: os máis recentes primeiro (por fecha e, en empate, por creación)
+    eData.sort((a, b) => b.date.localeCompare(a.date) || b.createdAt.localeCompare(a.createdAt));
 
     setBudget(bData);
     setSuppliers(sData);
@@ -74,6 +91,7 @@ export default function App() {
     setInvoices(iData);
     setPhotos(pData);
     setFunds(fData);
+    setBudgetExpenses(eData);
     setStorageStats(await dbInstance.getStats());
   };
 
@@ -130,6 +148,10 @@ export default function App() {
         throw new Error('O ficheiro non é un backup válido.');
       }
 
+      // budgetExpenses es opcional para mantener compatibilidad con backups
+      // exportados antes de introducir el histórico de movimientos.
+      const parsedExpenses = Array.isArray(parsed.budgetExpenses) ? parsed.budgetExpenses : [];
+
       await dbInstance.importBackup({
         version: typeof parsed.version === 'number' ? parsed.version : 1,
         exportedAt: parsed.exportedAt || new Date().toISOString(),
@@ -138,7 +160,8 @@ export default function App() {
         milestones: parsed.milestones,
         invoices: parsed.invoices,
         photos: parsed.photos,
-        funds: parsed.funds
+        funds: parsed.funds,
+        budgetExpenses: parsedExpenses
       });
 
       await reloadAllData();
@@ -160,24 +183,124 @@ export default function App() {
       id: 'b_' + Math.random().toString(36).substring(2, 9)
     };
     await dbInstance.add('budget', newCat);
-    logEvent(`[Database] Partida de orzamento creada: "${newCat.name}" asignándolle ${newCat.allocated}€`);
+    logEvent(`[Database] Partida de presupuesto creada: "${newCat.name}" asignándolle ${newCat.allocated}€`);
     await reloadAllData();
   };
 
   const handleUpdateBudgetCategory = async (cat: BudgetCategory) => {
     await dbInstance.update('budget', cat);
-    logEvent(`[Database] Partida de orzamento actualizada: "${cat.name}"`);
+    logEvent(`[Database] Partida de presuposto actualizada: "${cat.name}"`);
     await reloadAllData();
   };
 
   const handleDeleteBudgetCategory = async (id: string) => {
     const cat = budget.find(x => x.id === id);
-    const confirmed = window.confirm(`Esto eliminará a partida: "${cat?.name}" \n ¿Desexas continuar?`);
-    if (!confirmed) {
+
+    // Consistencia: si borramos la partida, sus movimientos de gasto quedarían
+    // huérfanos (categoryId apuntando a un id inexistente). Los eliminamos antes.
+    const orphanExpenses = budgetExpenses.filter(e => e.categoryId === id);
+    await Promise.all(orphanExpenses.map(e => dbInstance.delete('budgetExpenses', e.id)));
+
+    await dbInstance.delete('budget', id);
+    logEvent(`[Database] Partida eliminada: "${cat?.name || id}" (${orphanExpenses.length} movemento(s) asociado(s) eliminados)`);
+    await reloadAllData();
+  };
+
+  // --- Movementos de gasto (histórico detallado por partida) ---
+
+  // Crea un movemento de gasto e actualiza atomicamente o acumulado (spent)
+  // da partida correspondente. Este é o ÚNICO punto que debe incrementar
+  // 'spent' fóra da edición manual da propia partida, para que todo gasto
+  // quede sempre rastrexado no histórico.
+  const handleAddBudgetExpense = async (
+    categoryId: string,
+    amount: number,
+    source: ExpenseSource,
+    description?: string,
+    invoiceId?: string,
+    date?: string
+  ) => {
+    const category = budget.find(c => c.id === categoryId);
+    if (!category || isNaN(amount) || amount <= 0) return;
+
+    const newExpense: BudgetExpense = {
+      id: 'e_' + Math.random().toString(36).substring(2, 9),
+      categoryId,
+      amount,
+      date: date || new Date().toISOString().split('T')[0],
+      source,
+      description,
+      invoiceId,
+      createdAt: new Date().toISOString()
+    };
+
+    await dbInstance.add('budgetExpenses', newExpense);
+    await dbInstance.update('budget', { ...category, spent: category.spent + amount });
+
+    logEvent(`[Cuentas] Movemento rexistrado en "${category.name}": +${amount}€ (${source})`);
+    await reloadAllData();
+  };
+
+  // Edita un movemento xa existente. Só se permite para 'quick' e 'manual':
+  // os que veñen de factura ('invoice') deben editarse desde Documentos para
+  // non descuadrar os pagos ao proveedor rexistrados alí.
+  // Aplicamos a DIFERENZA (delta) sobre 'spent' en vez de sobrescribir, para
+  // non perder a contabilización do resto de movementos da partida.
+  const handleUpdateBudgetExpense = async (
+    expenseId: string,
+    newAmount: number,
+    newDescription: string,
+    newDate: string
+  ) => {
+    const expense = budgetExpenses.find(e => e.id === expenseId);
+    if (!expense) return;
+
+    if (expense.source === 'invoice') {
+      alert('Este movemento procede dunha factura. Edítao desde a sección de Facturas para manter os pagos ao proveedor consistentes.');
       return;
     }
-    await dbInstance.delete('budget', id);
-    logEvent(`[Database] Partida eliminada: "${cat?.name || id}"`);
+
+    if (isNaN(newAmount) || newAmount <= 0) return;
+
+    const category = budget.find(c => c.id === expense.categoryId);
+    if (!category) return;
+
+    const delta = newAmount - expense.amount;
+    const updatedExpense: BudgetExpense = {
+      ...expense,
+      amount: newAmount,
+      description: newDescription || undefined,
+      date: newDate || expense.date
+    };
+
+    await dbInstance.update('budgetExpenses', updatedExpense);
+    await dbInstance.update('budget', { ...category, spent: Math.max(0, category.spent + delta) });
+
+    logEvent(`[Cuentas] Movemento actualizado en "${category.name}": ${delta >= 0 ? '+' : ''}${delta}€`);
+    await reloadAllData();
+  };
+
+  // Elimina un movemento e revirte o seu importe do acumulado da partida.
+  // Igual que na edición, os movementos de factura están bloqueados aquí.
+  const handleDeleteBudgetExpense = async (expenseId: string) => {
+    const expense = budgetExpenses.find(e => e.id === expenseId);
+    if (!expense) return;
+
+    if (expense.source === 'invoice') {
+      alert('Este movemento procede dunha factura. Elimínao desde a sección de Facturas para manter os pagos ao proveedor consistentes.');
+      return;
+    }
+
+    const confirmed = window.confirm(`¿Eliminar o movemento de ${expense.amount.toLocaleString('es-ES')}€? Esta acción restará o importe do acumulado gastado da partida.`);
+    if (!confirmed) return;
+
+    const category = budget.find(c => c.id === expense.categoryId);
+    if (category) {
+      await dbInstance.update('budget', { ...category, spent: Math.max(0, category.spent - expense.amount) });
+    }
+    await dbInstance.delete('budgetExpenses', expenseId);
+
+    logEvent(`[Cuentas] Movemento eliminado de "${category?.name || expense.categoryId}": -${expense.amount}€`);
     await reloadAllData();
   };
 
@@ -200,10 +323,6 @@ export default function App() {
 
   const handleDeleteSupplier = async (id: string) => {
     const sup = suppliers.find(x => x.id === id);
-    const confirmed = window.confirm(`Esto eliminará o proveedor: "${sup?.name}" \n ¿Desexas continuar?`);
-    if (!confirmed) {
-      return;
-    }
     await dbInstance.delete('suppliers', id);
     logEvent(`[Database] Proveedor eliminado: "${sup?.name || id}"`);
     await reloadAllData();
@@ -228,10 +347,6 @@ export default function App() {
 
   const handleDeleteMilestone = async (id: string) => {
     const m = milestones.find(x => x.id === id);
-    const confirmed = window.confirm(`Esto eliminará o hito: "${m?.title}" \n ¿Desexas continuar?`);
-    if (!confirmed) {
-      return;
-    }
     await dbInstance.delete('milestones', id);
     logEvent(`[Database] Hito de planificación eliminado: "${m?.title || id}"`);
     await reloadAllData();
@@ -255,17 +370,24 @@ export default function App() {
       const supplier = suppliers.find(s => s.id === invoice.supplierId);
       if (supplier) {
         // 1. Update supplier balance
-        const updatedPaidAmount = supplier.paidAmount + invoice.amount;
         const updatedSupplier: Supplier = {
           ...supplier,
-          paidAmount: updatedPaidAmount,
-          pendingAmount: Math.max(0, supplier.contractedAmount - updatedPaidAmount)
+          paidAmount: supplier.paidAmount + invoice.amount,
+          pendingAmount: Math.max(0, supplier.contractedAmount - (supplier.paidAmount + invoice.amount))
         };
         await dbInstance.update('suppliers', updatedSupplier);
         logEvent(`[Cuentas] Proveedor "${supplier.name}" actualizado: Pagado +${invoice.amount}€`);
 
-        // 2. Link invoice directly to the selected budget category.
-        const matchedCategory = budget.find(c => c.id === invoice.categoryId);
+        // 2. Link supplier service to corresponding budget category spent amount!
+        // Try to match category name with supplier's service name
+        const matchedCategory = budget.find(c => 
+          c.name.toLowerCase().includes(supplier.service.toLowerCase()) || 
+          supplier.service.toLowerCase().includes(c.name.toLowerCase()) ||
+          (supplier.service === 'Albañilería y Tabiquería' && c.name.includes('Albañilería')) ||
+          (supplier.service === 'Fontanería y Calefacción' && c.name.includes('Fontanería')) ||
+          (supplier.service === 'Carpintería Exterior' && c.name.includes('Carpintería')) ||
+          (supplier.service === 'Electricidad' && c.name.includes('Electricidad'))
+        );
 
         if (matchedCategory) {
           const updatedCategory: BudgetCategory = {
@@ -273,7 +395,23 @@ export default function App() {
             spent: matchedCategory.spent + invoice.amount
           };
           await dbInstance.update('budget', updatedCategory);
-          logEvent(`[Cuentas] Partida de obra "${matchedCategory.name}" actualizada: Gastado +${invoice.amount}€`);
+
+          // Registramos el movimiento vinculado a la factura (source: 'invoice').
+          // invoiceId permite localizar la factura origen desde el histórico,
+          // y bloquea su edición/borrado directo desde la sección de Presupuesto.
+          const linkedExpense: BudgetExpense = {
+            id: 'e_' + Math.random().toString(36).substring(2, 9),
+            categoryId: matchedCategory.id,
+            amount: invoice.amount,
+            date: invoice.date,
+            source: 'invoice',
+            description: `Factura: ${invoice.title}`,
+            invoiceId: newId,
+            createdAt: new Date().toISOString()
+          };
+          await dbInstance.add('budgetExpenses', linkedExpense);
+
+          logEvent(`[Cuentas] Partida de obra "${matchedCategory.name}" aumentada: Gastado +${invoice.amount}€`);
         }
       }
     }
@@ -283,12 +421,21 @@ export default function App() {
 
   const handleDeleteInvoice = async (id: string) => {
     const inv = invoices.find(x => x.id === id);
-    const confirmed = window.confirm(`Esto eliminará a factura: "${inv?.title}" \n ¿Desexas continuar?`);
-    if (!confirmed) {
-      return;
+
+    // Consistencia: si la factura consolidó gasto en una partida, hay que
+    // revertir tanto el movimiento del histórico como el acumulado 'spent'
+    // de esa partida; si no, quedaría un gasto fantasma sin factura de respaldo.
+    const linkedExpense = budgetExpenses.find(e => e.invoiceId === id);
+    if (linkedExpense) {
+      const cat = budget.find(c => c.id === linkedExpense.categoryId);
+      if (cat) {
+        await dbInstance.update('budget', { ...cat, spent: Math.max(0, cat.spent - linkedExpense.amount) });
+      }
+      await dbInstance.delete('budgetExpenses', linkedExpense.id);
     }
+
     await dbInstance.delete('invoices', id);
-    logEvent(`[Database] Factura eliminada: "${inv?.title || id}"`);
+    logEvent(`[Database] Factura eliminada: "${inv?.title || id}"${linkedExpense ? ' (movemento de partida revertido)' : ''}`);
     await reloadAllData();
   };
 
@@ -308,10 +455,6 @@ export default function App() {
 
   const handleDeletePhoto = async (id: string) => {
     const ph = photos.find(x => x.id === id);
-    const confirmed = window.confirm(`Esto eliminará a foto: "${ph?.title}" \n ¿Desexas continuar?`);
-    if (!confirmed) {
-      return;
-    }
     await dbInstance.delete('photos', id);
     logEvent(`[Database] Fotografía eliminada: "${ph?.title || id}"`);
     await reloadAllData();
@@ -330,10 +473,6 @@ export default function App() {
 
   const handleDeleteFund = async (id: string) => {
     const fund = funds.find(x => x.id === id);
-    const confirmed = window.confirm(`Esto eliminará a partida de: "${fund?.source}" \n ¿Desexas continuar?`);
-    if (!confirmed) {
-      return;
-    }
     await dbInstance.delete('funds', id);
     logEvent(`[Database] Fondo eliminado: "${fund?.source || id}"`);
     await reloadAllData();
@@ -345,12 +484,12 @@ export default function App() {
       <header className="sticky top-0 bg-white/95 backdrop-blur-sm border-b-2 border-slate-200 z-30 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2 sm:gap-3">
-
+            
             <div className="w-9 h-9 bg-amber-500 rounded-sm flex items-center justify-center font-black text-white text-lg italic shadow-sm select-none">
-              <img src="../icons/Logo-reformas-48.png" alt="" />
-
+            <img src="../icons/Logo-reformas-48.png" alt="" />
+              
             </div>
-
+            
             <div>
               <span className="font-black tracking-tighter text-slate-900 font-sans text-sm sm:text-base uppercase block">
                 ReformaVivenda <span className="text-amber-600">XC</span>
@@ -404,12 +543,16 @@ export default function App() {
           />
         )}
 
-        {activeTab === 'orzamento' && (
+        {activeTab === 'presupuesto' && (
           <BudgetSection
             budget={budget}
+            expenses={budgetExpenses}
             onAddCategory={handleAddBudgetCategory}
             onUpdateCategory={handleUpdateBudgetCategory}
             onDeleteCategory={handleDeleteBudgetCategory}
+            onAddExpense={handleAddBudgetExpense}
+            onUpdateExpense={handleUpdateBudgetExpense}
+            onDeleteExpense={handleDeleteBudgetExpense}
           />
         )}
 
@@ -476,26 +619,29 @@ export default function App() {
           {/* Nav Tab Items */}
           <button
             onClick={() => setActiveTab('dashboard')}
-            className={`flex flex-col items-center gap-1 p-2 rounded-xl transition-all ${activeTab === 'dashboard' ? 'text-amber-600 scale-110 font-bold' : 'text-slate-400 hover:text-slate-600'
-              }`}
+            className={`flex flex-col items-center gap-1 p-2 rounded-xl transition-all ${
+              activeTab === 'dashboard' ? 'text-amber-600 scale-110 font-bold' : 'text-slate-400 hover:text-slate-600'
+            }`}
           >
             <LayoutDashboard className="w-5 h-5" />
             <span className="text-[10px] xs:text-[11px] font-medium">Inicio</span>
           </button>
 
           <button
-            onClick={() => setActiveTab('orzamento')}
-            className={`flex flex-col items-center gap-1 p-2 rounded-xl transition-all ${activeTab === 'orzamento' ? 'text-amber-600 scale-110 font-bold' : 'text-slate-400 hover:text-slate-600'
-              }`}
+            onClick={() => setActiveTab('presupuesto')}
+            className={`flex flex-col items-center gap-1 p-2 rounded-xl transition-all ${
+              activeTab === 'presupuesto' ? 'text-amber-600 scale-110 font-bold' : 'text-slate-400 hover:text-slate-600'
+            }`}
           >
             <Wallet className="w-5 h-5" />
-            <span className="text-[10px] xs:text-[11px] font-medium">Partidas</span>
+            <span className="text-[10px] xs:text-[11px] font-medium">Costos</span>
           </button>
 
           <button
             onClick={() => setActiveTab('fondos')}
-            className={`flex flex-col items-center gap-1 p-2 rounded-xl transition-all ${activeTab === 'fondos' ? 'text-emerald-600 scale-110 font-bold' : 'text-slate-400 hover:text-slate-600'
-              }`}
+            className={`flex flex-col items-center gap-1 p-2 rounded-xl transition-all ${
+              activeTab === 'fondos' ? 'text-emerald-600 scale-110 font-bold' : 'text-slate-400 hover:text-slate-600'
+            }`}
           >
             <Landmark className="w-5 h-5" />
             <span className="text-[10px] xs:text-[11px] font-medium">Fondos</span>
@@ -503,8 +649,9 @@ export default function App() {
 
           <button
             onClick={() => setActiveTab('proveedores')}
-            className={`flex flex-col items-center gap-1 p-2 rounded-xl transition-all ${activeTab === 'proveedores' ? 'text-amber-600 scale-110 font-bold' : 'text-slate-400 hover:text-slate-600'
-              }`}
+            className={`flex flex-col items-center gap-1 p-2 rounded-xl transition-all ${
+              activeTab === 'proveedores' ? 'text-amber-600 scale-110 font-bold' : 'text-slate-400 hover:text-slate-600'
+            }`}
           >
             <Users className="w-5 h-5" />
             <span className="text-[10px] xs:text-[11px] font-medium">Empresas</span>
@@ -512,8 +659,9 @@ export default function App() {
 
           <button
             onClick={() => setActiveTab('hitos')}
-            className={`flex flex-col items-center gap-1 p-2 rounded-xl transition-all ${activeTab === 'hitos' ? 'text-amber-600 scale-110 font-bold' : 'text-slate-400 hover:text-slate-600'
-              }`}
+            className={`flex flex-col items-center gap-1 p-2 rounded-xl transition-all ${
+              activeTab === 'hitos' ? 'text-amber-600 scale-110 font-bold' : 'text-slate-400 hover:text-slate-600'
+            }`}
           >
             <CalendarCheck className="w-5 h-5" />
             <span className="text-[10px] xs:text-[11px] font-medium">Hitos</span>
@@ -521,8 +669,9 @@ export default function App() {
 
           <button
             onClick={() => setActiveTab('documentos')}
-            className={`flex flex-col items-center gap-1 p-2 rounded-xl transition-all ${activeTab === 'documentos' ? 'text-amber-600 scale-110 font-bold' : 'text-slate-400 hover:text-slate-600'
-              }`}
+            className={`flex flex-col items-center gap-1 p-2 rounded-xl transition-all ${
+              activeTab === 'documentos' ? 'text-amber-600 scale-110 font-bold' : 'text-slate-400 hover:text-slate-600'
+            }`}
           >
             <FileText className="w-5 h-5" />
             <span className="text-[10px] xs:text-[11px] font-medium">Facturas</span>
@@ -530,8 +679,9 @@ export default function App() {
 
           <button
             onClick={() => setActiveTab('galeria')}
-            className={`flex flex-col items-center gap-1 p-2 rounded-xl transition-all ${activeTab === 'galeria' ? 'text-amber-600 scale-110 font-bold' : 'text-slate-400 hover:text-slate-600'
-              }`}
+            className={`flex flex-col items-center gap-1 p-2 rounded-xl transition-all ${
+              activeTab === 'galeria' ? 'text-amber-600 scale-110 font-bold' : 'text-slate-400 hover:text-slate-600'
+            }`}
           >
             <Camera className="w-5 h-5" />
             <span className="text-[10px] xs:text-[11px] font-medium">Fotos</span>
@@ -539,8 +689,9 @@ export default function App() {
 
           <button
             onClick={() => setActiveTab('datos')}
-            className={`flex flex-col items-center gap-1 p-2 rounded-xl transition-all ${activeTab === 'datos' ? 'text-amber-600 scale-110 font-bold' : 'text-slate-400 hover:text-slate-600'
-              }`}
+            className={`flex flex-col items-center gap-1 p-2 rounded-xl transition-all ${
+              activeTab === 'datos' ? 'text-amber-600 scale-110 font-bold' : 'text-slate-400 hover:text-slate-600'
+            }`}
           >
             <Database className="w-5 h-5" />
             <span className="text-[10px] xs:text-[11px] font-medium font-sans">Datos</span>
