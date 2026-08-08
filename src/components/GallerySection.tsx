@@ -43,7 +43,7 @@ export default function GallerySection({ photos, onAddPhoto, onDeletePhoto }: Ga
   const handleSavePhoto = (e: React.FormEvent) => {
     e.preventDefault();
     if (!title || !base64Data) {
-      alert('Por favor ingrese un título y tome/cargue una fotografía.');
+      alert('Por favor ingrese un título e tome/cargue unha fotografía.');
       return;
     }
 
@@ -133,7 +133,7 @@ export default function GallerySection({ photos, onAddPhoto, onDeletePhoto }: Ga
               {/* Photo preview container */}
               {base64Data && (
                 <div className="mt-4 bg-slate-50 p-3 rounded-none border border-slate-200 flex flex-col items-center">
-                  <span className="text-[10px] text-slate-400 uppercase font-black tracking-wider mb-2">Vista previa de captura</span>
+                  <span className="text-[10px] text-slate-400 uppercase font-black tracking-wider mb-2">Vista previa da captura</span>
                   <img
                     src={base64Data}
                     alt="Preview"
@@ -146,7 +146,7 @@ export default function GallerySection({ photos, onAddPhoto, onDeletePhoto }: Ga
 
             {/* Title & metadata */}
             <div>
-              <label className="block text-xs font-black text-slate-500 uppercase mb-1 tracking-wider">Título del avance</label>
+              <label className="block text-xs font-black text-slate-500 uppercase mb-1 tracking-wider">Título do avance</label>
               <input
                 type="text"
                 required
@@ -158,7 +158,7 @@ export default function GallerySection({ photos, onAddPhoto, onDeletePhoto }: Ga
             </div>
 
             <div>
-              <label className="block text-xs font-black text-slate-500 uppercase mb-1 tracking-wider">Data de Toma</label>
+              <label className="block text-xs font-black text-slate-500 uppercase mb-1 tracking-wider">Data da Toma</label>
               <input
                 type="date"
                 required

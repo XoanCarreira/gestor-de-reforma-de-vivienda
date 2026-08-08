@@ -194,6 +194,10 @@ export default function App() {
   };
 
   const handleDeleteBudgetCategory = async (id: string) => {
+    const confirmed = window.confirm('Esto eliminará a partida \'' + budget.find(x => x.id === id)?.name + '\'. ¿Desexas continuar?');
+    if (!confirmed) {
+      return;
+    }
     const cat = budget.find(x => x.id === id);
 
     // Consistencia: si borramos la partida, sus movimientos de gasto quedarían
@@ -283,6 +287,7 @@ export default function App() {
   // Elimina un movemento e revirte o seu importe do acumulado da partida.
   // Igual que na edición, os movementos de factura están bloqueados aquí.
   const handleDeleteBudgetExpense = async (expenseId: string) => {
+    
     const expense = budgetExpenses.find(e => e.id === expenseId);
     if (!expense) return;
 
@@ -322,6 +327,10 @@ export default function App() {
   };
 
   const handleDeleteSupplier = async (id: string) => {
+    const confirmed = window.confirm('Esto eliminará o proveedor \'' + suppliers.find(x => x.id === id)?.name + '\'. ¿Desexas continuar?');
+    if (!confirmed) {
+      return;
+    }
     const sup = suppliers.find(x => x.id === id);
     await dbInstance.delete('suppliers', id);
     logEvent(`[Database] Proveedor eliminado: "${sup?.name || id}"`);
@@ -346,6 +355,10 @@ export default function App() {
   };
 
   const handleDeleteMilestone = async (id: string) => {
+    const confirmed = window.confirm('Esto eliminará o hito \'' + milestones.find(x => x.id === id)?.title + '\'. ¿Desexas continuar?');
+    if (!confirmed) {
+      return;
+    }
     const m = milestones.find(x => x.id === id);
     await dbInstance.delete('milestones', id);
     logEvent(`[Database] Hito de planificación eliminado: "${m?.title || id}"`);
@@ -434,6 +447,10 @@ export default function App() {
   };
 
   const handleDeleteInvoice = async (id: string) => {
+    const confirmed = window.confirm('Esto eliminará a factura \'' + invoices.find(x => x.id === id)?.title + '\'. ¿Desexas continuar?');
+    if (!confirmed) {
+      return;
+    }
     const inv = invoices.find(x => x.id === id);
     if (!inv) return;
 
@@ -487,6 +504,10 @@ export default function App() {
   };
 
   const handleDeletePhoto = async (id: string) => {
+    const confirmed = window.confirm('Esto eliminará a fotografía \'' + photos.find(x => x.id === id)?.title + '\'. ¿Desexas continuar?');
+    if (!confirmed) {
+      return;
+    }
     const ph = photos.find(x => x.id === id);
     await dbInstance.delete('photos', id);
     logEvent(`[Database] Fotografía eliminada: "${ph?.title || id}"`);
@@ -505,6 +526,10 @@ export default function App() {
   };
 
   const handleDeleteFund = async (id: string) => {
+    const confirmed = window.confirm('Esto eliminará o fondo \'' + funds.find(x => x.id === id)?.source + '\'. ¿Desexas continuar?');
+    if (!confirmed) {
+      return;
+    }
     const fund = funds.find(x => x.id === id);
     await dbInstance.delete('funds', id);
     logEvent(`[Database] Fondo eliminado: "${fund?.source || id}"`);
@@ -667,7 +692,7 @@ export default function App() {
             }`}
           >
             <Wallet className="w-5 h-5" />
-            <span className="text-[10px] xs:text-[11px] font-medium">Costos</span>
+            <span className="text-[10px] xs:text-[11px] font-medium">Partidas</span>
           </button>
 
           <button
@@ -707,7 +732,7 @@ export default function App() {
             }`}
           >
             <FileText className="w-5 h-5" />
-            <span className="text-[10px] xs:text-[11px] font-medium">Facturas</span>
+            <span className="text-[10px] xs:text-[11px] font-medium">Pagos</span>
           </button>
 
           <button

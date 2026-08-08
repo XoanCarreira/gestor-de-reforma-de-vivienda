@@ -28,7 +28,7 @@ export function getBudgetStatus(cat: BudgetCategory): BudgetStatus {
   const isOver = cat.spent > cat.allocated;
   const isNearLimit = !isOver && cat.allocated > 0 && percentUsed >= 90;
 
-  return { percentUsed, deviation, isOver, isNearLimit };
+  return { percentUsed, deviation, isOver, isNearLimit};
 }
 
 export type BudgetStatusLabel = 'Excedido' | 'Límite' | 'Correcto';

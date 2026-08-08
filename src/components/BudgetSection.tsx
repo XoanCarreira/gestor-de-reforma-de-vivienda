@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { BudgetCategory, BudgetExpense, ExpenseSource } from '../types';
 import { Plus, Edit2, Trash2, Check, X, AlertTriangle, Lock, ChevronDown, ChevronUp } from 'lucide-react';
+import { getBudgetStatus } from '../utils/budget';
 
 interface BudgetSectionProps {
   budget: BudgetCategory[];
@@ -164,17 +165,7 @@ export default function BudgetSection({
                 className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-none text-slate-900 placeholder:text-slate-400 text-sm focus:border-slate-900 focus:ring-0 outline-none transition-colors"
               />
             </div>
-            <div>
-              <label className="block text-xs font-black text-slate-500 uppercase mb-1 tracking-wider">Gastado acumulado (€)</label>
-              <input
-                type="number"
-                min="0"
-                placeholder="0"
-                value={spent}
-                onChange={e => setSpent(e.target.value)}
-                className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-none text-slate-900 placeholder:text-slate-400 text-sm focus:border-slate-900 focus:ring-0 outline-none transition-colors"
-              />
-            </div>
+
             <div>
               <label className="block text-xs font-black text-slate-500 uppercase mb-1 tracking-wider">Notas / Observacións</label>
               <input
@@ -208,9 +199,7 @@ export default function BudgetSection({
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {budget.map(cat => {
           const isEditing = editingId === cat.id;
-          const deviation = cat.spent - cat.allocated;
-          const percentUsed = cat.allocated > 0 ? (cat.spent / cat.allocated) * 100 : 0;
-          const isOver = cat.spent > cat.allocated;
+          const { percentUsed, deviation, isOver } = getBudgetStatus(cat);
 
           return (
             <div
@@ -245,7 +234,7 @@ export default function BudgetSection({
                       />
                     </div>
                     <div className="space-y-1">
-                      <label className="text-[10px] font-black text-slate-500 uppercase tracking-wider">Gastado (€)</label>
+                      <label className="text-[10px] font-black text-slate-500 uppercase tracking-wider">Gastado<span className="text-[14px] text-red-500">*</span> (€)</label>
                       <input
                         type="number"
                         value={spent}
@@ -385,7 +374,7 @@ export default function BudgetSection({
                       disabled={!quickSpentIncrement[cat.id] || isNaN(Number(quickSpentIncrement[cat.id])) || Number(quickSpentIncrement[cat.id]) <= 0}
                       className="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 disabled:bg-slate-200 disabled:text-slate-400 text-white rounded-none text-xs font-black transition-all shrink-0 uppercase tracking-wider"
                     >
-                      Añadir
+                      Engadir
                     </button>
                   </div>
 

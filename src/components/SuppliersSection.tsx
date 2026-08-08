@@ -204,7 +204,7 @@ export default function SuppliersSection({
               <label className="block text-xs font-black text-slate-500 uppercase mb-1 tracking-wider">Comentarios / Observacións</label>
               <input
                 type="text"
-                placeholder="Ej. Suministra materiais pola súa conta..."
+                placeholder="Suministra materiais pola súa conta..."
                 value={notes}
                 onChange={e => setNotes(e.target.value)}
                 className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-none text-slate-900 placeholder:text-slate-400 text-sm focus:border-slate-900 focus:ring-0 outline-none transition-colors"
@@ -510,13 +510,13 @@ export default function SuppliersSection({
                 <div className="bg-slate-50 p-2.5 rounded-none border border-slate-200">
                   <span className="text-slate-400 block uppercase font-black tracking-wider text-[10px]">Teléfono</span>
                   <span className="text-slate-900 font-black">
-                    {suppliers.find(s => s.id === viewSupplier.id)?.phone || 'Sin asignar'}
+                    {suppliers.find(s => s.id === viewSupplier.id)?.phone || 'Sen asignar'}
                   </span>
                 </div>
                 <div className="bg-slate-50 p-2.5 rounded-none border border-slate-200">
                   <span className="text-slate-400 block uppercase font-black tracking-wider text-[10px]">Email</span>
                   <span className="text-slate-900 font-black">
-                    {suppliers.find(s => s.id === viewSupplier.id)?.email || 'Sin asignar'}
+                    {suppliers.find(s => s.id === viewSupplier.id)?.email || 'Sen asignar'}
                   </span>
                 </div>
               </div>
@@ -525,7 +525,7 @@ export default function SuppliersSection({
                 <div className="bg-slate-50 p-2.5 rounded-none border border-slate-200">
                   <span className="text-slate-400 block uppercase font-black tracking-wider text-[10px]">Notas</span>
                   <span className="text-slate-900 font-black">
-                    {suppliers.find(s => s.id === viewSupplier.id)?.notes || 'Sin asignar'}
+                    {suppliers.find(s => s.id === viewSupplier.id)?.notes || 'Sen asignar'}
                   </span>
                 </div>
               </div>

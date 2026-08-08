@@ -2,7 +2,7 @@ import { jsPDF } from 'jspdf';
 import { BudgetCategory, Supplier, Milestone, Invoice } from '../types';
 import { FileDown } from 'lucide-react';
 import { useState } from 'react';
-import { getBudgetTotals, getBudgetStatusLabel } from '../utils/budget';
+import { getBudgetTotals, getBudgetStatusLabel, getBudgetStatus } from '../utils/budget';
 
 interface ReportProps {
   budget: BudgetCategory[];
@@ -142,7 +142,7 @@ export default function ReportGenerator({ budget, suppliers, milestones, invoice
           doc.rect(15, y, 180, 7, 'F');
         }
 
-        const dev = item.spent - item.allocated;
+        const dev = getBudgetStatus(item).deviation;
         const status = getBudgetStatusLabel(item);
 
         doc.setFontSize(8);

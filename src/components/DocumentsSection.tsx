@@ -81,7 +81,7 @@ export default function DocumentsSection({
   const handleSaveInvoice = (e: React.FormEvent) => {
     e.preventDefault();
     if (!title || isNaN(Number(amount)) || !supplierId) {
-      alert('Por favor complete todos los campos obligatorios.');
+      alert('Por favor complete todos os campos obrigatorios.');
       return;
     }
 

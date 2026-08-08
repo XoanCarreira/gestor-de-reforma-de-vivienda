@@ -155,6 +155,15 @@ export default function SyncStatus({ stats, activityLogs, onClearData, onExportB
             Se queres comezar de cero, podes vaciar a base local e volver a introducir novos datos.
             Esto elimina fondos, presupuestos, proveedores, hitos, facturas e fotos gardadas neste navegador.
           </p>
+          <hr className="my-6 border-slate-200" />
+          {/* Histórico de cambios */}
+          <details className="bg-slate-50 p-4 rounded-xl border border-slate-200">
+            <summary className="cursor-pointer text-sm font-medium text-slate-700">Ver historial de actualizacións e revisións</summary>
+            <ul className="list-disc list-inside text-sm text-slate-600 space-y-1 mt-2">
+              <li className="text-[10px] text-slate-600">08/08/26 - Corrección erros consistencia datos. Agora cando eliminas unha factura, os datos asociados actualízanse correctamente(solo en facturas creadas post-actualización).</li>
+              <li className="text-[10px] text-slate-600">07/08/26 - Inclúese histórico de pagos nos orzamentos</li>
+            </ul>
+          </details>
         </div>
       </div>
     </div>
