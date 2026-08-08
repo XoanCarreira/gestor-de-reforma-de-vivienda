@@ -175,17 +175,7 @@ export default function SuppliersSection({
                 className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-none text-slate-900 placeholder:text-slate-400 text-sm focus:border-slate-900 focus:ring-0 outline-none transition-colors"
               />
             </div>
-            <div>
-              <label className="block text-xs font-black text-slate-500 uppercase mb-1 tracking-wider">Importe Pagado a conta (€)</label>
-              <input
-                type="number"
-                min="0"
-                placeholder="0"
-                value={paidAmount}
-                onChange={e => setPaidAmount(e.target.value)}
-                className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-none text-slate-900 placeholder:text-slate-400 text-sm focus:border-slate-900 focus:ring-0 outline-none transition-colors"
-              />
-            </div>
+            
             <div>
               <label className="block text-xs font-black text-slate-500 uppercase mb-1 tracking-wider">Calificación (1-5 Estrelas)</label>
               <select
@@ -295,7 +285,7 @@ export default function SuppliersSection({
                       />
                     </div>
                     <div className="space-y-1">
-                      <label className="text-[10px] font-black text-slate-500 uppercase tracking-wider">Pagado (€)</label>
+                      <label className="text-[10px] font-black text-slate-500 uppercase tracking-wider">Pagado<span className='text-[14px] text-red-600'>*</span> (€)</label>
                       <input
                         type="number"
                         value={paidAmount}
@@ -327,6 +317,9 @@ export default function SuppliersSection({
                       className="w-full px-2.5 py-1.5 bg-slate-50 border border-slate-200 rounded-none text-xs text-slate-900"
                     />
                   </div>
+                  <p className="text-[10px] text-slate-500">
+                      <span className="text-[14px] text-red-500">*</span> So deberías modificar a cantidade gastada para facer correccións. Para reverter un pago, elimina a factura correspondente ou o movemento manual do histórico de gastos.
+                    </p>
                   <div className="flex justify-end gap-2 pt-2 border-t border-slate-100">
                     <button
                       type="button"
@@ -465,7 +458,7 @@ export default function SuppliersSection({
                       </a>
                     ) : (
                       <div className="py-2 bg-slate-50 text-slate-400 rounded-none text-xs text-center border border-slate-200 cursor-not-allowed font-black uppercase tracking-wider">
-                        Sin correo
+                        Sen correo
                       </div>
                     )}
                   </div>
