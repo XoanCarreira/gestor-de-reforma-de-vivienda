@@ -1,13 +1,12 @@
 import React, { useState, useRef } from 'react';
 import { Invoice, Supplier, BudgetCategory } from '../types';
 import { Upload, FileText, Trash2, X, Eye } from 'lucide-react';
-import { utils } from '../utils/date';
 
 interface DocumentsSectionProps {
   invoices: Invoice[];
   suppliers: Supplier[];
   budget: BudgetCategory[];
-  onAddInvoice: (invoice: Omit<Invoice, 'id' | 'isSynced' | 'isLocalOnly'>, updateFinancials: boolean) => void;
+  onAddInvoice: (invoice: Omit<Invoice, 'id' | 'isSynced' | 'isLocalOnly' | 'financialsApplied'>, updateFinancials: boolean) => void;
   onDeleteInvoice: (id: string) => void;
 }
 
@@ -26,21 +25,16 @@ export default function DocumentsSection({
   const [title, setTitle] = useState('');
   const [amount, setAmount] = useState('');
   const [supplierId, setSupplierId] = useState('');
-  const [categoryId, setCategoryId] = useState('');
-  const [date, setDate] = useState(utils.getToday());
+  const [categoryId, setCategoryId] = useState(''); // Partida de presuposto asociada explícitamente
+  const [date, setDate] = useState('');
   const [updateFinancials, setUpdateFinancials] = useState(true);
   const [base64Data, setBase64Data] = useState<string>('');
   const [fileName, setFileName] = useState('');
-  const [supplierName, setSupplierName] = useState('');
-  const [service, setService] = useState('');
 
-  // Tamaño máximo dos arquivos (10MB)
-  const MAX_FILE_SIZE = 10 * 1024 * 1024;
-
-  // Estado para ver a factura en detalle
+  // View modal state
   const [viewInvoice, setViewInvoice] = useState<Invoice | null>(null);
 
-  // Manexador de arrastrar e soltar arquivos
+  // Handle Drag & Drop
   const handleDrag = (e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -68,12 +62,6 @@ export default function DocumentsSection({
   };
 
   const handleFile = (file: File) => {
-    // Comproba tamaño arquivo antes de subilo
-    if (file.size > MAX_FILE_SIZE) {
-      alert("Subida cancelada. Arquivo demasiado grande");
-      return;
-    }
-
     setFileName(file.name);
     if (!title) {
       // Auto-populate title with file name without extension
@@ -90,7 +78,6 @@ export default function DocumentsSection({
     reader.readAsDataURL(file);
   };
 
-  // Manexador de gardar a factura
   const handleSaveInvoice = (e: React.FormEvent) => {
     e.preventDefault();
     if (!title || isNaN(Number(amount)) || !supplierId) {
@@ -98,37 +85,36 @@ export default function DocumentsSection({
       return;
     }
 
+    // Si el usuario quiere consolidación automática y existen partidas creadas,
+    // exigimos elegir a cuál se asocia el gasto. Así evitamos que el importe
+    // se quede "flotando" sen sumar a ningunha partida por falta de coincidencia
+    // de texto (o problema orixinal do matching automático por nome de servizo).
+    if (updateFinancials && budget.length > 0 && !categoryId) {
+      alert('Selecciona a partida de presuposto á que se debe imputar este gasto.');
+      return;
+    }
+
     onAddInvoice({
       title,
-      categoryId,
       amount: Number(amount),
       supplierId,
+      categoryId: categoryId || undefined,
       date,
       fileName: fileName || 'factura_digital.pdf',
-      base64Data: base64Data || undefined,
-      supplierName: suppliers.find(s => s.id === supplierId)?.name || 'Desconocido',
-      service: budget.find(b => b.id === categoryId)?.name || 'Desconocido'
+      base64Data: base64Data || undefined
     }, updateFinancials);
 
     // Reset Form
-    resetForm();
-    setIsUploading(false);
-  };
-
-  const resetForm = () => {
     setTitle('');
-    setCategoryId('');
     setAmount('');
     setSupplierId('');
-    setDate(utils.getToday());
+    setCategoryId('');
+    setDate('');
     setUpdateFinancials(true);
     setBase64Data('');
     setFileName('');
-    setSupplierName('');
-    setService('');
+    setIsUploading(false);
   };
-
-
 
   return (
     <div className="space-y-6">
@@ -139,7 +125,7 @@ export default function DocumentsSection({
           <p className="text-xs text-slate-500 mt-1">Rexistra recibos, asociaos a un proveedor e liquida partidas automáticamente.</p>
         </div>
         <button
-          onClick={() => { setIsUploading(!isUploading); resetForm(); }}
+          onClick={() => setIsUploading(!isUploading)}
           className="flex items-center gap-1.5 px-4 py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-black rounded-none transition-all active:scale-95 text-xs uppercase tracking-wider shadow"
         >
           {isUploading ? <X className="w-4 h-4" /> : <Upload className="w-4 h-4" />}
@@ -151,7 +137,7 @@ export default function DocumentsSection({
       {isUploading && (
         <form onSubmit={handleSaveInvoice} className="p-5 bg-white border border-slate-200 shadow-sm rounded-none space-y-4 animate-fadeIn">
           <h3 className="font-black text-slate-900 text-xs uppercase tracking-wider">Cargar Factura de Proveedor</h3>
-
+          
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {/* File Drag and Drop zone */}
             <div className="sm:col-span-2">
@@ -162,12 +148,13 @@ export default function DocumentsSection({
                 onDragLeave={handleDrag}
                 onDrop={handleDrop}
                 onClick={() => fileInputRef.current?.click()}
-                className={`border-2 border-dashed rounded-none p-6 text-center cursor-pointer transition-all flex flex-col items-center justify-center gap-2 ${dragActive
-                    ? 'border-slate-900 bg-slate-50 text-slate-900'
-                    : fileName
-                      ? 'border-emerald-500 bg-emerald-50 text-emerald-800'
+                className={`border-2 border-dashed rounded-none p-6 text-center cursor-pointer transition-all flex flex-col items-center justify-center gap-2 ${
+                  dragActive 
+                    ? 'border-slate-900 bg-slate-50 text-slate-900' 
+                    : fileName 
+                      ? 'border-emerald-500 bg-emerald-50 text-emerald-800' 
                       : 'border-slate-300 bg-slate-50 hover:border-slate-400 hover:bg-slate-100/50'
-                  }`}
+                }`}
               >
                 <input
                   type="file"
@@ -223,9 +210,7 @@ export default function DocumentsSection({
               <select
                 required
                 value={supplierId}
-                onChange={e => {
-                  setSupplierId(e.target.value)
-                }}
+                onChange={e => setSupplierId(e.target.value)}
                 className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-none text-slate-900 text-sm focus:border-slate-900 outline-none font-bold"
               >
                 <option value="">-- Seleccionar Proveedor --</option>
@@ -236,18 +221,23 @@ export default function DocumentsSection({
             </div>
 
             <div>
-              <label className="block text-xs font-black text-slate-500 uppercase mb-1 tracking-wider">Partida Orzamental</label>
+              <label className="block text-xs font-black text-slate-500 uppercase mb-1 tracking-wider">Partida de Presuposto Asociada</label>
               <select
-                required
                 value={categoryId}
                 onChange={e => setCategoryId(e.target.value)}
-                className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-none text-slate-900 text-sm focus:border-slate-900 outline-none font-bold"
+                disabled={budget.length === 0}
+                className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-none text-slate-900 text-sm focus:border-slate-900 outline-none font-bold disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <option value="">-- Seleccionar Partida --</option>
-                {budget.map(s => (
-                  <option key={s.id} value={s.id}>{s.name}</option>
+                <option value="">
+                  {budget.length === 0 ? '-- Non hai partidas creadas --' : '-- Seleccionar Partida --'}
+                </option>
+                {budget.map(cat => (
+                  <option key={cat.id} value={cat.id}>{cat.name}</option>
                 ))}
               </select>
+              {budget.length === 0 && (
+                <p className="text-[10px] text-amber-600 mt-1 font-bold">Crea antes unha partida en "Costos" para poder imputar este gasto.</p>
+              )}
             </div>
 
             <div>
@@ -275,7 +265,7 @@ export default function DocumentsSection({
                   Consolidación Automática de Contas (Recomendado)
                 </label>
                 <span className="text-slate-500 block mt-1">
-                  O activar, sumará este importe ao PAGADO do proveedor e tamén o reflectirá na partida do orzamento correspondente automaticamente.
+                  Ao activar, sumará este importe ao GASTADO da partida de presuposto seleccionada arriba, e ao PAGADO do proveedor automáticamente.
                 </span>
               </div>
             </div>
@@ -284,7 +274,7 @@ export default function DocumentsSection({
           <div className="flex justify-end gap-2 border-t border-slate-100 pt-3">
             <button
               type="button"
-              onClick={() => { setIsUploading(false); resetForm(); }}
+              onClick={() => setIsUploading(false)}
               className="px-4 py-2 border border-slate-200 text-slate-600 font-bold rounded-none text-xs sm:text-sm hover:bg-slate-50 active:scale-95 transition-all"
             >
               Cancelar
@@ -302,7 +292,7 @@ export default function DocumentsSection({
       {/* Invoice List */}
       <div className="space-y-3.5">
         <h3 className="font-black text-slate-900 text-xs uppercase tracking-wider mb-2">Facturas Rexistradas</h3>
-
+        
         {invoices.length === 0 ? (
           <div className="p-8 text-center bg-slate-50 border border-slate-200 rounded-none">
             <FileText className="w-8 h-8 text-slate-400 mx-auto mb-2" />
@@ -313,7 +303,7 @@ export default function DocumentsSection({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {invoices.map(invoice => {
               const matchedSupplier = suppliers.find(s => s.id === invoice.supplierId);
-              const matchedCategory = budget.find(b => b.id === invoice.categoryId);
+              const matchedCategory = invoice.categoryId ? budget.find(c => c.id === invoice.categoryId) : undefined;
 
               return (
                 <div
@@ -326,15 +316,22 @@ export default function DocumentsSection({
                     </div>
                     <div className="min-w-0">
                       <h4 className="font-black text-slate-900 text-sm truncate">{invoice.title}</h4>
-                      <p className="text-[12px] text-slate-500 font-medium">Partida: <span className="text-slate-800 font-black">{matchedCategory?.name || 'Desconocido'}</span>
-                      </p>
                       <p className="text-[11px] text-slate-500 font-medium">
                         Asociado a: <span className="text-slate-800 font-black">{matchedSupplier?.name || 'Desconocido'}</span>
+                      </p>
+                      <p className="text-[11px] text-slate-500 font-medium">
+                        Partida: <span className="text-slate-800 font-black">{matchedCategory?.name || 'Sen partida asociada'}</span>
                       </p>
                       <div className="flex items-center gap-2 text-[10px] text-slate-400 font-bold uppercase tracking-wider mt-1">
                         <span>{new Date(invoice.date).toLocaleDateString('es-ES')}</span>
                         <span>•</span>
                         <span className="truncate max-w-[120px]">{invoice.fileName}</span>
+                        {invoice.financialsApplied && (
+                          <>
+                            <span>•</span>
+                            <span className="text-emerald-600">Consolidada</span>
+                          </>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -383,7 +380,7 @@ export default function DocumentsSection({
             <div className="p-5 border-b border-slate-100 flex justify-between items-start">
               <div>
                 <h3 className="font-black text-base text-slate-900 uppercase tracking-wide">{viewInvoice.title}</h3>
-                <p className="text-xs text-slate-400 mt-1 font-bold">{budget.find(b => b.name === viewInvoice.service)?.name || 'Desconocido'}</p>
+                <p className="text-xs text-slate-400 mt-1 font-bold">{viewInvoice.fileName}</p>
               </div>
               <button
                 onClick={() => setViewInvoice(null)}
@@ -413,12 +410,24 @@ export default function DocumentsSection({
                     {new Date(viewInvoice.date).toLocaleDateString('es-ES')}
                   </span>
                 </div>
+                <div className="bg-slate-50 p-2.5 rounded-none border border-slate-200">
+                  <span className="text-slate-400 block uppercase font-black tracking-wider text-[10px]">Partida Asociada</span>
+                  <span className="text-slate-900 font-black">
+                    {budget.find(c => c.id === viewInvoice.categoryId)?.name || 'Sen partida asociada'}
+                  </span>
+                </div>
+                <div className="bg-slate-50 p-2.5 rounded-none border border-slate-200">
+                  <span className="text-slate-400 block uppercase font-black tracking-wider text-[10px]">Consolidación de Contas</span>
+                  <span className={`font-black ${viewInvoice.financialsApplied ? 'text-emerald-700' : 'text-slate-400'}`}>
+                    {viewInvoice.financialsApplied ? 'Aplicada' : 'Non aplicada'}
+                  </span>
+                </div>
               </div>
 
               {/* Image viewer / PDF preview */}
               <div className="bg-slate-50 p-3 rounded-none border border-slate-200 flex flex-col items-center justify-center space-y-2">
                 <span className="text-[10px] text-slate-400 uppercase font-black tracking-wider">Vista previa do Documento</span>
-
+                
                 {/* Check if it is a base64 image */}
                 {viewInvoice.base64Data && viewInvoice.base64Data.startsWith('data:image/') ? (
                   <img

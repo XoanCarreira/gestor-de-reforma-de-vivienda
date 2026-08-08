@@ -60,11 +60,18 @@ export interface Invoice {
   title: string;
   amount: number;
   supplierId: string;
+  categoryId?: string;        // Partida de presupuesto asociada explícitamente por el usuario.
+                               // Antes se intentaba adivinar por coincidencia de texto entre
+                               // supplier.service y category.name, lo que fallaba en silencio
+                               // si los nombres no coincidían literalmente.
   date: string; // YYYY-MM-DD
   base64Data?: string; // File contents (PDF or Image)
   fileName: string;
   isSynced: boolean;
   isLocalOnly: boolean;
+  financialsApplied: boolean; // true si esta factura llegó a sumar efectivamente al proveedor
+                               // (paidAmount). Es la fuente de verdad para saber si hay que
+                               // revertir ese pago al eliminar la factura.
 }
 
 // Fotos de Progreso

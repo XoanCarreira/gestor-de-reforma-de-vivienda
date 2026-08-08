@@ -215,13 +215,12 @@ export default function BudgetSection({
           return (
             <div
               key={cat.id}
-              className={`p-5 rounded-none border transition-all ${
-                isOver
+              className={`p-5 rounded-none border transition-all ${isOver
                   ? 'bg-red-50/40 border border-red-200 border-l-4 border-l-red-500 shadow-sm'
                   : percentUsed >= 90
                     ? 'bg-amber-50/40 border border-amber-200 border-l-4 border-l-amber-500 shadow-sm'
                     : 'bg-white border border-slate-200 border-l-4 border-l-slate-900 shadow-sm'
-              }`}
+                }`}
             >
               {isEditing ? (
                 /* Edit Form Mode */
@@ -264,6 +263,9 @@ export default function BudgetSection({
                       className="w-full px-2.5 py-1.5 bg-slate-50 border border-slate-200 rounded-none text-xs text-slate-900"
                     />
                   </div>
+                    <p className="text-[10px] text-slate-500">
+                      <span className="text-[14px] text-red-500">*</span> So deberías modificar a cantidade gastada para facer correccións. Para reverter un pago, elimina a factura correspondente ou o movemento manual do histórico de gastos.
+                    </p>
                   <div className="flex justify-end gap-2 pt-2 border-t border-slate-100">
                     <button
                       onClick={() => setEditingId(null)}
@@ -334,13 +336,12 @@ export default function BudgetSection({
                     <div className="relative h-2.5 bg-slate-100 rounded-none overflow-hidden border border-slate-200">
                       <div
                         style={{ width: `${Math.min(percentUsed, 100)}%` }}
-                        className={`h-full transition-all duration-500 ${
-                          isOver 
-                            ? 'bg-red-500' 
-                            : percentUsed >= 90 
-                              ? 'bg-amber-500' 
+                        className={`h-full transition-all duration-500 ${isOver
+                            ? 'bg-red-500'
+                            : percentUsed >= 90
+                              ? 'bg-amber-500'
                               : 'bg-slate-900'
-                        }`}
+                          }`}
                       />
                     </div>
 
@@ -471,13 +472,12 @@ export default function BudgetSection({
                                     <div className="flex items-center gap-1.5 shrink-0">
                                       {/* Badge según el origen del gasto: factura, cargo rápido o manual */}
                                       <span
-                                        className={`text-[9px] font-black px-1.5 py-0.5 uppercase tracking-wider flex items-center gap-1 border ${
-                                          exp.source === 'invoice'
+                                        className={`text-[9px] font-black px-1.5 py-0.5 uppercase tracking-wider flex items-center gap-1 border ${exp.source === 'invoice'
                                             ? 'bg-blue-50 text-blue-700 border-blue-200'
                                             : exp.source === 'quick'
                                               ? 'bg-amber-50 text-amber-700 border-amber-200'
                                               : 'bg-slate-100 text-slate-600 border-slate-200'
-                                        }`}
+                                          }`}
                                       >
                                         {isLocked && <Lock className="w-2.5 h-2.5" />}
                                         {exp.source === 'invoice' ? 'Factura' : exp.source === 'quick' ? 'Gasto rápido' : 'Manual'}

@@ -353,17 +353,14 @@ export default function App() {
   };
 
   // Invoices & Accounting integration!
-  const handleAddInvoice = async (invoice: Omit<Invoice, 'id' | 'isSynced' | 'isLocalOnly'>, updateFinancials: boolean) => {
+  const handleAddInvoice = async (invoice: Omit<Invoice, 'id' | 'isSynced' | 'isLocalOnly' | 'financialsApplied'>, updateFinancials: boolean) => {
     const newId = 'i_' + Math.random().toString(36).substring(2, 9);
-    const newInvoice: Invoice = {
-      ...invoice,
-      id: newId,
-      isSynced: false,
-      isLocalOnly: true
-    };
 
-    await dbInstance.add('invoices', newInvoice);
-    logEvent(`[Database] Carga de Factura: "${newInvoice.title}" de ${newInvoice.amount}€`);
+    // financialsApplied queda como fuente de verdad de si esta factura llegó
+    // a sumar al proveedor. Se calcula ANTES de persistir la factura para
+    // guardarla ya con el valor correcto (evita una escritura intermedia
+    // con financialsApplied desactualizado).
+    let financialsApplied = false;
 
     // Intelligent financial consolidation
     if (updateFinancials) {
@@ -377,17 +374,17 @@ export default function App() {
         };
         await dbInstance.update('suppliers', updatedSupplier);
         logEvent(`[Cuentas] Proveedor "${supplier.name}" actualizado: Pagado +${invoice.amount}€`);
+        financialsApplied = true;
 
-        // 2. Link supplier service to corresponding budget category spent amount!
-        // Try to match category name with supplier's service name
-        const matchedCategory = budget.find(c => 
-          c.name.toLowerCase().includes(supplier.service.toLowerCase()) || 
-          supplier.service.toLowerCase().includes(c.name.toLowerCase()) ||
-          (supplier.service === 'Albañilería y Tabiquería' && c.name.includes('Albañilería')) ||
-          (supplier.service === 'Fontanería y Calefacción' && c.name.includes('Fontanería')) ||
-          (supplier.service === 'Carpintería Exterior' && c.name.includes('Carpintería')) ||
-          (supplier.service === 'Electricidad' && c.name.includes('Electricidad'))
-        );
+        // 2. Link the invoice to a budget category's spent amount.
+        // Usamos SIEMPRE la partida elegida explícitamente por el usuario en
+        // el formulario (invoice.categoryId). Antes se intentaba adivinar por
+        // coincidencia de texto entre supplier.service y category.name, lo
+        // que fallaba en silencio si los nombres no coincidían literalmente
+        // y dejaba el gasto sin imputar a ninguna partida.
+        const matchedCategory = invoice.categoryId
+          ? budget.find(c => c.id === invoice.categoryId)
+          : undefined;
 
         if (matchedCategory) {
           const updatedCategory: BudgetCategory = {
@@ -412,17 +409,53 @@ export default function App() {
           await dbInstance.add('budgetExpenses', linkedExpense);
 
           logEvent(`[Cuentas] Partida de obra "${matchedCategory.name}" aumentada: Gastado +${invoice.amount}€`);
+        } else {
+          // Dejamos constancia explícita en el log de que el importe NO se
+          // imputó a ninguna partida, en vez de fallar en silencio.
+          logEvent(`[Cuentas] Factura "${invoice.title}" sen partida asociada: ${invoice.amount}€ non se sumaron a ningunha partida de presuposto.`);
         }
+      } else {
+        logEvent(`[Cuentas] Non se atopou o proveedor da factura "${invoice.title}"; non se aplicou consolidación de contas.`);
       }
     }
+
+    const newInvoice: Invoice = {
+      ...invoice,
+      id: newId,
+      isSynced: false,
+      isLocalOnly: true,
+      financialsApplied
+    };
+
+    await dbInstance.add('invoices', newInvoice);
+    logEvent(`[Database] Carga de Factura: "${newInvoice.title}" de ${newInvoice.amount}€`);
 
     await reloadAllData();
   };
 
   const handleDeleteInvoice = async (id: string) => {
     const inv = invoices.find(x => x.id === id);
+    if (!inv) return;
 
-    // Consistencia: si la factura consolidó gasto en una partida, hay que
+    // Consistencia (1/2): si esta factura había sumado al PAGADO del proveedor,
+    // hay que revertir ese importe y recalcular lo pendiente. Nos apoyamos en
+    // financialsApplied como fuente de verdad, en vez de volver a comprobar
+    // condiciones que pudieron cambiar desde que se creó la factura.
+    if (inv.financialsApplied) {
+      const supplier = suppliers.find(s => s.id === inv.supplierId);
+      if (supplier) {
+        const revertedPaid = Math.max(0, supplier.paidAmount - inv.amount);
+        const updatedSupplier: Supplier = {
+          ...supplier,
+          paidAmount: revertedPaid,
+          pendingAmount: Math.max(0, supplier.contractedAmount - revertedPaid)
+        };
+        await dbInstance.update('suppliers', updatedSupplier);
+        logEvent(`[Cuentas] Proveedor "${supplier.name}" actualizado: Pagado -${inv.amount}€ (factura eliminada)`);
+      }
+    }
+
+    // Consistencia (2/2): si la factura consolidó gasto en una partida, hay que
     // revertir tanto el movimiento del histórico como el acumulado 'spent'
     // de esa partida; si no, quedaría un gasto fantasma sin factura de respaldo.
     const linkedExpense = budgetExpenses.find(e => e.invoiceId === id);
@@ -435,7 +468,7 @@ export default function App() {
     }
 
     await dbInstance.delete('invoices', id);
-    logEvent(`[Database] Factura eliminada: "${inv?.title || id}"${linkedExpense ? ' (movemento de partida revertido)' : ''}`);
+    logEvent(`[Database] Factura eliminada: "${inv.title}"${linkedExpense ? ' (movemento de partida revertido)' : ''}`);
     await reloadAllData();
   };
 
