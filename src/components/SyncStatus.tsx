@@ -1,28 +1,18 @@
 import { useRef } from 'react';
 import { Database, HardDrive, Info, Clock, Download, Upload } from 'lucide-react';
+import { useReformaDataContext } from '../context/ReformaDataContext';
 
-interface LocalDataStats {
-  budget: number;
-  suppliers: number;
-  milestones: number;
-  invoices: number;
-  photos: number;
-  funds: number;
-  budgetExpenses: number;
-  total: number;
-}
+export default function SyncStatus() {
+  const {
+    storageStats: stats,
+    activityLogs,
+    clearDatabase: onClearData,
+    exportBackup: onExportBackup,
+    importBackupFile: onImportBackupFile,
+    clearingData: clearing,
+    backupProcessing
+  } = useReformaDataContext();
 
-interface SyncStatusProps {
-  stats: LocalDataStats;
-  activityLogs: string[];
-  onClearData: () => void;
-  onExportBackup: () => void;
-  onImportBackupFile: (file: File) => void;
-  clearing: boolean;
-  backupProcessing: boolean;
-}
-
-export default function SyncStatus({ stats, activityLogs, onClearData, onExportBackup, onImportBackupFile, clearing, backupProcessing }: SyncStatusProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   return (
@@ -160,6 +150,7 @@ export default function SyncStatus({ stats, activityLogs, onClearData, onExportB
           <details className="bg-slate-50 p-4 rounded-xl border border-slate-200">
             <summary className="cursor-pointer text-sm font-medium text-slate-700">Ver historial de actualizacións e revisións</summary>
             <ul className="list-disc list-inside text-sm text-slate-600 space-y-1 mt-2">
+              <li className="text-[10px] text-slate-600">09/08/26 - Refactor interno: os datos agora se centralizan nun único hook (useReformaData) accesible por contexto, sen cambios visibles para o usuario.</li>
               <li className="text-[10px] text-slate-600">08/08/26 - Corrección erros consistencia datos. Agora cando eliminas unha factura, os datos asociados actualízanse correctamente(solo en facturas creadas post-actualización).</li>
               <li className="text-[10px] text-slate-600">07/08/26 - Inclúese histórico de pagos nos orzamentos</li>
             </ul>

@@ -1,32 +1,30 @@
 import React, { useState, useRef } from 'react';
-import { Invoice, Supplier, BudgetCategory } from '../types';
+import { Invoice } from '../types';
 import { Upload, FileText, Trash2, X, Eye } from 'lucide-react';
+import { useReformaDataContext } from '../context/ReformaDataContext';
+import { utils } from '../utils/date';
 
-interface DocumentsSectionProps {
-  invoices: Invoice[];
-  suppliers: Supplier[];
-  budget: BudgetCategory[];
-  onAddInvoice: (invoice: Omit<Invoice, 'id' | 'isSynced' | 'isLocalOnly' | 'financialsApplied'>, updateFinancials: boolean) => void;
-  onDeleteInvoice: (id: string) => void;
-}
+export default function DocumentsSection() {
+  const {
+    invoices,
+    suppliers,
+    budget,
+    addInvoice: onAddInvoice,
+    deleteInvoice: onDeleteInvoice
+  } = useReformaDataContext();
 
-export default function DocumentsSection({
-  invoices,
-  suppliers,
-  budget,
-  onAddInvoice,
-  onDeleteInvoice
-}: DocumentsSectionProps) {
   const [isUploading, setIsUploading] = useState(false);
   const [dragActive, setDragActive] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const today = utils.getToday(); // Get today's date in YYYY-MM-DD format
 
   // Form states
   const [title, setTitle] = useState('');
   const [amount, setAmount] = useState('');
   const [supplierId, setSupplierId] = useState('');
   const [categoryId, setCategoryId] = useState(''); // Partida de presuposto asociada explícitamente
-  const [date, setDate] = useState('');
+  const [date, setDate] = useState(today);
   const [updateFinancials, setUpdateFinancials] = useState(true);
   const [base64Data, setBase64Data] = useState<string>('');
   const [fileName, setFileName] = useState('');
@@ -34,7 +32,6 @@ export default function DocumentsSection({
   // View modal state
   const [viewInvoice, setViewInvoice] = useState<Invoice | null>(null);
 
-  // Handle Drag & Drop
   const handleDrag = (e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -64,7 +61,6 @@ export default function DocumentsSection({
   const handleFile = (file: File) => {
     setFileName(file.name);
     if (!title) {
-      // Auto-populate title with file name without extension
       const cleanName = file.name.substring(0, file.name.lastIndexOf('.')) || file.name;
       setTitle(cleanName);
     }
@@ -85,10 +81,6 @@ export default function DocumentsSection({
       return;
     }
 
-    // Si el usuario quiere consolidación automática y existen partidas creadas,
-    // exigimos elegir a cuál se asocia el gasto. Así evitamos que el importe
-    // se quede "flotando" sen sumar a ningunha partida por falta de coincidencia
-    // de texto (o problema orixinal do matching automático por nome de servizo).
     if (updateFinancials && budget.length > 0 && !categoryId) {
       alert('Selecciona a partida de presuposto á que se debe imputar este gasto.');
       return;
@@ -109,7 +101,7 @@ export default function DocumentsSection({
     setAmount('');
     setSupplierId('');
     setCategoryId('');
-    setDate('');
+    setDate(today);
     setUpdateFinancials(true);
     setBase64Data('');
     setFileName('');
@@ -137,7 +129,7 @@ export default function DocumentsSection({
       {isUploading && (
         <form onSubmit={handleSaveInvoice} className="p-5 bg-white border border-slate-200 shadow-sm rounded-none space-y-4 animate-fadeIn">
           <h3 className="font-black text-slate-900 text-xs uppercase tracking-wider">Cargar Factura de Proveedor</h3>
-          
+
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {/* File Drag and Drop zone */}
             <div className="sm:col-span-2">
@@ -396,7 +388,6 @@ export default function DocumentsSection({
                 <span className="text-3xl font-black text-slate-900">{viewInvoice.amount.toLocaleString('es-ES')} €</span>
               </div>
 
-              {/* Displaying details */}
               <div className="grid grid-cols-2 gap-4 text-xs">
                 <div className="bg-slate-50 p-2.5 rounded-none border border-slate-200">
                   <span className="text-slate-400 block uppercase font-black tracking-wider text-[10px]">Proveedor</span>
@@ -424,11 +415,9 @@ export default function DocumentsSection({
                 </div>
               </div>
 
-              {/* Image viewer / PDF preview */}
               <div className="bg-slate-50 p-3 rounded-none border border-slate-200 flex flex-col items-center justify-center space-y-2">
                 <span className="text-[10px] text-slate-400 uppercase font-black tracking-wider">Vista previa do Documento</span>
                 
-                {/* Check if it is a base64 image */}
                 {viewInvoice.base64Data && viewInvoice.base64Data.startsWith('data:image/') ? (
                   <img
                     src={viewInvoice.base64Data}

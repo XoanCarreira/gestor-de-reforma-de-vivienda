@@ -1,29 +1,23 @@
 import React, { useState } from 'react';
-import { BudgetCategory, BudgetExpense, ExpenseSource } from '../types';
+import { BudgetCategory, BudgetExpense } from '../types';
 import { Plus, Edit2, Trash2, Check, X, AlertTriangle, Lock, ChevronDown, ChevronUp } from 'lucide-react';
 import { getBudgetStatus } from '../utils/budget';
+import { useReformaDataContext } from '../context/ReformaDataContext';
 
-interface BudgetSectionProps {
-  budget: BudgetCategory[];
-  expenses: BudgetExpense[];
-  onAddCategory: (category: Omit<BudgetCategory, 'id'>) => void;
-  onUpdateCategory: (category: BudgetCategory) => void;
-  onDeleteCategory: (id: string) => void;
-  onAddExpense: (categoryId: string, amount: number, source: ExpenseSource, description?: string) => void;
-  onUpdateExpense: (expenseId: string, newAmount: number, newDescription: string, newDate: string) => void;
-  onDeleteExpense: (expenseId: string) => void;
-}
+// Este componente ya no recibe props: budget, expenses y todos los handlers
+// CRUD se leen directamente del contexto de datos.
+export default function BudgetSection() {
+  const {
+    budget,
+    budgetExpenses: expenses,
+    addBudgetCategory: onAddCategory,
+    updateBudgetCategory: onUpdateCategory,
+    deleteBudgetCategory: onDeleteCategory,
+    addBudgetExpense: onAddExpense,
+    updateBudgetExpense: onUpdateExpense,
+    deleteBudgetExpense: onDeleteExpense
+  } = useReformaDataContext();
 
-export default function BudgetSection({
-  budget,
-  expenses,
-  onAddCategory,
-  onUpdateCategory,
-  onDeleteCategory,
-  onAddExpense,
-  onUpdateExpense,
-  onDeleteExpense
-}: BudgetSectionProps) {
   const [isAdding, setIsAdding] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
 
@@ -56,7 +50,6 @@ export default function BudgetSection({
       notes: notes || undefined
     });
 
-    // Reset
     setName('');
     setAllocated('');
     setSpent('');
@@ -90,15 +83,9 @@ export default function BudgetSection({
     const val = Number(quickSpentIncrement[cat.id]);
     if (isNaN(val) || val <= 0) return;
 
-    // Ya no actualizamos 'spent' directamente: delegamos en onAddExpense,
-    // que crea el movimiento en el histórico Y actualiza el acumulado de
-    // forma atómica. Así todo gasto rápido queda siempre rastreado.
     onAddExpense(cat.id, val, 'quick', 'Cargo rápido en obra');
-
     setQuickSpentIncrement(prev => ({ ...prev, [cat.id]: '' }));
   };
-
-  // --- Histórico de movimientos ---
 
   const handleStartEditExpense = (exp: BudgetExpense) => {
     setEditingExpenseId(exp.id);
@@ -213,7 +200,6 @@ export default function BudgetSection({
                 }`}
             >
               {isEditing ? (
-                /* Edit Form Mode */
                 <div className="space-y-3.5">
                   <div className="space-y-1">
                     <label className="text-[10px] font-black text-slate-500 uppercase tracking-wider">Nome</label>
@@ -274,9 +260,7 @@ export default function BudgetSection({
                   </div>
                 </div>
               ) : (
-                /* Card Display Mode */
                 <div className="flex flex-col h-full justify-between space-y-4">
-                  {/* Top: Name, Deviation Indicator and Actions */}
                   <div>
                     <div className="flex justify-between items-start">
                       <h3 className="font-black text-slate-900 text-sm sm:text-base tracking-tight leading-none">
@@ -307,7 +291,6 @@ export default function BudgetSection({
                     )}
                   </div>
 
-                  {/* Mid: Progreso e desviacións */}
                   <div className="space-y-2">
                     <div className="flex justify-between items-end text-xs font-mono">
                       <div>
@@ -322,7 +305,6 @@ export default function BudgetSection({
                       </div>
                     </div>
 
-                    {/* Cost Progress Bar */}
                     <div className="relative h-2.5 bg-slate-100 rounded-none overflow-hidden border border-slate-200">
                       <div
                         style={{ width: `${Math.min(percentUsed, 100)}%` }}
@@ -335,7 +317,6 @@ export default function BudgetSection({
                       />
                     </div>
 
-                    {/* Progress Indicator Texts */}
                     <div className="flex justify-between items-center text-[11px]">
                       <span className={`font-black uppercase tracking-wider text-[10px] ${isOver ? 'text-red-600' : percentUsed >= 90 ? 'text-amber-600' : 'text-slate-900'}`}>
                         {percentUsed.toFixed(1)}% utilizado
@@ -355,7 +336,6 @@ export default function BudgetSection({
                     </div>
                   </div>
 
-                  {/* Bottom: Mobile on-site Quick Log of spent expenses */}
                   <div className="bg-slate-50 p-2.5 rounded-none flex items-center justify-between gap-2 border border-slate-200">
                     <div className="flex-1">
                       <label className="text-[9px] font-black text-slate-400 uppercase tracking-wider block mb-0.5">Sumar gasto rápido</label>
@@ -379,7 +359,6 @@ export default function BudgetSection({
                     </button>
                   </div>
 
-                  {/* Histórico de movementos: fecha, cantidad e orixe de cada gasto */}
                   {(() => {
                     const categoryExpenses = expenses.filter(e => e.categoryId === cat.id);
                     const isExpanded = expandedId === cat.id;
@@ -460,7 +439,6 @@ export default function BudgetSection({
                                       <span className="text-slate-400">{new Date(exp.date).toLocaleDateString('es-ES')}</span>
                                     </div>
                                     <div className="flex items-center gap-1.5 shrink-0">
-                                      {/* Badge según el origen del gasto: factura, cargo rápido o manual */}
                                       <span
                                         className={`text-[9px] font-black px-1.5 py-0.5 uppercase tracking-wider flex items-center gap-1 border ${exp.source === 'invoice'
                                             ? 'bg-blue-50 text-blue-700 border-blue-200'
@@ -474,7 +452,6 @@ export default function BudgetSection({
                                       </span>
                                       <span className="font-mono font-black text-slate-900">{exp.amount.toLocaleString('es-ES')} €</span>
 
-                                      {/* Editar/eliminar solo disponible si NO procede de factura */}
                                       {!isLocked && (
                                         <div className="flex items-center gap-0.5">
                                           <button

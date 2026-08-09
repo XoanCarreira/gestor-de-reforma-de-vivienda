@@ -2,14 +2,11 @@ import React, { useState, useRef } from 'react';
 import { ProgressPhoto } from '../types';
 import { Camera, Image, Trash2, Calendar, ZoomIn, X, } from 'lucide-react';
 import { utils } from '../utils/date';
+import { useReformaDataContext } from '../context/ReformaDataContext';
 
-interface GallerySectionProps {
-  photos: ProgressPhoto[];
-  onAddPhoto: (photo: Omit<ProgressPhoto, 'id' | 'isSynced' | 'isLocalOnly'>) => void;
-  onDeletePhoto: (id: string) => void;
-}
+export default function GallerySection() {
+  const { photos, addPhoto: onAddPhoto, deletePhoto: onDeletePhoto } = useReformaDataContext();
 
-export default function GallerySection({ photos, onAddPhoto, onDeletePhoto }: GallerySectionProps) {
   const [isAdding, setIsAdding] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
@@ -17,7 +14,7 @@ export default function GallerySection({ photos, onAddPhoto, onDeletePhoto }: Ga
   // Form states
   const [title, setTitle] = useState('');
   const [notes, setNotes] = useState('');
-  const [date, setDate] = useState(utils.getToday()); // Default to today in YYYY-MM-DD format 
+  const [date, setDate] = useState(utils.getToday());
   const [base64Data, setBase64Data] = useState('');
 
   // Zoom view state
@@ -54,7 +51,6 @@ export default function GallerySection({ photos, onAddPhoto, onDeletePhoto }: Ga
       base64Data
     });
 
-    // Reset Form
     resetForm();
     setIsAdding(false);
   };
@@ -89,12 +85,10 @@ export default function GallerySection({ photos, onAddPhoto, onDeletePhoto }: Ga
           <h3 className="font-black text-slate-900 text-xs uppercase tracking-wider">Engadir Fotografía de Obra</h3>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {/* Capture ButtonsZone */}
             <div className="sm:col-span-2">
               <label className="block text-xs font-black text-slate-500 uppercase mb-2 tracking-wider">Capturar Fotografía</label>
               
               <div className="flex flex-wrap gap-3">
-                {/* File input (Galleries) */}
                 <input
                   type="file"
                   ref={fileInputRef}
@@ -111,13 +105,12 @@ export default function GallerySection({ photos, onAddPhoto, onDeletePhoto }: Ga
                   <span>Examinar Galería</span>
                 </button>
 
-                {/* Camera capture (Mobile optimized with native capture tag!) */}
                 <input
                   type="file"
                   ref={cameraInputRef}
                   onChange={handleFileChange}
                   accept="image/*"
-                  capture="environment" // Forces back camera on smartphones! Extremely clean on-site feature
+                  capture="environment"
                   className="hidden"
                 />
                 <button
@@ -130,7 +123,6 @@ export default function GallerySection({ photos, onAddPhoto, onDeletePhoto }: Ga
                 </button>
               </div>
 
-              {/* Photo preview container */}
               {base64Data && (
                 <div className="mt-4 bg-slate-50 p-3 rounded-none border border-slate-200 flex flex-col items-center">
                   <span className="text-[10px] text-slate-400 uppercase font-black tracking-wider mb-2">Vista previa da captura</span>
@@ -144,7 +136,6 @@ export default function GallerySection({ photos, onAddPhoto, onDeletePhoto }: Ga
               )}
             </div>
 
-            {/* Title & metadata */}
             <div>
               <label className="block text-xs font-black text-slate-500 uppercase mb-1 tracking-wider">Título do avance</label>
               <input
@@ -212,7 +203,6 @@ export default function GallerySection({ photos, onAddPhoto, onDeletePhoto }: Ga
               key={photo.id}
               className="bg-white border border-slate-200 rounded-none overflow-hidden flex flex-col justify-between hover:border-slate-400 transition-all shadow-sm group"
             >
-              {/* Picture area with zoom icon */}
               <div className="relative aspect-video bg-slate-100 flex items-center justify-center overflow-hidden">
                 <img
                   src={photo.base64Data}
@@ -221,7 +211,6 @@ export default function GallerySection({ photos, onAddPhoto, onDeletePhoto }: Ga
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                 />
                 
-                {/* Hover overlay with zoom button */}
                 <div className="absolute inset-0 bg-slate-900/40 opacity-100 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
                   <button
                     onClick={() => setActivePhoto(photo)}
@@ -239,13 +228,11 @@ export default function GallerySection({ photos, onAddPhoto, onDeletePhoto }: Ga
                   </button>
                 </div>
 
-                {/* Top left corner: Date badge */}
                 <div className="absolute top-2.5 left-2.5 px-2.5 py-1 bg-white/95 backdrop-blur-sm border border-slate-200 rounded-none text-[9px] font-black uppercase tracking-wider text-slate-900 flex items-center gap-1">
                   <Calendar className="w-3 h-3 text-slate-900" />
                   <span>{new Date(photo.date).toLocaleDateString('es-ES')}</span>
                 </div>
 
-                {/* Top right corner: Local storage badge */}
                 <div className="absolute top-2.5 right-2.5">
                   <span className="px-2 py-1 bg-white/95 border border-slate-200 text-slate-700 rounded-none flex items-center justify-center text-[9px] font-black uppercase tracking-wider" title="Guardado en IndexedDB local">
                     Local
@@ -253,7 +240,6 @@ export default function GallerySection({ photos, onAddPhoto, onDeletePhoto }: Ga
                 </div>
               </div>
 
-              {/* Text Area */}
               <div className="p-4 space-y-2 flex-1 flex flex-col justify-between">
                 <div>
                   <h4 className="font-black text-slate-900 text-sm leading-snug group-hover:text-slate-700 transition-colors">
@@ -279,7 +265,6 @@ export default function GallerySection({ photos, onAddPhoto, onDeletePhoto }: Ga
       {/* Photo Zoom Modal */}
       {activePhoto && (
         <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex flex-col items-center justify-center p-4 z-50 animate-fadeIn">
-          {/* Top Panel */}
           <div className="w-full max-w-4xl flex justify-between items-center mb-4">
             <div className="text-left">
               <span className="text-xs text-slate-500 font-black uppercase tracking-wider">{new Date(activePhoto.date).toLocaleDateString('es-ES')}</span>
@@ -293,7 +278,6 @@ export default function GallerySection({ photos, onAddPhoto, onDeletePhoto }: Ga
             </button>
           </div>
 
-          {/* Central image view */}
           <div className="w-full max-w-4xl flex-1 flex items-center justify-center overflow-hidden max-h-[70vh]">
             <img
               src={activePhoto.base64Data}
@@ -303,7 +287,6 @@ export default function GallerySection({ photos, onAddPhoto, onDeletePhoto }: Ga
             />
           </div>
 
-          {/* Bottom Panel: notes */}
           {activePhoto.notes && (
             <div className="w-full max-w-4xl mt-4 bg-white border border-slate-200 p-4 rounded-none text-center">
               <p className="text-sm text-slate-700 italic font-medium">“{activePhoto.notes}”</p>

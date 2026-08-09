@@ -1,23 +1,17 @@
-import { BudgetCategory, Milestone, Supplier, FundEntry } from '../types';
 import { AlertTriangle, TrendingUp, Clock, HardHat, Database } from 'lucide-react';
 import { utils } from '../utils/date';
 import { getBudgetStatus, getBudgetTotals } from '../utils/budget';
+import { useReformaDataContext } from '../context/ReformaDataContext';
 
 interface DashboardProps {
-  budget: BudgetCategory[];
-  suppliers: Supplier[];
-  milestones: Milestone[];
-  funds: FundEntry[];
+  // onNavigate se mantiene como prop: es un dato de navegación de la UI
+  // (a qué pestaña saltar), no un dato de negocio, así que no pertenece
+  // al contexto de datos.
   onNavigate: (tab: string) => void;
 }
 
-export default function Dashboard({
-  budget,
-  suppliers,
-  milestones,
-  funds,
-  onNavigate
-}: DashboardProps) {
+export default function Dashboard({ onNavigate }: DashboardProps) {
+  const { budget, suppliers, milestones, funds } = useReformaDataContext();
 
   const TODAY_STR = utils.getToday(); // Data referencia do sistema
 
@@ -115,7 +109,6 @@ export default function Dashboard({
 
       {/* KPI Cards Grid */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        {/* KPI Orzamento Total */}
         <div className="p-5 bg-white border-l-4 border-amber-500 shadow-sm flex flex-col justify-between">
           <div>
             <p className="text-xs font-black text-slate-400 uppercase tracking-wider">Orzamento Total</p>
@@ -126,7 +119,6 @@ export default function Dashboard({
           <span className="text-[10px] font-medium text-slate-400 mt-2 block">Total acordado inicial</span>
         </div>
 
-        {/* KPI Total executado */}
         <div className="p-5 bg-white border-l-4 border-emerald-500 shadow-sm flex flex-col justify-between">
           <div>
             <p className="text-xs font-black text-slate-400 uppercase tracking-wider">Investido / Executado</p>
@@ -139,7 +131,6 @@ export default function Dashboard({
           </span>
         </div>
 
-        {/* KPI Pendente executar */}
         <div className={`p-5 border-l-4 shadow-sm flex flex-col justify-between ${remainingBudget < 0 ? 'bg-red-50 border-red-500' : 'bg-white border-slate-950'
           }`}>
           <div>
@@ -153,7 +144,6 @@ export default function Dashboard({
           </span>
         </div>
 
-        {/* KPI Avance de Obra */}
         <div className="p-5 bg-white border-l-4 border-slate-900 shadow-sm flex flex-col justify-between">
           <div>
             <p className="text-xs font-black text-slate-400 uppercase tracking-wider">Avance de Obra</p>
@@ -168,14 +158,12 @@ export default function Dashboard({
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        {/* KPI Fondos dispoñibles logo de pagos */}
         <div className="p-5 bg-white border border-slate-200 shadow-sm rounded-none">
           <p className="text-xs font-black text-slate-400 uppercase tracking-wider">Fondos dispoñibles</p>
           <p className="text-2xl font-black text-slate-900 mt-2">{(totalFunds - totalSpent).toLocaleString('es-ES')} €</p>
           <span className="text-[10px] text-slate-400 mt-2 block">Saldo total actual</span>
         </div>
 
-        {/* Total contratado a provedores*/}
         <div className={'p-5 bg-white border border-slate-200 shadow-sm rounded-none'}>
           <p className="text-xs font-black text-slate-400 uppercase tracking-wider">Total contratado</p>
           <p className={'text-2xl font-black text-slate-900 mt-2'}>
@@ -186,14 +174,12 @@ export default function Dashboard({
           </span>
         </div>
 
-        {/* Suma das facturas pagadas */}
         <div className="p-5 bg-white border border-slate-200 shadow-sm rounded-none">
           <p className="text-xs font-black text-slate-400 uppercase tracking-wider">Facturas pagadas</p>
           <p className="text-2xl font-black text-slate-900 mt-2">{totalPaid.toLocaleString('es-ES')} €</p>
           <span className="text-[10px] text-slate-400 mt-2 block">Suma das facturas pagadas</span>
         </div>
 
-        {/* Balance de fondos - orzamento */}
         <div className={`p-5 border shadow-sm rounded-none ${hasDeficit ? 'bg-red-50 border-red-200' : 'bg-emerald-50 border-emerald-200'}`}>
           <p className="text-xs font-black text-slate-400 uppercase tracking-wider">Balance fondos - orzamento</p>
           <p className={`text-2xl font-black mt-2 ${hasDeficit ? 'text-red-700' : 'text-emerald-700'}`}>
@@ -207,7 +193,6 @@ export default function Dashboard({
 
       {/* Main Charts & Overview Row */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Cost Comparison Custom Chart */}
         <div className="lg:col-span-2 p-5 bg-white border border-slate-200 shadow-sm rounded-none">
           <h3 className="font-black text-sm uppercase tracking-widest text-slate-900 mb-4 flex items-center gap-2">
             <TrendingUp className="w-4 h-4 text-amber-500" />
@@ -228,9 +213,7 @@ export default function Dashboard({
                       </span>
                     </div>
                   </div>
-                  {/* Custom Dual Bar Chart representation */}
                   <div className="relative h-3.5 bg-slate-100 rounded-none overflow-hidden border border-slate-200">
-                    {/* Spent Bar */}
                     <div
                       style={{ width: `${Math.min(capPercent, 100)}%` }}
                       className={`h-full transition-all duration-500 ${isOver
@@ -240,7 +223,6 @@ export default function Dashboard({
                           : 'bg-green-800'
                         }`}
                     />
-                    {/* If over-budget, draw a warning indicator at 100% */}
                     {isOver && (
                       <div className="absolute right-0 top-0 bottom-0 w-1.5 bg-red-700 animate-pulse" />
                     )}
@@ -266,7 +248,6 @@ export default function Dashboard({
           </div>
         </div>
 
-        {/* Global Progress Radial Metric & Action Panel */}
         <div className="p-5 bg-white border border-slate-200 shadow-sm rounded-none flex flex-col justify-between">
           <div>
             <h3 className="font-black text-sm uppercase tracking-widest text-slate-900 mb-4 flex items-center gap-2">
@@ -274,20 +255,10 @@ export default function Dashboard({
               Progreso de Obra a {utils.getToday().split('-').reverse().join('/')}
             </h3>
 
-            {/* Circular Progress Wheel */}
             <div className="flex flex-col items-center py-4">
               <div className="relative w-36 h-36">
                 <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
-                  {/* Background Circle */}
-                  <circle
-                    cx="50"
-                    cy="50"
-                    r="40"
-                    fill="transparent"
-                    stroke="#f1f5f9"
-                    strokeWidth="8"
-                  />
-                  {/* Foreground progress Circle */}
+                  <circle cx="50" cy="50" r="40" fill="transparent" stroke="#f1f5f9" strokeWidth="8" />
                   <circle
                     cx="50"
                     cy="50"
@@ -301,7 +272,6 @@ export default function Dashboard({
                     className="transition-all duration-1000 ease-out"
                   />
                 </svg>
-                {/* Center text */}
                 <div className="absolute inset-0 flex flex-col items-center justify-center">
                   <span className="text-3xl font-black font-sans text-slate-900 tracking-tighter">
                     {milestonesPercent}%

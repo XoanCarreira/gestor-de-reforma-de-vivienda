@@ -2,20 +2,16 @@ import React, { useState } from 'react';
 import { Milestone, MilestoneStatus } from '../types';
 import { Plus, Edit2, Trash2, Check, X, Calendar, AlertTriangle, PlayCircle, CheckCircle2 } from 'lucide-react';
 import { utils } from '../utils/date';
+import { useReformaDataContext } from '../context/ReformaDataContext';
 
-interface MilestonesSectionProps {
-  milestones: Milestone[];
-  onAddMilestone: (milestone: Omit<Milestone, 'id'>) => void;
-  onUpdateMilestone: (milestone: Milestone) => void;
-  onDeleteMilestone: (id: string) => void;
-}
+export default function MilestonesSection() {
+  const {
+    milestones,
+    addMilestone: onAddMilestone,
+    updateMilestone: onUpdateMilestone,
+    deleteMilestone: onDeleteMilestone
+  } = useReformaDataContext();
 
-export default function MilestonesSection({
-  milestones,
-  onAddMilestone,
-  onUpdateMilestone,
-  onDeleteMilestone
-}: MilestonesSectionProps) {
   const TODAY_STR = utils.getToday(); // Reference System Date
 
   const [isAdding, setIsAdding] = useState(false);
@@ -40,7 +36,6 @@ export default function MilestonesSection({
       completedDate: status === 'completed' ? (completedDate || TODAY_STR) : undefined
     });
 
-    // Reset
     resetForm();
     setIsAdding(false);
   };
@@ -85,7 +80,6 @@ export default function MilestonesSection({
     });
   };
 
-  // Helper to determine if a milestone is delayed/overdue
   const isOverdue = (m: Milestone) => {
     if (m.status === 'completed') return false;
     if (m.status === 'delayed') return true;
@@ -196,7 +190,6 @@ export default function MilestonesSection({
 
           return (
             <div key={m.id} className="relative group">
-              {/* Timeline dot */}
               <div
                 className={`absolute -left-[31px] sm:-left-[39px] top-1.5 w-4 h-4 rounded-full border-4 bg-white ${
                   m.status === 'completed'
@@ -209,7 +202,6 @@ export default function MilestonesSection({
                 }`}
               />
 
-              {/* Edit Form */}
               {isEditing ? (
                 <div className="p-4 bg-white border border-slate-200 rounded-none shadow-sm space-y-3">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -283,14 +275,12 @@ export default function MilestonesSection({
                   </div>
                 </div>
               ) : (
-                /* Card Display */
                 <div className="p-4 bg-white border border-slate-200 rounded-none flex flex-col sm:flex-row justify-between gap-4 shadow-sm group-hover:border-slate-400 transition-all">
                   <div className="space-y-1.5 flex-1">
                     <div className="flex flex-wrap items-center gap-2">
                       <h3 className="font-black text-slate-900 text-sm sm:text-base leading-none">
                         {m.title}
                       </h3>
-                      {/* State Pill */}
                       <span
                         className={`text-[9px] font-black px-2 py-0.5 rounded-none uppercase tracking-wider border ${
                           m.status === 'completed'
@@ -318,7 +308,6 @@ export default function MilestonesSection({
                       </p>
                     )}
 
-                    {/* Due Dates / Delayed Banner */}
                     <div className="flex flex-wrap items-center gap-3 text-[10px] text-slate-400 font-bold uppercase tracking-wider">
                       <span className="flex items-center gap-1">
                         <Calendar className="w-3.5 h-3.5 text-slate-400" />
@@ -341,7 +330,6 @@ export default function MilestonesSection({
                     </div>
                   </div>
 
-                  {/* Right side: Quick status transition pills and Edit actions */}
                   <div className="flex sm:flex-col justify-between items-end gap-2 border-t sm:border-t-0 border-slate-100 pt-2 sm:pt-0 shrink-0">
                     <div className="flex items-center gap-1.5 self-start sm:self-end">
                       <button
@@ -358,7 +346,6 @@ export default function MilestonesSection({
                       </button>
                     </div>
 
-                    {/* Quick State Toggle for Site workers */}
                     {m.status !== 'completed' && (
                       <div className="flex gap-1.5">
                         {m.status !== 'in_progress' && (

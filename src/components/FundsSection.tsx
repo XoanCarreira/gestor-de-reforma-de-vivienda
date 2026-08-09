@@ -1,15 +1,11 @@
 import React, { useState } from 'react';
-import { FundEntry } from '../types';
 import { Plus, Trash2, X, PiggyBank, Landmark } from 'lucide-react';
 import { utils } from '../utils/date';
+import { useReformaDataContext } from '../context/ReformaDataContext';
 
-interface FundsSectionProps {
-  funds: FundEntry[];
-  onAddFund: (fund: Omit<FundEntry, 'id'>) => void;
-  onDeleteFund: (id: string) => void;
-}
+export default function FundsSection() {
+  const { funds, addFund: onAddFund, deleteFund: onDeleteFund } = useReformaDataContext();
 
-export default function FundsSection({ funds, onAddFund, onDeleteFund }: FundsSectionProps) {
   const [isAdding, setIsAdding] = useState(false);
 
   const [source, setSource] = useState('');
@@ -30,7 +26,6 @@ export default function FundsSection({ funds, onAddFund, onDeleteFund }: FundsSe
       notes: notes || undefined
     });
 
-    // Reset
     resetForm();
     setIsAdding(false);
   };

@@ -1,61 +1,48 @@
 import { jsPDF } from 'jspdf';
-import { BudgetCategory, Supplier, Milestone, Invoice } from '../types';
 import { FileDown } from 'lucide-react';
 import { useState } from 'react';
 import { getBudgetTotals, getBudgetStatusLabel, getBudgetStatus } from '../utils/budget';
+import { useReformaDataContext } from '../context/ReformaDataContext';
 
-interface ReportProps {
-  budget: BudgetCategory[];
-  suppliers: Supplier[];
-  milestones: Milestone[];
-  invoices: Invoice[];
-}
-
-export default function ReportGenerator({ budget, suppliers, milestones, invoices }: ReportProps) {
+export default function ReportGenerator() {
+  const { budget, suppliers, milestones, invoices } = useReformaDataContext();
   const [generating, setGenerating] = useState(false);
 
   const generatePDF = () => {
     setGenerating(true);
 
     try {
-      // Create new document
       const doc = new jsPDF({
         orientation: 'portrait',
         unit: 'mm',
         format: 'a4',
       });
 
-      // Styling parameters
-      const primaryColor = [30, 41, 59]; // slate-800
-      const accentColor = [245, 158, 11]; // amber-500
-      const textColor = [51, 65, 85]; // slate-700
-      const lightBg = [248, 250, 252]; // slate-50
+      const primaryColor = [30, 41, 59];
+      const accentColor = [245, 158, 11];
+      const textColor = [51, 65, 85];
+      const lightBg = [248, 250, 252];
 
-      // Total calculations
       const { totalAllocated, totalSpent, totalDeviation, deviationPercent } = getBudgetTotals(budget);
 
       // --- PAGE 1: TITLE & SUMMARY ---
       doc.setFillColor(primaryColor[0], primaryColor[1], primaryColor[2]);
       doc.rect(0, 0, 210, 60, 'F');
 
-      // Title
       doc.setTextColor(255, 255, 255);
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(24);
       doc.text('REPORTE DE REFORMA DE VIVENDA', 15, 25);
 
-      // Subtitle
       doc.setFont('helvetica', 'normal');
       doc.setFontSize(11);
       doc.setTextColor(241, 245, 249);
       doc.text(`Fecha de xeración: ${new Date().toLocaleDateString('es-ES')}`, 15, 35);
       doc.text('Xenerado por ReformaVivenda - App creada por XoanCoder', 15, 41);
 
-      // Accent bar
       doc.setFillColor(accentColor[0], accentColor[1], accentColor[2]);
       doc.rect(0, 57, 210, 3, 'F');
 
-      // Section 1: Executive Summary
       doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(16);
@@ -66,13 +53,11 @@ export default function ReportGenerator({ budget, suppliers, milestones, invoice
       doc.setTextColor(textColor[0], textColor[1], textColor[2]);
       doc.text('Este documento contén o estado financeiro, avance de hitos e balance de proveedores da obra en curso.', 15, 82);
 
-      // KPI Boxes Backgrounds
       doc.setFillColor(lightBg[0], lightBg[1], lightBg[2]);
       doc.rect(15, 90, 55, 30, 'F');
       doc.rect(77, 90, 55, 30, 'F');
       doc.rect(140, 90, 55, 30, 'F');
 
-      // KPI 1: Orzamento total
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(9);
       doc.setTextColor(100, 116, 139);
@@ -81,44 +66,40 @@ export default function ReportGenerator({ budget, suppliers, milestones, invoice
       doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
       doc.text(`${totalAllocated.toLocaleString('es-ES')} EUR`, 20, 106);
 
-      // KPI 2: Total investido
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(9);
       doc.setTextColor(100, 116, 139);
       doc.text('ACUMULADO GASTADO', 82, 96);
       doc.setFontSize(14);
       if (totalSpent > totalAllocated) {
-        doc.setTextColor(239, 68, 68); // Red
+        doc.setTextColor(239, 68, 68);
       } else {
-        doc.setTextColor(16, 185, 129); // Green
+        doc.setTextColor(16, 185, 129);
       }
       doc.text(`${totalSpent.toLocaleString('es-ES')} EUR`, 82, 106);
 
-      // KPI 3: Desviación
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(9);
       doc.setTextColor(100, 116, 139);
       doc.text('DESVIACIÓN NETA', 145, 96);
       doc.setFontSize(14);
       if (totalDeviation > 0) {
-        doc.setTextColor(239, 68, 68); // Red
+        doc.setTextColor(239, 68, 68);
         doc.text(`+${totalDeviation.toLocaleString('es-ES')} EUR`, 145, 106);
         doc.setFontSize(8);
         doc.text(`(+${(deviationPercent - 100).toFixed(1)}% sobrecoste)`, 145, 112);
       } else {
-        doc.setTextColor(16, 185, 129); // Green
+        doc.setTextColor(16, 185, 129);
         doc.text(`${totalDeviation.toLocaleString('es-ES')} EUR`, 145, 106);
         doc.setFontSize(8);
         doc.text(`(Ahorro del ${(100 - deviationPercent).toFixed(1)}%)`, 145, 112);
       }
 
-      // Section 2: Budget Breakdown Table
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(14);
       doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
       doc.text('Desglose do Orzamento por Categoría', 15, 135);
 
-      // Table Header
       let y = 142;
       doc.setFillColor(primaryColor[0], primaryColor[1], primaryColor[2]);
       doc.rect(15, y, 180, 8, 'F');
@@ -136,7 +117,6 @@ export default function ReportGenerator({ budget, suppliers, milestones, invoice
       doc.setTextColor(textColor[0], textColor[1], textColor[2]);
 
       budget.forEach((item, index) => {
-        // Zebra striping
         if (index % 2 === 0) {
           doc.setFillColor(248, 250, 252);
           doc.rect(15, y, 180, 7, 'F');
@@ -152,10 +132,10 @@ export default function ReportGenerator({ budget, suppliers, milestones, invoice
         doc.text(`${item.spent.toLocaleString('es-ES')} €`, 125, y + 5, { align: 'right' });
 
         if (dev > 0) {
-          doc.setTextColor(239, 68, 68); // Red
+          doc.setTextColor(239, 68, 68);
           doc.text(`+${dev.toLocaleString('es-ES')} €`, 160, y + 5, { align: 'right' });
         } else {
-          doc.setTextColor(16, 185, 129); // Green
+          doc.setTextColor(16, 185, 129);
           doc.text(`${dev.toLocaleString('es-ES')} €`, 160, y + 5, { align: 'right' });
         }
 
@@ -179,7 +159,6 @@ export default function ReportGenerator({ budget, suppliers, milestones, invoice
         y += 7;
       });
 
-      // Footer of Page 1
       doc.setFontSize(8);
       doc.setTextColor(148, 163, 184);
       doc.text('Páxina 1 de 2 - ReformaVivenda Reporte Automatizado', 15, 285);
@@ -187,7 +166,6 @@ export default function ReportGenerator({ budget, suppliers, milestones, invoice
       // --- PAGE 2: PROVIDERS & TIMELINE ---
       doc.addPage();
 
-      // Page Header
       doc.setFillColor(primaryColor[0], primaryColor[1], primaryColor[2]);
       doc.rect(0, 0, 210, 15, 'F');
       doc.setFillColor(accentColor[0], accentColor[1], accentColor[2]);
@@ -198,7 +176,6 @@ export default function ReportGenerator({ budget, suppliers, milestones, invoice
       doc.setFontSize(10);
       doc.text('REPORTE DETALLADO DE OBRA - CONTROL DE PROVEEDORES E HITOS', 15, 10);
 
-      // Section 3: Suppliers Summary
       doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
       doc.setFontSize(14);
       doc.text('Control Financiero de Proveedores', 15, 28);
@@ -231,7 +208,7 @@ export default function ReportGenerator({ budget, suppliers, milestones, invoice
         doc.text(`${sup.paidAmount.toLocaleString('es-ES')} €`, 120, y + 5, { align: 'right' });
 
         if (sup.pendingAmount > 0) {
-          doc.setTextColor(217, 119, 6); // Orange for pending
+          doc.setTextColor(217, 119, 6);
         } else {
           doc.setTextColor(16, 185, 129);
         }
@@ -243,7 +220,6 @@ export default function ReportGenerator({ budget, suppliers, milestones, invoice
         y += 7;
       });
 
-      // Section 4: Milestones Chronogram
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(14);
       doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
@@ -298,7 +274,6 @@ export default function ReportGenerator({ budget, suppliers, milestones, invoice
         y += 7;
       });
 
-      // Audit info
       y += 12;
       doc.setFillColor(254, 243, 199);
       doc.rect(15, y, 180, 12, 'F');
@@ -309,12 +284,10 @@ export default function ReportGenerator({ budget, suppliers, milestones, invoice
       doc.setFont('helvetica', 'normal');
       doc.text('Calquer cambio rexistrado sen conexión consolidarase no servidor o recuperar a sincronización.', 18, y + 9);
 
-      // Page footer 2
       doc.setFontSize(8);
       doc.setTextColor(148, 163, 184);
       doc.text('Página 2 de 2 - ReformaVivenda Reporte Automatizado', 15, 285);
 
-      // Save PDF
       doc.save(`reporte_reforma_${new Date().toISOString().slice(0, 10)}.pdf`);
     } catch (e) {
       console.error('Error generating PDF:', e);

@@ -1,20 +1,16 @@
 import React, { useState } from 'react';
 import { Supplier } from '../types';
 import { Plus, Edit2, Trash2, Check, X, Phone, Mail, MessageSquare, Eye } from 'lucide-react';
+import { useReformaDataContext } from '../context/ReformaDataContext';
 
-interface SuppliersSectionProps {
-  suppliers: Supplier[];
-  onAddSupplier: (supplier: Omit<Supplier, 'id'>) => void;
-  onUpdateSupplier: (supplier: Supplier) => void;
-  onDeleteSupplier: (id: string) => void;
-}
+export default function SuppliersSection() {
+  const {
+    suppliers,
+    addSupplier: onAddSupplier,
+    updateSupplier: onUpdateSupplier,
+    deleteSupplier: onDeleteSupplier
+  } = useReformaDataContext();
 
-export default function SuppliersSection({
-  suppliers,
-  onAddSupplier,
-  onUpdateSupplier,
-  onDeleteSupplier
-}: SuppliersSectionProps) {
   const [isAdding, setIsAdding] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
 
@@ -50,7 +46,6 @@ export default function SuppliersSection({
       notes: notes || undefined
     });
 
-    // Reset
     resetForm();
     setIsAdding(false);
   };
@@ -177,7 +172,7 @@ export default function SuppliersSection({
                 className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-none text-slate-900 placeholder:text-slate-400 text-sm focus:border-slate-900 focus:ring-0 outline-none transition-colors"
               />
             </div>
-            
+
             <div>
               <label className="block text-xs font-black text-slate-500 uppercase mb-1 tracking-wider">Calificación (1-5 Estrelas)</label>
               <select
@@ -234,7 +229,6 @@ export default function SuppliersSection({
               className="p-5 bg-white border border-slate-200 border-l-4 border-l-slate-900 shadow-sm rounded-none flex flex-col justify-between space-y-4"
             >
               {isEditing ? (
-                /* Edit Mode Form */
                 <div className="space-y-3.5">
                   <div className="grid grid-cols-2 gap-2">
                     <div className="space-y-1">
@@ -340,9 +334,7 @@ export default function SuppliersSection({
                   </div>
                 </div>
               ) : (
-                /* Display Card Mode */
                 <div className="flex flex-col h-full justify-between space-y-4">
-                  {/* Card Top: Supplier info & rating */}
                   <div>
                     <div className="flex justify-between items-start">
                       <div>
@@ -376,7 +368,6 @@ export default function SuppliersSection({
                       </div>
                     </div>
 
-                    {/* Star Rating & Notes */}
                     <div className="flex items-center gap-1 mt-1.5">
                       <div className="flex text-slate-900 text-xs tracking-tight">
                         {'★'.repeat(Math.round(sup.rating || 5))}
@@ -393,7 +384,6 @@ export default function SuppliersSection({
                     )}
                   </div>
 
-                  {/* Card Middle: Finances & Progress */}
                   <div className="space-y-2">
                     <div className="grid grid-cols-3 gap-2 text-xs font-mono">
                       <div>
@@ -412,7 +402,6 @@ export default function SuppliersSection({
                       </div>
                     </div>
 
-                    {/* Payment Progress Bar */}
                     <div className="relative h-2.5 bg-slate-100 rounded-none overflow-hidden border border-slate-200">
                       <div
                         style={{ width: `${Math.min(paidPercent, 100)}%` }}
@@ -435,7 +424,6 @@ export default function SuppliersSection({
                     </div>
                   </div>
 
-                  {/* Card Bottom: Quick On-Site Action Links */}
                   <div className="grid grid-cols-2 gap-2 pt-2.5 border-t border-slate-100">
                     {sup.phone ? (
                       <a
@@ -489,7 +477,6 @@ export default function SuppliersSection({
             </div>
 
             <div className="p-5 space-y-4">
-              {/* Displaying financial summary */}
               <div className="bg-slate-50 p-4 rounded-none border border-slate-200 text-center font-mono">
                 <span className="text-xs text-slate-400 block uppercase font-black tracking-wider mb-1">Orzamento asignado</span>
                 <span className="text-3xl font-black text-slate-900">{viewSupplier.contractedAmount.toLocaleString('es-ES')} €</span>
@@ -500,7 +487,6 @@ export default function SuppliersSection({
                 <span className="text-3xl font-black text-slate-900">{viewSupplier.paidAmount.toLocaleString('es-ES')} €</span>
               </div>
 
-              {/* Displaying details */}
               <div className="grid grid-cols-2 gap-4 text-xs">
                 <div className="bg-slate-50 p-2.5 rounded-none border border-slate-200">
                   <span className="text-slate-400 block uppercase font-black tracking-wider text-[10px]">Teléfono</span>
@@ -525,7 +511,6 @@ export default function SuppliersSection({
                 </div>
               </div>
 
-              
             </div>
 
             <div className="p-4 bg-slate-50 border-t border-slate-100 text-right">
