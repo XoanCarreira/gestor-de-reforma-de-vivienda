@@ -114,7 +114,7 @@ export default function DocumentsSection() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white border border-slate-200 p-5 rounded-none shadow-sm">
         <div>
           <h2 className="text-sm font-black text-slate-900 uppercase tracking-widest">Carga de Facturas e Gastos</h2>
-          <p className="text-xs text-slate-500 mt-1">Rexistra recibos, asociaos a un proveedor e liquida partidas automáticamente.</p>
+          <p className="text-xs text-slate-500 mt-1">Rexistra recibos, asociaos a un provedor e liquida partidas automáticamente.</p>
         </div>
         <button
           onClick={() => setIsUploading(!isUploading)}
@@ -128,7 +128,7 @@ export default function DocumentsSection() {
       {/* Upload/Carga Form */}
       {isUploading && (
         <form onSubmit={handleSaveInvoice} className="p-5 bg-white border border-slate-200 shadow-sm rounded-none space-y-4 animate-fadeIn">
-          <h3 className="font-black text-slate-900 text-xs uppercase tracking-wider">Cargar Factura de Proveedor</h3>
+          <h3 className="font-black text-slate-900 text-xs uppercase tracking-wider">Cargar Factura de Provedor</h3>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {/* File Drag and Drop zone */}
@@ -140,13 +140,12 @@ export default function DocumentsSection() {
                 onDragLeave={handleDrag}
                 onDrop={handleDrop}
                 onClick={() => fileInputRef.current?.click()}
-                className={`border-2 border-dashed rounded-none p-6 text-center cursor-pointer transition-all flex flex-col items-center justify-center gap-2 ${
-                  dragActive 
-                    ? 'border-slate-900 bg-slate-50 text-slate-900' 
-                    : fileName 
-                      ? 'border-emerald-500 bg-emerald-50 text-emerald-800' 
+                className={`border-2 border-dashed rounded-none p-6 text-center cursor-pointer transition-all flex flex-col items-center justify-center gap-2 ${dragActive
+                    ? 'border-slate-900 bg-slate-50 text-slate-900'
+                    : fileName
+                      ? 'border-emerald-500 bg-emerald-50 text-emerald-800'
                       : 'border-slate-300 bg-slate-50 hover:border-slate-400 hover:bg-slate-100/50'
-                }`}
+                  }`}
               >
                 <input
                   type="file"
@@ -198,14 +197,14 @@ export default function DocumentsSection() {
             </div>
 
             <div>
-              <label className="block text-xs font-black text-slate-500 uppercase mb-1 tracking-wider">Proveedor Asociado</label>
+              <label className="block text-xs font-black text-slate-500 uppercase mb-1 tracking-wider">Provedor Asociado</label>
               <select
                 required
                 value={supplierId}
                 onChange={e => setSupplierId(e.target.value)}
                 className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-none text-slate-900 text-sm focus:border-slate-900 outline-none font-bold"
               >
-                <option value="">-- Seleccionar Proveedor --</option>
+                <option value="">-- Seleccionar Provedor --</option>
                 {suppliers.map(s => (
                   <option key={s.id} value={s.id}>{s.name} ({s.service})</option>
                 ))}
@@ -257,7 +256,7 @@ export default function DocumentsSection() {
                   Consolidación Automática de Contas (Recomendado)
                 </label>
                 <span className="text-slate-500 block mt-1">
-                  Ao activar, sumará este importe ao GASTADO da partida de presuposto seleccionada arriba, e ao PAGADO do proveedor automáticamente.
+                  Ao activar, sumará este importe ao GASTADO da partida de presuposto seleccionada arriba, e ao PAGADO do provedor automáticamente.
                 </span>
               </div>
             </div>
@@ -284,7 +283,21 @@ export default function DocumentsSection() {
       {/* Invoice List */}
       <div className="space-y-3.5">
         <h3 className="font-black text-slate-900 text-xs uppercase tracking-wider mb-2">Facturas Rexistradas</h3>
-        
+        <div>
+          <label className="block text-xs font-black text-slate-500 uppercase mb-1 tracking-wider">Provedor Asociado</label>
+          <select
+            required
+            value={supplierId}
+            onChange={e => setSupplierId(e.target.value)}
+            className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-none text-slate-900 text-sm focus:border-slate-900 outline-none font-bold"
+          >
+            <option value="">-- Todos --</option>
+            {suppliers.map(s => (
+              <option key={s.id} value={s.id}>{s.name} ({s.service})</option>
+            ))}
+          </select>
+        </div>
+
         {invoices.length === 0 ? (
           <div className="p-8 text-center bg-slate-50 border border-slate-200 rounded-none">
             <FileText className="w-8 h-8 text-slate-400 mx-auto mb-2" />
@@ -293,7 +306,7 @@ export default function DocumentsSection() {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {invoices.map(invoice => {
+            {invoices.filter(invoice => !supplierId || invoice.supplierId === supplierId).map(invoice => {
               const matchedSupplier = suppliers.find(s => s.id === invoice.supplierId);
               const matchedCategory = invoice.categoryId ? budget.find(c => c.id === invoice.categoryId) : undefined;
 
@@ -390,7 +403,7 @@ export default function DocumentsSection() {
 
               <div className="grid grid-cols-2 gap-4 text-xs">
                 <div className="bg-slate-50 p-2.5 rounded-none border border-slate-200">
-                  <span className="text-slate-400 block uppercase font-black tracking-wider text-[10px]">Proveedor</span>
+                  <span className="text-slate-400 block uppercase font-black tracking-wider text-[10px]">Provedor</span>
                   <span className="text-slate-900 font-black">
                     {suppliers.find(s => s.id === viewInvoice.supplierId)?.name || 'Sin asignar'}
                   </span>
@@ -417,7 +430,7 @@ export default function DocumentsSection() {
 
               <div className="bg-slate-50 p-3 rounded-none border border-slate-200 flex flex-col items-center justify-center space-y-2">
                 <span className="text-[10px] text-slate-400 uppercase font-black tracking-wider">Vista previa do Documento</span>
-                
+
                 {viewInvoice.base64Data && viewInvoice.base64Data.startsWith('data:image/') ? (
                   <img
                     src={viewInvoice.base64Data}
