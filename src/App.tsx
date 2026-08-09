@@ -735,7 +735,7 @@ export default function App() {
 
           <button
             onClick={() => setActiveTab('datos')}
-            className={`flex flex-col items-center gap-1 p-2 rounded-xl transition-all ${
+            className={`hidden md:block flex flex-col items-center gap-1 p-2 rounded-xl transition-all ${
               activeTab === 'datos' ? 'text-amber-600 scale-110 font-bold' : 'text-slate-400 hover:text-slate-600'
             }`}
           >
