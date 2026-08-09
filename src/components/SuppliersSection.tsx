@@ -28,7 +28,7 @@ export default function SuppliersSection({
   const [rating, setRating] = useState('5');
   const [notes, setNotes] = useState('');
 
-  // Estado para ver o proveedor en detalle
+  // Estado para ver o provedor en detalle
   const [viewSupplier, setViewSupplier] = useState<Supplier | null>(null);
 
   const handleSaveAdd = (e: React.FormEvent) => {
@@ -105,22 +105,24 @@ export default function SuppliersSection({
       {/* Header and Add Button */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white border border-slate-200 p-5 rounded-none shadow-sm">
         <div>
-          <h2 className="text-sm font-black text-slate-900 uppercase tracking-widest">Xestión de Proveedores</h2>
-          <p className="text-xs text-slate-500 mt-1">Administra os contratistas da obra, pagos e orzamentos cerrados.</p>
+          <h2 className="text-sm font-black text-slate-900 uppercase tracking-widest">Xestión de Provedores</h2>
+          <p className="text-xs text-slate-500 mt-1">Xestiona os teus provedores e o contratado con cada un deles. O total destas contratacións móstrase no dashboard como <i>Total Contratado</i>.</p>
+          <p className="text-xs text-slate-500 mt-1">Aquí so deberías incluir a cantidade contratada con cada provedor. Os pagos débense rexistrar na súa propia sección.</p>
+
         </div>
         <button
           onClick={() => { setIsAdding(!isAdding); resetForm(); }}
           className="flex items-center gap-1.5 px-4 py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-black rounded-none transition-all active:scale-95 text-xs uppercase tracking-wider shadow"
         >
           {isAdding ? <X className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
-          <span>{isAdding ? 'Cancelar' : 'Novo Proveedor'}</span>
+          <span>{isAdding ? 'Cancelar' : 'Novo Provedor'}</span>
         </button>
       </div>
 
       {/* Add Form (Expandable) */}
       {isAdding && (
         <form onSubmit={handleSaveAdd} className="p-5 bg-white border border-slate-200 shadow-sm rounded-none space-y-4 animate-fadeIn">
-          <h3 className="font-black text-slate-900 text-xs uppercase tracking-wider">Rexistrar Novo Proveedor</h3>
+          <h3 className="font-black text-slate-900 text-xs uppercase tracking-wider">Rexistrar Novo Provedor</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-xs font-black text-slate-500 uppercase mb-1 tracking-wider">Nome Comercial / Empresa</label>
@@ -158,7 +160,7 @@ export default function SuppliersSection({
               <label className="block text-xs font-black text-slate-500 uppercase mb-1 tracking-wider">Correo Electrónico</label>
               <input
                 type="email"
-                placeholder="proveedor@email.com"
+                placeholder="provedor@email.com"
                 value={email}
                 onChange={e => setEmail(e.target.value)}
                 className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-none text-slate-900 placeholder:text-slate-400 text-sm focus:border-slate-900 focus:ring-0 outline-none transition-colors"
@@ -213,7 +215,7 @@ export default function SuppliersSection({
               type="submit"
               className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white font-black rounded-none text-xs sm:text-sm active:scale-95 transition-all uppercase tracking-wider"
             >
-              Gardar Proveedor
+              Gardar Provedor
             </button>
           </div>
         </form>
@@ -355,7 +357,7 @@ export default function SuppliersSection({
                         <button
                           onClick={() => setViewSupplier(sup)}
                           className="p-1.5 text-slate-400 hover:text-green-600 bg-slate-50 hover:bg-slate-100 rounded-none transition-all active:scale-90"
-                          title="Ver Proveedor"
+                          title="Ver Provedor"
                         >
                           <Eye className="w-3.5 h-3.5" />
                         </button>

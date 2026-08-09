@@ -125,8 +125,9 @@ export default function BudgetSection({
       {/* Header and Add Button */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white border border-slate-200 p-5 rounded-none shadow-sm">
         <div>
-          <h2 className="text-sm font-black text-slate-900 uppercase tracking-widest">Control de Presuposto</h2>
-          <p className="text-xs text-slate-500 mt-1">Sigue as desviacions e xestiona as partidas da tua reforma.</p>
+          <h2 className="text-sm font-black text-slate-900 uppercase tracking-widest">Control do Orzamento</h2>
+          <p className="text-xs text-slate-500 mt-1">Inclue aquí as distintas partidas do orzamento para facer un seguimento individual de cada unha. O total destas partidas móstrase no dashboard como <i>Orzamento Total</i>.</p>
+          <p className="text-xs text-slate-500 mt-1">Aquí so deberías incluir a cantidade asignada a cada partida. Os pagos débense rexistrar na súa propia sección.</p>
         </div>
         <button
           onClick={() => setIsAdding(!isAdding)}

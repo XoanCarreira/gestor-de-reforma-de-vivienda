@@ -103,7 +103,7 @@ export default function Dashboard({
                       </span>
                     </div>
                     <span className="text-[11px] text-slate-500 mt-1">
-                      Límite: {new Date(m.dueDate).toLocaleDateString('es-ES')} (Hace {Math.round((new Date(TODAY_STR).getTime() - new Date(m.dueDate).getTime()) / (1000 * 60 * 60 * 24))} días)
+                      Límite: {new Date(m.dueDate).toLocaleDateString('es-ES')} (Fai {Math.round((new Date(TODAY_STR).getTime() - new Date(m.dueDate).getTime()) / (1000 * 60 * 60 * 24))} días)
                     </span>
                   </li>
                 ))}
@@ -115,7 +115,7 @@ export default function Dashboard({
 
       {/* KPI Cards Grid */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        {/* KPI 1 */}
+        {/* KPI Orzamento Total */}
         <div className="p-5 bg-white border-l-4 border-amber-500 shadow-sm flex flex-col justify-between">
           <div>
             <p className="text-xs font-black text-slate-400 uppercase tracking-wider">Orzamento Total</p>
@@ -126,7 +126,7 @@ export default function Dashboard({
           <span className="text-[10px] font-medium text-slate-400 mt-2 block">Total acordado inicial</span>
         </div>
 
-        {/* KPI 2 */}
+        {/* KPI Total executado */}
         <div className="p-5 bg-white border-l-4 border-emerald-500 shadow-sm flex flex-col justify-between">
           <div>
             <p className="text-xs font-black text-slate-400 uppercase tracking-wider">Investido / Executado</p>
@@ -139,7 +139,7 @@ export default function Dashboard({
           </span>
         </div>
 
-        {/* KPI 3 */}
+        {/* KPI Pendente executar */}
         <div className={`p-5 border-l-4 shadow-sm flex flex-col justify-between ${remainingBudget < 0 ? 'bg-red-50 border-red-500' : 'bg-white border-slate-950'
           }`}>
           <div>
@@ -153,7 +153,7 @@ export default function Dashboard({
           </span>
         </div>
 
-        {/* KPI 4 */}
+        {/* KPI Avance de Obra */}
         <div className="p-5 bg-white border-l-4 border-slate-900 shadow-sm flex flex-col justify-between">
           <div>
             <p className="text-xs font-black text-slate-400 uppercase tracking-wider">Avance de Obra</p>
@@ -167,19 +167,23 @@ export default function Dashboard({
         </div>
       </div>
 
-      {/* KPI Fondos dispoñibles logo de pagos */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        {/* KPI Fondos dispoñibles logo de pagos */}
         <div className="p-5 bg-white border border-slate-200 shadow-sm rounded-none">
           <p className="text-xs font-black text-slate-400 uppercase tracking-wider">Fondos dispoñibles</p>
           <p className="text-2xl font-black text-slate-900 mt-2">{(totalFunds - totalSpent).toLocaleString('es-ES')} €</p>
           <span className="text-[10px] text-slate-400 mt-2 block">Saldo total actual</span>
         </div>
 
-        {/* Suma de fondos aportados*/}
-        <div className="p-5 bg-white border border-slate-200 shadow-sm rounded-none">
-          <p className="text-xs font-black text-slate-400 uppercase tracking-wider">Fondos totais</p>
-          <p className="text-2xl font-black text-slate-900 mt-2">{totalFunds.toLocaleString('es-ES')} €</p>
-          <span className="text-[10px] text-slate-400 mt-2 block">Aportes, ingresos e financiación rexistrada</span>
+        {/* Total contratado a provedores*/}
+        <div className={'p-5 bg-white border border-slate-200 shadow-sm rounded-none'}>
+          <p className="text-xs font-black text-slate-400 uppercase tracking-wider">Total contratado</p>
+          <p className={'text-2xl font-black text-slate-900 mt-2'}>
+            {totalContracted.toLocaleString('es-ES')} €
+          </p>
+          <span className="text-[10px] text-slate-400 mt-2 block">
+            Total contratado con provedores
+          </span>
         </div>
 
         {/* Suma das facturas pagadas */}
