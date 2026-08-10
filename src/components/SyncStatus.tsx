@@ -150,7 +150,7 @@ export default function SyncStatus() {
           <details className="bg-slate-50 p-4 rounded-xl border border-slate-200">
             <summary className="cursor-pointer text-sm font-medium text-slate-700">Ver historial de actualizacións e revisións</summary>
             <ul className="list-disc list-inside text-sm text-slate-600 space-y-1 mt-2">
-              <li className="text-[10px] text-slate-600">09/08/26 - Refactor interno: os datos agora se centralizan nun único hook (useReformaData) accesible por contexto, sen cambios visibles para o usuario.</li>
+              <li className="text-[10px] text-slate-600">09/08/26 - Engade filtrado por provedor de facturas</li>
               <li className="text-[10px] text-slate-600">08/08/26 - Corrección erros consistencia datos. Agora cando eliminas unha factura, os datos asociados actualízanse correctamente(solo en facturas creadas post-actualización).</li>
               <li className="text-[10px] text-slate-600">07/08/26 - Inclúese histórico de pagos nos orzamentos</li>
             </ul>

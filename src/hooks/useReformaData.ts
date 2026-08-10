@@ -127,8 +127,6 @@ export function useReformaData() {
   // --- Mantemento / backup ---
 
   const clearDatabase = async () => {
-    const confirmed = window.confirm('Esto eliminará todas as partidas, proveedores, hitos, facturas e fotos gardadas na base local. ¿Desexas continuar?');
-    if (!confirmed) return;
 
     try {
       setClearingData(true);
@@ -165,8 +163,6 @@ export function useReformaData() {
   };
 
   const importBackupFile = async (file: File) => {
-    const confirmed = window.confirm('A importación substituirá todos os datos actuais pola información do backup. Continuar?');
-    if (!confirmed) return;
 
     try {
       setBackupProcessing(true);
@@ -220,11 +216,9 @@ export function useReformaData() {
 
   const deleteBudgetCategory = async (id: string) => {
     const cat = state.budget.find(x => x.id === id);
-    const confirmed = window.confirm('Esto eliminará a partida \'' + cat?.name + '\'. ¿Desexas continuar?');
-    if (!confirmed) return;
 
-    // Consistencia: si borramos la partida, sus movementos de gasto quedarían
-    // huérfanos (categoryId apuntando a un id inexistente). Los eliminamos antes.
+    // Consistencia: si borramos a partida, os movementos de gasto quedarían
+    // horfos (categoryId apuntando a un id inexistente). Eliminamolos antes.
     const orphanExpenses = state.budgetExpenses.filter(e => e.categoryId === id);
     await Promise.all(orphanExpenses.map(e => dbInstance.delete('budgetExpenses', e.id)));
     await dbInstance.delete('budget', id);
@@ -307,9 +301,6 @@ export function useReformaData() {
       return;
     }
 
-    const confirmed = window.confirm(`¿Eliminar o movemento de ${expense.amount.toLocaleString('es-ES')}€? Esta acción restará o importe do acumulado gastado da partida.`);
-    if (!confirmed) return;
-
     const category = state.budget.find(c => c.id === expense.categoryId);
     if (category) {
       await dbInstance.update('budget', { ...category, spent: Math.max(0, category.spent - expense.amount) });
@@ -337,8 +328,6 @@ export function useReformaData() {
 
   const deleteSupplier = async (id: string) => {
     const sup = state.suppliers.find(x => x.id === id);
-    const confirmed = window.confirm('Esto eliminará o proveedor \'' + sup?.name + '\'. ¿Desexas continuar?');
-    if (!confirmed) return;
 
     await dbInstance.delete('suppliers', id);
     logEvent(`[Database] Proveedor eliminado: "${sup?.name || id}"`);
@@ -362,8 +351,6 @@ export function useReformaData() {
 
   const deleteMilestone = async (id: string) => {
     const m = state.milestones.find(x => x.id === id);
-    const confirmed = window.confirm('Esto eliminará o hito \'' + m?.title + '\'. ¿Desexas continuar?');
-    if (!confirmed) return;
 
     await dbInstance.delete('milestones', id);
     logEvent(`[Database] Hito de planificación eliminado: "${m?.title || id}"`);
@@ -436,8 +423,7 @@ export function useReformaData() {
 
   const deleteInvoice = async (id: string) => {
     const inv = state.invoices.find(x => x.id === id);
-    const confirmed = window.confirm('Esto eliminará a factura \'' + inv?.title + '\'. ¿Desexas continuar?');
-    if (!confirmed || !inv) return;
+    if (!inv) return;
 
     const touchedStores = new Set<StoreName>(['invoices']);
 
@@ -485,8 +471,6 @@ export function useReformaData() {
 
   const deletePhoto = async (id: string) => {
     const ph = state.photos.find(x => x.id === id);
-    const confirmed = window.confirm('Esto eliminará a fotografía \'' + ph?.title + '\'. ¿Desexas continuar?');
-    if (!confirmed) return;
 
     await dbInstance.delete('photos', id);
     logEvent(`[Database] Fotografía eliminada: "${ph?.title || id}"`);
@@ -504,8 +488,6 @@ export function useReformaData() {
 
   const deleteFund = async (id: string) => {
     const fund = state.funds.find(x => x.id === id);
-    const confirmed = window.confirm('Esto eliminará o fondo \'' + fund?.source + '\'. ¿Desexas continuar?');
-    if (!confirmed) return;
 
     await dbInstance.delete('funds', id);
     logEvent(`[Database] Fondo eliminado: "${fund?.source || id}"`);

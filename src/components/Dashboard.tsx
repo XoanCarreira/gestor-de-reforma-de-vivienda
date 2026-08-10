@@ -204,9 +204,9 @@ export default function Dashboard({ onNavigate }: DashboardProps) {
               const { percentUsed: capPercent, isOver } = getBudgetStatus(cat);
               return (
                 <div key={cat.id} className="space-y-1">
-                  <div className="flex justify-between text-xs sm:text-sm">
+                  <div className="block justify-between text-xs sm:text-sm">
                     <span className="font-bold text-slate-800">{cat.name}</span>
-                    <div className="space-x-1.5">
+                    <div className="flex justify-between gap-2">
                       <span className="text-slate-400 font-mono text-xs">Asignado: {cat.allocated}€</span>
                       <span className={`font-mono text-xs font-black ${isOver ? 'text-red-600' : 'text-slate-800'}`}>
                         Gastado: {cat.spent}€

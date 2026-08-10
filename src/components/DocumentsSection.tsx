@@ -3,6 +3,7 @@ import { Invoice } from '../types';
 import { Upload, FileText, Trash2, X, Eye } from 'lucide-react';
 import { useReformaDataContext } from '../context/ReformaDataContext';
 import { utils } from '../utils/date';
+import { useConfirm } from '../hooks/useConfirm';
 
 export default function DocumentsSection() {
   const {
@@ -28,6 +29,8 @@ export default function DocumentsSection() {
   const [updateFinancials, setUpdateFinancials] = useState(true);
   const [base64Data, setBase64Data] = useState<string>('');
   const [fileName, setFileName] = useState('');
+
+  const confirm = useConfirm();
 
   // View modal state
   const [viewInvoice, setViewInvoice] = useState<Invoice | null>(null);
@@ -363,7 +366,14 @@ export default function DocumentsSection() {
                       </button>
 
                       <button
-                        onClick={() => onDeleteInvoice(invoice.id)}
+                      
+                        onClick={async () => {
+                            const ok = await confirm({
+                              title: 'Eliminar factura',
+                              description: `¿Seguro que queres eliminar a factura ${invoice.title}?`
+                            });
+                            if(ok) onDeleteInvoice(invoice.id);
+                          }}
                         className="p-1 text-slate-400 hover:text-red-600 hover:bg-slate-50 rounded-none transition-colors"
                         title="Eliminar"
                       >

@@ -3,6 +3,7 @@ import { BudgetCategory, BudgetExpense } from '../types';
 import { Plus, Edit2, Trash2, Check, X, AlertTriangle, Lock, ChevronDown, ChevronUp } from 'lucide-react';
 import { getBudgetStatus } from '../utils/budget';
 import { useReformaDataContext } from '../context/ReformaDataContext';
+import { useConfirm } from '../hooks/useConfirm';
 
 // Este componente ya no recibe props: budget, expenses y todos los handlers
 // CRUD se leen directamente del contexto de datos.
@@ -38,6 +39,8 @@ export default function BudgetSection() {
   const [expenseAmount, setExpenseAmount] = useState('');
   const [expenseDescription, setExpenseDescription] = useState('');
   const [expenseDate, setExpenseDate] = useState('');
+
+  const confirm = useConfirm();
 
   const handleSaveAdd = (e: React.FormEvent) => {
     e.preventDefault();
@@ -275,7 +278,13 @@ export default function BudgetSection() {
                           <Edit2 className="w-3.5 h-3.5" />
                         </button>
                         <button
-                          onClick={() => onDeleteCategory(cat.id)}
+                          onClick={async () => {
+                            const ok = await confirm({
+                              title: 'Eliminar partida de orzamento',
+                              description: `¿Seguro que queres eliminar a partida ${cat.name}?`
+                            });
+                            if(ok) onDeleteCategory(cat.id);
+                          }}
                           className="p-1.5 text-slate-400 hover:text-red-600 bg-slate-50 hover:bg-slate-100 rounded-none transition-all active:scale-90"
                           title="Eliminar"
                         >
@@ -462,7 +471,13 @@ export default function BudgetSection() {
                                             <Edit2 className="w-3 h-3" />
                                           </button>
                                           <button
-                                            onClick={() => onDeleteExpense(exp.id)}
+                                            onClick={async () => {
+                                              const ok = await confirm({
+                                                title: 'Eliminar movemento',
+                                                description: `¿Seguro que queres eliminar o movemento ${exp.source}?`
+                                              });
+                                              if (ok) onDeleteExpense(exp.id);
+                                            }}
                                             className="p-1 text-slate-400 hover:text-red-600 transition-colors"
                                             title="Eliminar movemento"
                                           >

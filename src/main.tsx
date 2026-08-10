@@ -3,12 +3,15 @@ import { createRoot } from 'react-dom/client';
 import App from './App.tsx';
 import { ReformaDataProvider } from './context/ReformaDataContext';
 import './index.css';
+import { ConfirmProvider } from './hooks/useConfirm';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <ReformaDataProvider>
-      <App />
-    </ReformaDataProvider>
+    <ConfirmProvider>
+      <ReformaDataProvider>
+        <App />
+      </ReformaDataProvider>
+    </ConfirmProvider>
   </StrictMode>,
 );
 

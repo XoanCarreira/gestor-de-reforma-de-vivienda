@@ -2,9 +2,12 @@ import React, { useState } from 'react';
 import { Plus, Trash2, X, PiggyBank, Landmark } from 'lucide-react';
 import { utils } from '../utils/date';
 import { useReformaDataContext } from '../context/ReformaDataContext';
+import { useConfirm } from '../hooks/useConfirm';
 
 export default function FundsSection() {
   const { funds, addFund: onAddFund, deleteFund: onDeleteFund } = useReformaDataContext();
+
+  const confirm = useConfirm();
 
   const [isAdding, setIsAdding] = useState(false);
 
@@ -86,7 +89,7 @@ export default function FundsSection() {
             </div>
           </div>
           <div className="flex justify-end gap-2 border-t border-slate-100 pt-3">
-            <button type="button" onClick={() => {setIsAdding(false); resetForm();}} className="px-4 py-2 border border-slate-200 text-slate-600 font-bold rounded-none text-xs sm:text-sm hover:bg-slate-50 active:scale-95 transition-all">Cancelar</button>
+            <button type="button" onClick={() => { setIsAdding(false); resetForm(); }} className="px-4 py-2 border border-slate-200 text-slate-600 font-bold rounded-none text-xs sm:text-sm hover:bg-slate-50 active:scale-95 transition-all">Cancelar</button>
             <button type="submit" className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white font-black rounded-none text-xs sm:text-sm active:scale-95 transition-all uppercase tracking-wider">Gardar fondo</button>
           </div>
         </form>
@@ -126,7 +129,13 @@ export default function FundsSection() {
                   </div>
 
                   <div className="flex items-center gap-1.5">
-                    <button onClick={() => onDeleteFund(fund.id)} className="p-1 text-slate-400 hover:text-red-600 hover:bg-slate-50 rounded-none transition-colors" title="Eliminar">
+                    <button onClick={async () => {
+                      const ok = await confirm({
+                        title: 'Eliminar fondo',
+                        description: `¿Seguro que queres eliminar o fondo ${fund.source}?`
+                      });
+                      if (ok) onDeleteFund(fund.id);
+                    }} className="p-1 text-slate-400 hover:text-red-600 hover:bg-slate-50 rounded-none transition-colors" title="Eliminar">
                       <Trash2 className="w-4 h-4" />
                     </button>
                   </div>

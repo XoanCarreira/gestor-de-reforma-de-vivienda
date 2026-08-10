@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Supplier } from '../types';
 import { Plus, Edit2, Trash2, Check, X, Phone, Mail, MessageSquare, Eye } from 'lucide-react';
 import { useReformaDataContext } from '../context/ReformaDataContext';
+import { useConfirm } from '../hooks/useConfirm';
 
 export default function SuppliersSection() {
   const {
@@ -10,6 +11,8 @@ export default function SuppliersSection() {
     updateSupplier: onUpdateSupplier,
     deleteSupplier: onDeleteSupplier
   } = useReformaDataContext();
+
+  const confirm = useConfirm();
 
   const [isAdding, setIsAdding] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -360,7 +363,13 @@ export default function SuppliersSection() {
                           <Edit2 className="w-3.5 h-3.5" />
                         </button>
                         <button
-                          onClick={() => onDeleteSupplier(sup.id)}
+                          onClick={async () => {
+                            const ok = await confirm({
+                              title: 'Eliminar Provedor',
+                              description: `Esto eliminará o provedor "${sup.name}" e todos os seus datos asociados. ¿Desexas continuar?`,
+                            })
+                            if (ok) {onDeleteSupplier(sup.id);}
+                          }}
                           className="p-1.5 text-slate-400 hover:text-red-600 bg-slate-50 hover:bg-slate-100 rounded-none transition-all active:scale-90"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
