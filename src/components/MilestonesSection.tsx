@@ -3,6 +3,7 @@ import { Milestone, MilestoneStatus } from '../types';
 import { Plus, Edit2, Trash2, Check, X, Calendar, AlertTriangle, PlayCircle, CheckCircle2 } from 'lucide-react';
 import { utils } from '../utils/date';
 import { useReformaDataContext } from '../context/ReformaDataContext';
+import { useConfirm } from '../hooks/useConfirm';
 
 export default function MilestonesSection() {
   const {
@@ -11,6 +12,8 @@ export default function MilestonesSection() {
     updateMilestone: onUpdateMilestone,
     deleteMilestone: onDeleteMilestone
   } = useReformaDataContext();
+
+  const confirm = useConfirm();
 
   const TODAY_STR = utils.getToday(); // Reference System Date
 
@@ -339,7 +342,13 @@ export default function MilestonesSection() {
                         <Edit2 className="w-3 h-3" />
                       </button>
                       <button
-                        onClick={() => onDeleteMilestone(m.id)}
+                        onClick={async () => {
+                          const ok = await confirm({
+                            title: 'Confirmar Eliminación',
+                            description: `Esto eliminará o hito "${m.title}". ¿Desexas continuar?`
+                          });
+                          if (ok) onDeleteMilestone(m.id);
+                        }}
                         className="p-1.5 text-slate-400 hover:text-red-600 bg-slate-50 hover:bg-slate-100 rounded-none transition-all active:scale-90"
                       >
                         <Trash2 className="w-3.5 h-3.5" />

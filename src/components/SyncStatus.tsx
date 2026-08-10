@@ -1,6 +1,7 @@
 import { useRef } from 'react';
 import { Database, HardDrive, Info, Clock, Download, Upload } from 'lucide-react';
 import { useReformaDataContext } from '../context/ReformaDataContext';
+import { useConfirm } from '../hooks/useConfirm';
 
 export default function SyncStatus() {
   const {
@@ -14,6 +15,8 @@ export default function SyncStatus() {
   } = useReformaDataContext();
 
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const confirm = useConfirm();
 
   return (
     <div className="space-y-6">
@@ -34,7 +37,13 @@ export default function SyncStatus() {
         </div>
 
         <button
-          onClick={onClearData}
+          onClick={async () => {
+            const ok = await confirm({
+              title: 'Eliminar base de datos local',
+              description: 'Esto eliminará todas as partidas, proveedores, hitos, facturas e fotos gardadas na base local. ¿Desexas continuar?'
+            });
+            if (ok) onClearData();
+          }}
           disabled={clearing}
           className="px-4 py-2 rounded-2xl text-xs sm:text-sm font-bold active:scale-95 transition-all shadow border bg-red-500 hover:bg-red-600 border-transparent text-white disabled:opacity-50 disabled:cursor-not-allowed"
         >
