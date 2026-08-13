@@ -117,6 +117,21 @@ export default function SuppliersSection() {
         </button>
       </div>
 
+      <div>
+          <label className="block text-xs font-black text-slate-500 uppercase mb-1 tracking-wider">Servicio Asociado</label>
+          <select
+            required
+            value={service}
+            onChange={e => setService(e.target.value)}
+            className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-none text-slate-900 text-sm focus:border-slate-900 outline-none font-bold"
+          >
+            <option value="">-- Todos --</option>
+            {suppliers.map(s => (
+              <option key={s.id} value={s.service}>{s.service}</option>
+            ))}
+          </select>
+        </div>
+
       {/* Add Form (Expandable) */}
       {isAdding && (
         <form onSubmit={handleSaveAdd} className="p-5 bg-white border border-slate-200 shadow-sm rounded-none space-y-4 animate-fadeIn">
@@ -221,7 +236,7 @@ export default function SuppliersSection() {
 
       {/* Supplier Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {suppliers.map(sup => {
+        {suppliers.filter(suplier => !service || suplier.service === service).map(sup => {
           const isEditing = editingId === sup.id;
           const paidPercent = sup.contractedAmount > 0 ? (sup.paidAmount / sup.contractedAmount) * 100 : 0;
           const isFullyPaid = sup.paidAmount >= sup.contractedAmount && sup.contractedAmount > 0;
