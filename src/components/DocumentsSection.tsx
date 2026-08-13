@@ -117,7 +117,7 @@ export default function DocumentsSection() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white border border-slate-200 p-5 rounded-none shadow-sm">
         <div>
           <h2 className="text-sm font-black text-slate-900 uppercase tracking-widest">Carga de Facturas e Gastos</h2>
-          <p className="text-xs text-slate-500 mt-1">Rexistra recibos, asociaos a un provedor e liquida partidas automáticamente.</p>
+          <p className="text-xs text-slate-500 mt-1">Rexistra recibos, asociados a un provedor e liquida partidas automáticamente.</p>
         </div>
         <button
           onClick={() => setIsUploading(!isUploading)}
@@ -143,12 +143,13 @@ export default function DocumentsSection() {
                 onDragLeave={handleDrag}
                 onDrop={handleDrop}
                 onClick={() => fileInputRef.current?.click()}
-                className={`border-2 border-dashed rounded-none p-6 text-center cursor-pointer transition-all flex flex-col items-center justify-center gap-2 ${dragActive
-                    ? 'border-slate-900 bg-slate-50 text-slate-900'
-                    : fileName
-                      ? 'border-emerald-500 bg-emerald-50 text-emerald-800'
+                className={`border-2 border-dashed rounded-none p-6 text-center cursor-pointer transition-all flex flex-col items-center justify-center gap-2 ${
+                  dragActive 
+                    ? 'border-slate-900 bg-slate-50 text-slate-900' 
+                    : fileName 
+                      ? 'border-emerald-500 bg-emerald-50 text-emerald-800' 
                       : 'border-slate-300 bg-slate-50 hover:border-slate-400 hover:bg-slate-100/50'
-                  }`}
+                }`}
               >
                 <input
                   type="file"
@@ -300,7 +301,7 @@ export default function DocumentsSection() {
             ))}
           </select>
         </div>
-
+        
         {invoices.length === 0 ? (
           <div className="p-8 text-center bg-slate-50 border border-slate-200 rounded-none">
             <FileText className="w-8 h-8 text-slate-400 mx-auto mb-2" />
@@ -440,7 +441,7 @@ export default function DocumentsSection() {
 
               <div className="bg-slate-50 p-3 rounded-none border border-slate-200 flex flex-col items-center justify-center space-y-2">
                 <span className="text-[10px] text-slate-400 uppercase font-black tracking-wider">Vista previa do Documento</span>
-
+                
                 {viewInvoice.base64Data && viewInvoice.base64Data.startsWith('data:image/') ? (
                   <img
                     src={viewInvoice.base64Data}

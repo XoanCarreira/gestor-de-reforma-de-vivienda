@@ -1,7 +1,11 @@
-import { AppBackup, BudgetCategory, Supplier, Milestone, Invoice, ProgressPhoto, FundEntry, BudgetExpense } from './types';
+import { AppBackup, BudgetCategoryRecord, Supplier, Milestone, Invoice, ProgressPhoto, FundEntry, BudgetExpense } from './types';
 
 const DB_NAME = 'ReformaGestDB';
-const DB_VERSION = 4; // v4: se añade el store 'budgetExpenses' (histórico de movimientos por partida)
+// v4: se añade el store 'budgetExpenses' (histórico de movimientos por partida)
+// v5: 'spent' deixa de persistirse en 'budget'. Agora derívase sempre a partir
+//     de 'budgetExpenses' (ver utils/money.ts + hooks/useReformaData.ts), para
+//     que non poida desincronizarse do histórico real de movementos.
+const DB_VERSION = 5;
 
 // Centralizamos el nombre de los stores en un solo tipo. Antes este union
 // literal se repetía en cada método (getAll, add, update, delete, count...)
@@ -44,20 +48,20 @@ export class Database {
           db.deleteObjectStore('syncQueue');
         }
 
-        // --- Migración de consistencia: saldo inicial de partidas previas ---
+        // --- Migración v4: saldo inicial de partidas previas ---
         // Si el usuario ya tenía partidas con `spent > 0` creadas antes de v4,
-        // el nuevo store 'budgetExpenses' estaría vacío para ellas y el
-        // histórico no cuadraría con el acumulado. Generamos un movimiento
-        // "manual" de saldo inicial por cada partida afectada, una sola vez.
+        // el store 'budgetExpenses' estaría vacío para ellas y el histórico
+        // no cuadraría con el acumulado. Generamos un movimiento "manual" de
+        // saldo inicial por cada partida afectada, una sola vez.
         if (event.oldVersion > 0 && event.oldVersion < 4) {
           const budgetStore = upgradeTx.objectStore('budget');
           const expensesStore = upgradeTx.objectStore('budgetExpenses');
           const getAllReq = budgetStore.getAll();
 
           getAllReq.onsuccess = () => {
-            const categories = (getAllReq.result || []) as BudgetCategory[];
+            const categories = (getAllReq.result || []) as Array<BudgetCategoryRecord & { spent?: number }>;
             categories.forEach((cat) => {
-              if (cat.spent > 0) {
+              if (cat.spent && cat.spent > 0) {
                 const migratedExpense: BudgetExpense = {
                   id: 'e_migrated_' + cat.id,
                   categoryId: cat.id,
@@ -71,6 +75,27 @@ export class Database {
                 // ejecutara más de una vez por error, 'add' fallaría en vez
                 // de duplicar el saldo inicial.
                 expensesStore.add(migratedExpense);
+              }
+            });
+          };
+        }
+
+        // --- Migración v5: eliminar 'spent' persistido en 'budget' ---
+        // A partir de ahora 'spent' se calcula siempre a partir de
+        // 'budgetExpenses' (que ya quedó completo tras la migración v4
+        // anterior). El campo 'spent' que pudiera quedar en los registros
+        // antiguos se limpia aquí para que no quede un dato muerto y
+        // potencialmente confuso si se inspecciona la base directamente.
+        if (event.oldVersion > 0 && event.oldVersion < 5) {
+          const budgetStore = upgradeTx.objectStore('budget');
+          const getAllReq = budgetStore.getAll();
+
+          getAllReq.onsuccess = () => {
+            const categories = (getAllReq.result || []) as Array<BudgetCategoryRecord & { spent?: number }>;
+            categories.forEach((cat) => {
+              if ('spent' in cat) {
+                const { spent: _spent, ...cleanCat } = cat as BudgetCategoryRecord & { spent?: number };
+                budgetStore.put(cleanCat);
               }
             });
           };
@@ -100,7 +125,7 @@ export class Database {
 
   async add<T>(storeName: StoreName, item: T): Promise<void> {
     await this.init();
-    
+
     // Add to main store
     await new Promise<void>((resolve, reject) => {
       const store = this.getStore(storeName, 'readwrite');
@@ -152,7 +177,7 @@ export class Database {
     await this.init();
 
     const [budget, suppliers, milestones, invoices, photos, funds, budgetExpenses] = await Promise.all([
-      this.getAll<BudgetCategory>('budget'),
+      this.getAll<BudgetCategoryRecord>('budget'),
       this.getAll<Supplier>('suppliers'),
       this.getAll<Milestone>('milestones'),
       this.getAll<Invoice>('invoices'),
@@ -184,6 +209,9 @@ export class Database {
       }
     };
 
+    // Los backups antiguos (pre-v5) pueden traer un campo 'spent' colgando
+    // en cada categoría; se ignora sin más (nunca se lee de ahí), así que no
+    // hace falta limpiarlo explícitamente al importar.
     await insertAll('budget', backup.budget || []);
     await insertAll('suppliers', backup.suppliers || []);
     await insertAll('milestones', backup.milestones || []);

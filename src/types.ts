@@ -1,25 +1,37 @@
-// Presuposto
-export interface BudgetCategory {
+// --- Presuposto ---
+
+// Registro tal cual se persiste en IndexedDB. NO incluye 'spent': el gasto
+// acumulado ya no se guarda como número redundante. Se deriva SIEMPRE a
+// partir del histórico real de movementos (BudgetExpense[]), para que sea
+// estructuralmente imposible que se desincronice de la verdad auditable.
+// Ver utils/money.ts y hooks/useReformaData.ts.
+export interface BudgetCategoryRecord {
   id: string;
   name: string;
   allocated: number;
-  spent: number;
   notes?: string;
+}
+
+// Versión enriquecida que consume la UI: añade 'spent', calculado en tiempo
+// de lectura sumando BudgetExpense[] filtrados por categoryId. Nunca se
+// persiste tal cual; solo BudgetCategoryRecord llega a la base de datos.
+export interface BudgetCategory extends BudgetCategoryRecord {
+  spent: number;
 }
 
 // Origen del movimiento de gasto: de dónde procede el registro.
 // 'invoice' se crea automáticamente al consolidar una factura, 'quick' desde
-// el cargo rápido de la partida, y 'manual' desde un ajuste directo del histórico.
+// el cargo rápido de la partida, y 'manual' desde un axuste directo do
+// histórico (é o único que admite importes negativos, para correccións).
 export type ExpenseSource = 'invoice' | 'quick' | 'manual';
 
 // Movimiento individual de gasto asociado a una partida de presupuesto.
-// Es la fuente de verdad del detalle: BudgetCategory.spent sigue siendo el
-// acumulado rápido usado para cálculos (barras de progreso, KPIs...), pero
-// cada BudgetExpense permite reconstruir de dónde salió cada euro gastado.
+// Es la ÚNICA fuente de verdad del gasto: BudgetCategory.spent se deriva
+// siempre de sumar estos registros, nunca al revés.
 export interface BudgetExpense {
   id: string;
-  categoryId: string;      // Referencia a BudgetCategory.id
-  amount: number;
+  categoryId: string;      // Referencia a BudgetCategoryRecord.id
+  amount: number;           // Positivo salvo para axustes manuais de corrección
   date: string;             // YYYY-MM-DD, fecha del gasto (no de creación del registro)
   source: ExpenseSource;
   description?: string;     // Ej. "Factura: Alicatado baño" o nota manual
@@ -61,9 +73,6 @@ export interface Invoice {
   amount: number;
   supplierId: string;
   categoryId?: string;        // Partida de presupuesto asociada explícitamente por el usuario.
-                               // Antes se intentaba adivinar por coincidencia de texto entre
-                               // supplier.service y category.name, lo que fallaba en silencio
-                               // si los nombres no coincidían literalmente.
   date: string; // YYYY-MM-DD
   base64Data?: string; // File contents (PDF or Image)
   fileName: string;
@@ -98,7 +107,7 @@ export interface FundEntry {
 export interface AppBackup {
   version: number;
   exportedAt: string;
-  budget: BudgetCategory[];
+  budget: BudgetCategoryRecord[];
   suppliers: Supplier[];
   milestones: Milestone[];
   invoices: Invoice[];

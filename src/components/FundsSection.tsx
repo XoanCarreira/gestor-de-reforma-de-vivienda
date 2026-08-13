@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Plus, Trash2, X, PiggyBank, Landmark } from 'lucide-react';
 import { utils } from '../utils/date';
+import { sumEuros } from '../utils/money';
 import { useReformaDataContext } from '../context/ReformaDataContext';
 import { useConfirm } from '../hooks/useConfirm';
 
@@ -16,7 +17,7 @@ export default function FundsSection() {
   const [date, setDate] = useState(utils.getToday());
   const [notes, setNotes] = useState('');
 
-  const totalFunds = funds.reduce((sum, fund) => sum + fund.amount, 0);
+  const totalFunds = sumEuros(funds.map(f => f.amount));
 
   const handleSaveAdd = (e: React.FormEvent) => {
     e.preventDefault();
@@ -89,7 +90,7 @@ export default function FundsSection() {
             </div>
           </div>
           <div className="flex justify-end gap-2 border-t border-slate-100 pt-3">
-            <button type="button" onClick={() => { setIsAdding(false); resetForm(); }} className="px-4 py-2 border border-slate-200 text-slate-600 font-bold rounded-none text-xs sm:text-sm hover:bg-slate-50 active:scale-95 transition-all">Cancelar</button>
+            <button type="button" onClick={() => {setIsAdding(false); resetForm();}} className="px-4 py-2 border border-slate-200 text-slate-600 font-bold rounded-none text-xs sm:text-sm hover:bg-slate-50 active:scale-95 transition-all">Cancelar</button>
             <button type="submit" className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white font-black rounded-none text-xs sm:text-sm active:scale-95 transition-all uppercase tracking-wider">Gardar fondo</button>
           </div>
         </form>

@@ -1,4 +1,5 @@
 import { BudgetCategory } from '../types';
+import { sumEuros, subtractEuros } from './money';
 
 /**
  * Estado financeiro calculado dunha partida individual de presuposto.
@@ -18,13 +19,13 @@ export interface BudgetStatus {
  * Calcula o estado financeiro dunha partida de presuposto: porcentaxe usado,
  * desviación (sobrecosto/aforro) e flags de estado (excedido / preto do límite).
  *
- * Esta función centraliza a lóxica que antes estaba duplicada en
- * BudgetSection, Dashboard e ReportGenerator, evitando que cada un calcule
- * unha versión lixeiramente distinta e queden desincronizados.
+ * `cat.spent` xa chega aquí calculado de forma exacta (ver useReformaData),
+ * así que esta función só fai as comparacións, sen preocuparse de posibles
+ * erros de coma flotante acumulados.
  */
 export function getBudgetStatus(cat: BudgetCategory): BudgetStatus {
   const percentUsed = cat.allocated > 0 ? (cat.spent / cat.allocated) * 100 : 0;
-  const deviation = cat.spent - cat.allocated;
+  const deviation = subtractEuros(cat.spent, cat.allocated);
   const isOver = cat.spent > cat.allocated;
   const isNearLimit = !isOver && cat.allocated > 0 && percentUsed >= 90;
 
@@ -46,11 +47,15 @@ export function getBudgetStatusLabel(cat: BudgetCategory): BudgetStatusLabel {
 /**
  * Totais agregados dun conxunto de partidas de presuposto.
  * Útil para o Dashboard e para a portada do informe PDF.
+ *
+ * Usa sumEuros (aritmética en céntimos) en vez de reduce((a,b)=>a+b,0):
+ * sumar moitas partidas con decimais directamente en coma flotante pode
+ * arrastrar o mesmo tipo de erro de redondeo que se evitou en 'spent'.
  */
 export function getBudgetTotals(budget: BudgetCategory[]) {
-  const totalAllocated = budget.reduce((sum, c) => sum + c.allocated, 0);
-  const totalSpent = budget.reduce((sum, c) => sum + c.spent, 0);
-  const totalDeviation = totalSpent - totalAllocated;
+  const totalAllocated = sumEuros(budget.map(c => c.allocated));
+  const totalSpent = sumEuros(budget.map(c => c.spent));
+  const totalDeviation = subtractEuros(totalSpent, totalAllocated);
   const deviationPercent = totalAllocated > 0 ? (totalSpent / totalAllocated) * 100 : 0;
 
   return { totalAllocated, totalSpent, totalDeviation, deviationPercent };

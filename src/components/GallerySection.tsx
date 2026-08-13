@@ -29,7 +29,7 @@ export default function GallerySection() {
       if (!title) {
         setTitle(file.name.substring(0, file.name.lastIndexOf('.')) || file.name);
       }
-
+      
       const reader = new FileReader();
       reader.onload = (event) => {
         if (event.target?.result) {
@@ -90,7 +90,7 @@ export default function GallerySection() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="sm:col-span-2">
               <label className="block text-xs font-black text-slate-500 uppercase mb-2 tracking-wider">Capturar Fotografía</label>
-
+              
               <div className="flex flex-wrap gap-3">
                 <input
                   type="file"
@@ -177,7 +177,7 @@ export default function GallerySection() {
           <div className="flex justify-end gap-2 border-t border-slate-100 pt-3">
             <button
               type="button"
-              onClick={() => { setIsAdding(false); resetForm(); }}
+              onClick={() => {setIsAdding(false); resetForm();}}
               className="px-4 py-2 border border-slate-200 text-slate-600 font-bold rounded-none text-xs sm:text-sm hover:bg-slate-50 active:scale-95 transition-all"
             >
               Cancelar
@@ -213,7 +213,7 @@ export default function GallerySection() {
                   referrerPolicy="no-referrer"
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                 />
-
+                
                 <div className="absolute inset-0 bg-slate-900/40 opacity-100 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
                   <button
                     onClick={() => setActivePhoto(photo)}

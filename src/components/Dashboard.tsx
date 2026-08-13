@@ -1,6 +1,7 @@
 import { AlertTriangle, TrendingUp, Clock, HardHat, Database } from 'lucide-react';
 import { utils } from '../utils/date';
 import { getBudgetStatus, getBudgetTotals } from '../utils/budget';
+import { sumEuros, subtractEuros } from '../utils/money';
 import { useReformaDataContext } from '../context/ReformaDataContext';
 
 interface DashboardProps {
@@ -15,15 +16,16 @@ export default function Dashboard({ onNavigate }: DashboardProps) {
 
   const TODAY_STR = utils.getToday(); // Data referencia do sistema
 
-  // Cálculos
+  // Cálculos. sumEuros suma en céntimos por debaixo para evitar o mesmo
+  // erro de redondeo que xa se corrixiu en 'spent' (ver utils/money.ts).
   const { totalAllocated, totalSpent } = getBudgetTotals(budget);
-  const totalPaid = suppliers.reduce((sum, s) => sum + s.paidAmount, 0);
-  const totalContracted = suppliers.reduce((sum, s) => sum + s.contractedAmount, 0);
-  const totalFunds = funds.reduce((sum, entry) => sum + entry.amount, 0);
-  const fundsBalance = totalFunds - totalAllocated;
+  const totalPaid = sumEuros(suppliers.map(s => s.paidAmount));
+  const totalContracted = sumEuros(suppliers.map(s => s.contractedAmount));
+  const totalFunds = sumEuros(funds.map(f => f.amount));
+  const fundsBalance = subtractEuros(totalFunds, totalAllocated);
   const hasDeficit = fundsBalance < 0;
 
-  const remainingBudget = totalAllocated - totalSpent;
+  const remainingBudget = subtractEuros(totalAllocated, totalSpent);
   const progressPercent = totalAllocated > 0 ? (totalSpent / totalAllocated) * 100 : 0;
 
   // Progreso hitos
@@ -160,7 +162,7 @@ export default function Dashboard({ onNavigate }: DashboardProps) {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <div className="p-5 bg-white border border-slate-200 shadow-sm rounded-none">
           <p className="text-xs font-black text-slate-400 uppercase tracking-wider">Fondos dispoñibles</p>
-          <p className="text-2xl font-black text-slate-900 mt-2">{(totalFunds - totalSpent).toLocaleString('es-ES')} €</p>
+          <p className="text-2xl font-black text-slate-900 mt-2">{subtractEuros(totalFunds, totalSpent).toLocaleString('es-ES')} €</p>
           <span className="text-[10px] text-slate-400 mt-2 block">Saldo total actual</span>
         </div>
 
