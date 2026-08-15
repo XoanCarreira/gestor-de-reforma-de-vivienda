@@ -1,7 +1,8 @@
 import React, { useState, useRef } from 'react';
 import { ProgressPhoto } from '../types';
-import { Camera, Image, Trash2, Calendar, ZoomIn, X, } from 'lucide-react';
+import { Camera, Image, Trash2, Calendar, ZoomIn, X, Loader2 } from 'lucide-react';
 import { utils } from '../utils/date';
+import { compressImage, estimateBase64Size, formatBytes } from '../utils/image';
 import { useReformaDataContext } from '../context/ReformaDataContext';
 import { useConfirm } from '../hooks/useConfirm';
 
@@ -20,23 +21,39 @@ export default function GallerySection() {
   const [date, setDate] = useState(utils.getToday());
   const [base64Data, setBase64Data] = useState('');
 
+  // Estado de compresión: la foto se comprime de forma asíncrona (canvas)
+  // antes de quedar lista para guardar, así que hay un pequeño intervalo
+  // en el que hay que bloquear el envío y mostrar feedback.
+  const [compressing, setCompressing] = useState(false);
+  const [originalSize, setOriginalSize] = useState<number | null>(null);
+  const [compressedSize, setCompressedSize] = useState<number | null>(null);
+
   // Zoom view state
   const [activePhoto, setActivePhoto] = useState<ProgressPhoto | null>(null);
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0];
-      if (!title) {
-        setTitle(file.name.substring(0, file.name.lastIndexOf('.')) || file.name);
-      }
-      
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        if (event.target?.result) {
-          setBase64Data(event.target.result as string);
-        }
-      };
-      reader.readAsDataURL(file);
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!title) {
+      setTitle(file.name.substring(0, file.name.lastIndexOf('.')) || file.name);
+    }
+
+    setCompressing(true);
+    setOriginalSize(file.size);
+    setCompressedSize(null);
+
+    try {
+      const compressed = await compressImage(file);
+      setBase64Data(compressed);
+      setCompressedSize(estimateBase64Size(compressed));
+    } catch (err) {
+      alert(err instanceof Error ? err.message : 'Non se puido procesar a imaxe.');
+      setOriginalSize(null);
+    } finally {
+      setCompressing(false);
+      // Permite volver a seleccionar o mesmo arquivo tras un erro.
+      e.target.value = '';
     }
   };
 
@@ -63,6 +80,8 @@ export default function GallerySection() {
     setNotes('');
     setDate(utils.getToday());
     setBase64Data('');
+    setOriginalSize(null);
+    setCompressedSize(null);
   };
 
   return (
@@ -101,8 +120,9 @@ export default function GallerySection() {
                 />
                 <button
                   type="button"
+                  disabled={compressing}
                   onClick={() => fileInputRef.current?.click()}
-                  className="flex-1 flex items-center justify-center gap-2 py-3 bg-slate-50 border border-slate-200 rounded-none hover:bg-slate-100 text-xs sm:text-sm font-black text-slate-900 transition-all active:scale-95 uppercase tracking-wider"
+                  className="flex-1 flex items-center justify-center gap-2 py-3 bg-slate-50 border border-slate-200 rounded-none hover:bg-slate-100 disabled:opacity-50 disabled:cursor-not-allowed text-xs sm:text-sm font-black text-slate-900 transition-all active:scale-95 uppercase tracking-wider"
                 >
                   <Image className="w-4 h-4 text-slate-900" />
                   <span>Examinar Galería</span>
@@ -113,20 +133,30 @@ export default function GallerySection() {
                   ref={cameraInputRef}
                   onChange={handleFileChange}
                   accept="image/*"
-                  capture="environment"
+                  capture="environment" // Forces back camera on smartphones! Extremely clean on-site feature
                   className="hidden"
                 />
                 <button
                   type="button"
+                  disabled={compressing}
                   onClick={() => cameraInputRef.current?.click()}
-                  className="flex-1 flex items-center justify-center gap-2 py-3 bg-slate-50 border border-slate-200 rounded-none hover:bg-slate-100 text-xs sm:text-sm font-black text-slate-900 transition-all active:scale-95 uppercase tracking-wider"
+                  className="flex-1 flex items-center justify-center gap-2 py-3 bg-slate-50 border border-slate-200 rounded-none hover:bg-slate-100 disabled:opacity-50 disabled:cursor-not-allowed text-xs sm:text-sm font-black text-slate-900 transition-all active:scale-95 uppercase tracking-wider"
                 >
                   <Camera className="w-4 h-4 text-slate-900" />
                   <span>Capturar con Cámara</span>
                 </button>
               </div>
 
-              {base64Data && (
+              {/* Estado de compresión */}
+              {compressing && (
+                <div className="mt-4 bg-slate-50 p-4 rounded-none border border-slate-200 flex items-center justify-center gap-2 text-xs font-bold text-slate-600 uppercase tracking-wider">
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <span>Comprimindo imaxe...</span>
+                </div>
+              )}
+
+              {/* Photo preview container */}
+              {!compressing && base64Data && (
                 <div className="mt-4 bg-slate-50 p-3 rounded-none border border-slate-200 flex flex-col items-center">
                   <span className="text-[10px] text-slate-400 uppercase font-black tracking-wider mb-2">Vista previa da captura</span>
                   <img
@@ -135,10 +165,17 @@ export default function GallerySection() {
                     referrerPolicy="no-referrer"
                     className="max-h-[30vh] rounded-none object-contain border border-slate-200 shadow-sm"
                   />
+                  {originalSize !== null && compressedSize !== null && (
+                    <span className="text-[10px] text-emerald-700 font-bold mt-2 bg-emerald-50 border border-emerald-200 px-2 py-1">
+                      {formatBytes(originalSize)} → {formatBytes(compressedSize)}
+                      {' '}(-{Math.round((1 - compressedSize / originalSize) * 100)}%)
+                    </span>
+                  )}
                 </div>
               )}
             </div>
 
+            {/* Title & metadata */}
             <div>
               <label className="block text-xs font-black text-slate-500 uppercase mb-1 tracking-wider">Título do avance</label>
               <input
@@ -184,7 +221,8 @@ export default function GallerySection() {
             </button>
             <button
               type="submit"
-              className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white font-black rounded-none text-xs sm:text-sm active:scale-95 transition-all uppercase tracking-wider"
+              disabled={compressing || !base64Data}
+              className="px-4 py-2 bg-slate-900 hover:bg-slate-800 disabled:bg-slate-300 disabled:cursor-not-allowed text-white font-black rounded-none text-xs sm:text-sm active:scale-95 transition-all uppercase tracking-wider"
             >
               Gardar Fotografía
             </button>
@@ -206,6 +244,7 @@ export default function GallerySection() {
               key={photo.id}
               className="bg-white border border-slate-200 rounded-none overflow-hidden flex flex-col justify-between hover:border-slate-400 transition-all shadow-sm group"
             >
+              {/* Picture area with zoom icon */}
               <div className="relative aspect-video bg-slate-100 flex items-center justify-center overflow-hidden">
                 <img
                   src={photo.base64Data}
@@ -214,6 +253,7 @@ export default function GallerySection() {
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                 />
                 
+                {/* Hover overlay with zoom button */}
                 <div className="absolute inset-0 bg-slate-900/40 opacity-100 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
                   <button
                     onClick={() => setActivePhoto(photo)}
@@ -237,11 +277,13 @@ export default function GallerySection() {
                   </button>
                 </div>
 
+                {/* Top left corner: Date badge */}
                 <div className="absolute top-2.5 left-2.5 px-2.5 py-1 bg-white/95 backdrop-blur-sm border border-slate-200 rounded-none text-[9px] font-black uppercase tracking-wider text-slate-900 flex items-center gap-1">
                   <Calendar className="w-3 h-3 text-slate-900" />
                   <span>{new Date(photo.date).toLocaleDateString('es-ES')}</span>
                 </div>
 
+                {/* Top right corner: Local storage badge */}
                 <div className="absolute top-2.5 right-2.5">
                   <span className="px-2 py-1 bg-white/95 border border-slate-200 text-slate-700 rounded-none flex items-center justify-center text-[9px] font-black uppercase tracking-wider" title="Guardado en IndexedDB local">
                     Local
@@ -249,6 +291,7 @@ export default function GallerySection() {
                 </div>
               </div>
 
+              {/* Text Area */}
               <div className="p-4 space-y-2 flex-1 flex flex-col justify-between">
                 <div>
                   <h4 className="font-black text-slate-900 text-sm leading-snug group-hover:text-slate-700 transition-colors">
@@ -262,7 +305,7 @@ export default function GallerySection() {
                 </div>
 
                 <div className="flex justify-between items-center text-[10px] text-slate-400 font-bold uppercase tracking-wider pt-2 border-t border-slate-100">
-                  <span className="font-bold">Formato: JPG / PNG</span>
+                  <span className="font-bold">Formato: JPG comprimido</span>
                   <span className="text-slate-700 font-black">Almacenado localmente</span>
                 </div>
               </div>
@@ -274,6 +317,7 @@ export default function GallerySection() {
       {/* Photo Zoom Modal */}
       {activePhoto && (
         <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex flex-col items-center justify-center p-4 z-50 animate-fadeIn">
+          {/* Top Panel */}
           <div className="w-full max-w-4xl flex justify-between items-center mb-4">
             <div className="text-left">
               <span className="text-xs text-slate-500 font-black uppercase tracking-wider">{new Date(activePhoto.date).toLocaleDateString('es-ES')}</span>
@@ -287,6 +331,7 @@ export default function GallerySection() {
             </button>
           </div>
 
+          {/* Central image view */}
           <div className="w-full max-w-4xl flex-1 flex items-center justify-center overflow-hidden max-h-[70vh]">
             <img
               src={activePhoto.base64Data}
@@ -296,6 +341,7 @@ export default function GallerySection() {
             />
           </div>
 
+          {/* Bottom Panel: notes */}
           {activePhoto.notes && (
             <div className="w-full max-w-4xl mt-4 bg-white border border-slate-200 p-4 rounded-none text-center">
               <p className="text-sm text-slate-700 italic font-medium">“{activePhoto.notes}”</p>
