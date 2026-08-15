@@ -465,7 +465,7 @@ export default function SuppliersSection() {
                       </a>
                     ) : (
                       <div className="py-2 bg-slate-50 text-slate-400 rounded-none text-xs text-center border border-slate-200 cursor-not-allowed font-black uppercase tracking-wider">
-                        Sin teléfono
+                        Sen teléfono
                       </div>
                     )}
                     {sup.email ? (

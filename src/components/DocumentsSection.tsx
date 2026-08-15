@@ -90,15 +90,15 @@ export default function DocumentsSection() {
 
     try {
       if (file.type.startsWith('image/')) {
-        // Fotos de facturas tomadas con el móvil: se comprimen igual que en
-        // la galería, mismo motivo (pueden pesar varios MB sin comprimir).
+        // Fotos de facturas tomadas co móbil: comprimense igual que na
+        // galería, mesmo motivo (poden pesar varios MB sen comprimir).
         const compressed = await compressImage(file);
         setBase64Data(compressed);
         setFinalSize(estimateBase64Size(compressed));
       } else {
-        // PDF u otro tipo: no se puede recomprimir en el cliente sin una
-        // librería específica, así que solo se valida el tamaño real. Antes
-        // la UI prometía "Máx. 10MB" pero no lo comprobaba en ningún sitio.
+        // PDF ou outro tipo: non se pode recomprimir en el cliente sen una
+        // librería específica, así que so se valida o tamaño real. Antes
+        // a UI prometía "Máx. 10MB" pero non o comprobaba en ningún sitio.
         if (file.size > MAX_PDF_BYTES) {
           throw new Error(`O arquivo pesa ${formatBytes(file.size)}. O máximo admitido son ${formatBytes(MAX_PDF_BYTES)}.`);
         }
@@ -132,9 +132,9 @@ export default function DocumentsSection() {
       return;
     }
 
-    // Si el usuario quiere consolidación automática y existen partidas creadas,
-    // exigimos elegir a cuál se asocia el gasto. Así evitamos que el importe
-    // se quede "flotando" sen sumar a ningunha partida por falta de coincidencia
+    // Se o usuario quiere consolidación automática e existen partidas creadas,
+    // exigimos elexir a cal se asocia o gasto. Así evitamos que o importe
+    // quede "flotando" sen sumar a ningunha partida por falta de coincidencia
     // de texto (o problema orixinal do matching automático por nome de servizo).
     if (updateFinancials && budget.length > 0 && !categoryId) {
       alert('Selecciona a partida de presuposto á que se debe imputar este gasto.');
@@ -489,7 +489,7 @@ export default function DocumentsSection() {
                 <div className="bg-slate-50 p-2.5 rounded-none border border-slate-200">
                   <span className="text-slate-400 block uppercase font-black tracking-wider text-[10px]">Provedor</span>
                   <span className="text-slate-900 font-black">
-                    {suppliers.find(s => s.id === viewInvoice.supplierId)?.name || 'Sin asignar'}
+                    {suppliers.find(s => s.id === viewInvoice.supplierId)?.name || 'Sen asignar'}
                   </span>
                 </div>
                 <div className="bg-slate-50 p-2.5 rounded-none border border-slate-200">

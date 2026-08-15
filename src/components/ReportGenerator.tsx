@@ -215,7 +215,7 @@ export default function ReportGenerator() {
         doc.text(`${sup.pendingAmount.toLocaleString('es-ES')} €`, 155, y + 5, { align: 'right' });
 
         doc.setTextColor(textColor[0], textColor[1], textColor[2]);
-        doc.text(`${sup.rating ? '★'.repeat(Math.round(sup.rating)) : 'Sin punt.'}`, 190, y + 5, { align: 'right' });
+        doc.text(`${sup.rating ? '★'.repeat(Math.round(sup.rating)) : 'Sen punt.'}`, 190, y + 5, { align: 'right' });
 
         y += 7;
       });
