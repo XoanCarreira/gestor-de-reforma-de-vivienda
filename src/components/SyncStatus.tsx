@@ -152,14 +152,14 @@ export default function SyncStatus() {
           </h3>
           <p className="text-sm text-slate-600 leading-relaxed">
             Se queres comezar de cero, podes vaciar a base local e volver a introducir novos datos.
-            Esto elimina fondos, presupuestos, proveedores, hitos, facturas e fotos gardadas neste navegador.
+            Esto elimina fondos, orzamentos, provedores, hitos, facturas e fotos gardadas neste navegador.
           </p>
           <hr className="my-6 border-slate-200" />
           {/* Histórico de cambios */}
           <details className="bg-slate-50 p-4 rounded-xl border border-slate-200">
             <summary className="cursor-pointer text-sm font-medium text-slate-700">Ver historial de actualizacións e revisións</summary>
             <ul className="list-disc list-inside text-sm text-slate-600 space-y-1 mt-2">
-              <li className="text-[10px] text-red-800">13/08/26 - Numérosas actualizacións na lóxica dos cálculos. Para poder usar todas as funcionalidades, recoméndase borrar os datos existentes e volver a introducilos cubrindo os novos campos.</li>
+              <li className="text-[10px] text-slate-600">14/08/26 - <span className="text-red-700 text-bold">Numérosas actualizacións na lóxica dos cálculos. Para poder usar todas as funcionalidades, recoméndase borrar os datos existentes e volver a introducilos cubrindo os novos campos.</span></li>
               <li className="text-[10px] text-slate-600">09/08/26 - Engade filtrados en facturas e provedores</li>
               <li className="text-[10px] text-slate-600">08/08/26 - Corrección erros consistencia datos. Agora cando eliminas unha factura, os datos asociados actualízanse correctamente(solo en facturas creadas post-actualización).</li>
               <li className="text-[10px] text-slate-600">07/08/26 - Inclúese histórico de pagos nos orzamentos</li>

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Supplier } from '../types';
-import { Plus, Edit2, Trash2, Check, X, Phone, Mail, MessageSquare, Eye } from 'lucide-react';
+import { Plus, Edit2, Trash2, Check, X, Phone, Mail, MessageSquare, Eye, HardHat } from 'lucide-react';
 import { useReformaDataContext } from '../context/ReformaDataContext';
 import { useConfirm } from '../hooks/useConfirm';
 
@@ -118,19 +118,19 @@ export default function SuppliersSection() {
       </div>
 
       <div>
-          <label className="block text-xs font-black text-slate-500 uppercase mb-1 tracking-wider">Servicio Asociado</label>
-          <select
-            required
-            value={service}
-            onChange={e => setService(e.target.value)}
-            className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-none text-slate-900 text-sm focus:border-slate-900 outline-none font-bold"
-          >
-            <option value="">-- Todos --</option>
-            {suppliers.map(s => (
-              <option key={s.id} value={s.service}>{s.service}</option>
-            ))}
-          </select>
-        </div>
+        <label className="block text-xs font-black text-slate-500 uppercase mb-1 tracking-wider">Servicio Asociado</label>
+        <select
+          required
+          value={service}
+          onChange={e => setService(e.target.value)}
+          className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-none text-slate-900 text-sm focus:border-slate-900 outline-none font-bold"
+        >
+          <option value="">-- Todos --</option>
+          {suppliers.map(s => (
+            <option key={s.id} value={s.service}>{s.service}</option>
+          ))}
+        </select>
+      </div>
 
       {/* Add Form (Expandable) */}
       {isAdding && (
@@ -235,7 +235,13 @@ export default function SuppliersSection() {
       )}
 
       {/* Supplier Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      {suppliers.length === 0 ? (
+        <div className="p-8 text-center bg-slate-50 border border-slate-200 rounded-none">
+          <HardHat className="w-8 h-8 text-slate-400 mx-auto mb-2" />
+          <p className="text-sm font-black text-slate-800 uppercase tracking-wide text-xs">Non existen partidas neste momento.</p>
+          <p className="text-xs text-slate-500 mt-1">Engada unha nova partida co botón superior.</p>
+        </div>
+      ) : (<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {suppliers.filter(suplier => !service || suplier.service === service).map(sup => {
           const isEditing = editingId === sup.id;
           const paidPercent = sup.contractedAmount > 0 ? (sup.paidAmount / sup.contractedAmount) * 100 : 0;
@@ -332,8 +338,8 @@ export default function SuppliersSection() {
                     />
                   </div>
                   <p className="text-[10px] text-slate-500">
-                      <span className="text-[14px] text-red-500">*</span> So deberías modificar a cantidade gastada para facer correccións. Para reverter un pago, elimina a factura correspondente ou o movemento manual do histórico de gastos.
-                    </p>
+                    <span className="text-[14px] text-red-500">*</span> So deberías modificar a cantidade gastada para facer correccións. Para reverter un pago, elimina a factura correspondente ou o movemento manual do histórico de gastos.
+                  </p>
                   <div className="flex justify-end gap-2 pt-2 border-t border-slate-100">
                     <button
                       type="button"
@@ -383,7 +389,7 @@ export default function SuppliersSection() {
                               title: 'Eliminar Provedor',
                               description: `Esto eliminará o provedor "${sup.name}" e todos os seus datos asociados. ¿Desexas continuar?`,
                             })
-                            if (ok) {onDeleteSupplier(sup.id);}
+                            if (ok) { onDeleteSupplier(sup.id); }
                           }}
                           className="p-1.5 text-slate-400 hover:text-red-600 bg-slate-50 hover:bg-slate-100 rounded-none transition-all active:scale-90"
                         >
@@ -481,7 +487,7 @@ export default function SuppliersSection() {
             </div>
           );
         })}
-      </div>
+      </div>)}
 
       {/* View Supplier Modal */}
       {viewSupplier && (

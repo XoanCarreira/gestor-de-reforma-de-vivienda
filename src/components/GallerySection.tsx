@@ -90,7 +90,7 @@ export default function GallerySection() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white border border-slate-200 p-5 rounded-none shadow-sm">
         <div>
           <h2 className="text-sm font-black text-slate-900 uppercase tracking-widest">Fotos de Avance de Obra</h2>
-          <p className="text-xs text-slate-500 mt-1">Rexistra de forma visual o progreso, engade anotacións e consulta o histórico.</p>
+          <p className="text-xs text-slate-500 mt-1">Rexistra de forma visual o progreso, engade anotacións e consulta o histórico. Para optimizar o rendemento, as imaxes serán comprimidas antes de ser gardadas.</p>
         </div>
         <button
           onClick={() => { setIsAdding(!isAdding); resetForm(); }}
